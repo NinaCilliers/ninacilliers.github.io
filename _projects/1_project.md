@@ -18,3 +18,62 @@ In the second part of this project, we use this data to predict athlete performa
  - Random forest 
  - XGBoost
  - Dense neural network
+
+ XG Boost was found to outperform other models by ~3%. The most important features were extracted using a custom feature permutation algorithm, and gender, age and BMI were found to be the most important considerations, in line with the findings in our data exploration phase. The dense neural network suffered from a higher bias and was not optimal for our dataset. Finally, the error metric from these models is contextualized in terms of my own ability to predict performance. Insight is provided for both athletes and future survey construction. 
+
+
+# Project Outline 
+
+- **Data Preparation**
+   - Data summary
+   - Outlier removal
+   - Cleaning survey data
+   
+
+- **Feature Engineering**
+   - Normalizing lifts 
+   - Calculating body mass index (BMI)
+   
+   
+- **EDA** 
+   - Lifts
+   - Region 
+   - BMI
+   - Age
+   - Athlete lifestyle
+   - Has CrossFit been life changing?
+   - Correlation matrix
+   
+   
+- **Predicting Normalized Total Lift**
+  - Random forest regression model
+  - XGBoost
+  - Feature Importance
+  - Dense neural network
+  - Benchmarking model performance
+  
+  
+- **Conclusions and recommendations**
+  - Advice for athletes and coaches
+  - Survey suggestions
+
+
+# Data Preparation
+
+
+```python
+import pandas as pd
+import missingno as msno
+import seaborn as sns
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+```
+
+### Data summary
+
+
+```python
+df = pd.read_csv('/kaggle/input/crossfit-athletes/athletes.csv')
+df.info()
+```
