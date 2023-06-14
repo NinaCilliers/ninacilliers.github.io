@@ -2,8 +2,8 @@
 layout: page
 permalink: /publications/
 title: Publications
-description: Publications from my time as a scientists
-years: [2009, 2019]
+description: Highlighted publications from my time as a scientists
+years: [2019, 2009]
 nav: true
 nav_order: 1
 ---
