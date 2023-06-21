@@ -10,9 +10,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Project 1 | Nina  Cilliers</title>
+    <title>A data-based approach to CrossFit training | Nina  Cilliers</title>
     <meta name="author" content="Nina  Cilliers">
-    <meta name="description" content="a project with a background image">
+    <meta name="description" content="CrossFit game data is explored and analyzed and used to improve athlete preparation.">
     <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
 
 
@@ -38,7 +38,7 @@
     <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
     
     <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="canonical" href="https://ninacilliers.github.io/projects/1_project/">
+    <link rel="canonical" href="https://ninacilliers.github.io/projects/crossfit_explore/">
 
     <!-- Dark Mode -->
     
@@ -73,7 +73,7 @@
 
               <!-- About -->
               <li class="nav-item ">
-                <a class="nav-link" href="/">about</a>
+                <a class="nav-link" href="/">About</a>
               </li>
               
               <!-- Blog -->
@@ -90,6 +90,9 @@
               </li>
               <li class="nav-item ">
                 <a class="nav-link" href="/repositories/">repositories</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/teaching/">teaching</a>
               </li>
               <li class="nav-item dropdown ">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">submenus</a>
@@ -125,80 +128,57 @@
     <div class="container mt-5">
       
         <!-- page.html -->
+        <style>
+          img {
+            max-width: 100%
+          }
+        </style>
         <div class="post">
 
-          <header class="post-header">
-            <h1 class="post-title">Project 1</h1>
-            <p class="post-description">a project with a background image</p>
-          </header>
-
           <article>
-            <h1 id="introduction">Introduction</h1>
+            <h1 id="a-data-based-approach-to-crossfit-training">A data-based approach to CrossFit training</h1>
+
+<h2 id="project-overview">Project Overview</h2>
 
 <p>CrossFit is a high-intensity fitness program that combines elements of weightlifting, cardio, and gymnastics. It aims to improve overall physical fitness by incorporating constantly varied functional movements performed at a high intensity. At the pinnacle of CrossFit is the CrossFit Games, an annual competition that showcases the world’s fittest athletes. The CrossFit Games serve as a platform for elite athletes to test their skills and compete in a wide range of demanding workouts, challenging their strength, speed, power, and mental resilience. In this analysis, we will delve into the performance of CrossFit athletes, examining key factors that contribute to their success in this highly demanding and competitive sport.</p>
 
-<p>In this comprehensive two-part project, we first clean highly disorganized survey data profiling athletes competing in the CrossFit games. This data encompasses their age, height, weight, training habits (including rest days and sessions per day), geographic location, eating habits (such as measuring food, adhering to paleo or quality eating practices), and performance data. Features are engineered for a more insightful analysis of athlete performance, enabling us to uncover valuable trends and patterns. Notably, strong relationships were found between performance and athlete age, body composition and gender and athlete performance.</p>
+<p>In this comprehensive review of survey data from the CrossFit games, we first clean highly disorganized survey data profiling athletes competing in the CrossFit games. This data encompasses age, height, weight, training habits (including rest days and sessions per day), geographic location, eating habits (such as measuring food, adhering to paleo or quality eating practices), and performance data. Features are engineered for a more insightful analysis of athlete performance, enabling us to uncover valuable trends and patterns. We then look at how these factors correlate with athlete performance to gain valuable insight for athletes, coaches and future survey construction.</p>
 
-<p>In the second part of this project, we use this data to predict athlete performance. Three models are made to this end using common regression models:</p>
+<p>The dataset used in this project was provided by Ulrik Pedersen and can be found on <a href="https://www.kaggle.com/datasets/ulrikthygepedersen/crossfit-athletes" rel="external nofollow noopener" target="_blank">Kaggle</a>.</p>
 
-<ul>
-  <li>Random forest</li>
-  <li>XGBoost</li>
-  <li>Dense neural network</li>
-</ul>
-
-<p>XG Boost was found to outperform other models by ~3%. The most important features were extracted using a custom feature permutation algorithm, and gender, age and BMI were found to be the most important considerations, in line with the findings in our data exploration phase. The dense neural network suffered from a higher bias and was not optimal for our dataset. Finally, the error metric from these models is contextualized in terms of my own ability to predict performance. Insight is provided for both athletes and future survey construction.</p>
-
-<h1 id="project-outline">Project Outline</h1>
+<h2 id="project-outline">Project outline</h2>
 
 <ul>
-  <li>
-<strong>Data Preparation</strong>
+  <li>Data overview</li>
+  <li>Data cleaning
     <ul>
-      <li>Data summary</li>
-      <li>Outlier removal</li>
-      <li>Cleaning survey data</li>
+      <li>Event selection</li>
+      <li>Outlier selection</li>
+      <li>Cleaning survey Data</li>
     </ul>
   </li>
-  <li>
-<strong>Feature Engineering</strong>
+  <li>Feature engineering
     <ul>
       <li>Normalizing lifts</li>
       <li>Calculating body mass index (BMI)</li>
     </ul>
   </li>
-  <li>
-<strong>EDA</strong>
+  <li>Event performance</li>
+  <li>Athlete demographics and performance
     <ul>
-      <li>Lifts</li>
-      <li>Region</li>
+      <li>Gender</li>
       <li>BMI</li>
       <li>Age</li>
-      <li>Athlete lifestyle</li>
-      <li>Has CrossFit been life changing?</li>
-      <li>Correlation matrix</li>
+      <li>Region</li>
     </ul>
   </li>
-  <li>
-<strong>Predicting Normalized Total Lift</strong>
-    <ul>
-      <li>Random forest regression model</li>
-      <li>XGBoost</li>
-      <li>Feature Importance</li>
-      <li>Dense neural network</li>
-      <li>Benchmarking model performance</li>
-    </ul>
-  </li>
-  <li>
-<strong>Conclusions and recommendations</strong>
-    <ul>
-      <li>Advice for athletes and coaches</li>
-      <li>Survey suggestions</li>
-    </ul>
-  </li>
+  <li>Lifestyle factors</li>
+  <li>Has CrossFit been life changing?</li>
+  <li>Feature correlation</li>
+  <li>Conclusions and recommendations</li>
 </ul>
 
-<h1 id="data-preparation">Data Preparation</h1>
+<h3 id="data-overview">Data overview</h3>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
 <span class="kn">import</span> <span class="n">missingno</span> <span class="k">as</span> <span class="n">msno</span>
@@ -206,11 +186,12 @@
 <span class="kn">import</span> <span class="n">matplotlib</span> <span class="k">as</span> <span class="n">mpl</span>
 <span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="n">os</span>
+<span class="kn">import</span> <span class="n">pickle</span>
 </code></pre></div></div>
 
-<h3 id="data-summary">Data summary</h3>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_csv</span><span class="p">(</span><span class="sh">'</span><span class="s">/kaggle/input/crossfit-athletes/athletes.csv</span><span class="sh">'</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="sh">'</span><span class="s">C:</span><span class="se">\\</span><span class="s">Users</span><span class="se">\\</span><span class="s">corne</span><span class="se">\\</span><span class="s">OneDrive</span><span class="se">\\</span><span class="s">Documents</span><span class="se">\\</span><span class="s">DS_Portfolio</span><span class="se">\\</span><span class="s">crossfit_project</span><span class="se">\\</span><span class="s">crossfit_project</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_csv</span><span class="p">(</span><span class="sh">'</span><span class="s">CrossFit_Games_data.csv</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">df</span><span class="p">.</span><span class="nf">info</span><span class="p">()</span>
 </code></pre></div></div>
 
@@ -423,8 +404,11 @@ memory usage: 87.1+ MB
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">msno</span><span class="p">.</span><span class="nf">matrix</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p><img src="output_7_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_5_0.png" alt="missing data"></p>
 
+<h2 id="data-cleaning">Data cleaning</h2>
+
+<h3 id="event-selection">Event selection</h3>
 <p>Data that is not relevant to our analysis was removed from consideration along with the less frequently performed fitness events. It was necessary to remove these less common events to maintain a large dataset.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">region</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">train</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">candj</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">snatch</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">backsq</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">])</span> <span class="c1">#removing NaNs from parameters of interest 
@@ -434,9 +418,11 @@ memory usage: 87.1+ MB
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">msno</span><span class="p">.</span><span class="nf">matrix</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p><img src="output_10_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_8_0.png" alt="missing data"></p>
 
 <h3 id="outlier-removal">Outlier Removal</h3>
+
+<p>Only clear outliers were removed from the dataset. These outliers are suspected to be the result of data entry errors and were diagnosed from highly inprobable heights and weights and performances in events exceeding current world records. Only adults and male and female competitors were considered in this analysis.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#removing problematic entries 
 </span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1500</span><span class="p">]</span> <span class="c1">#removes two anomolous weight entries of 1,750 and 2,113
@@ -582,9 +568,9 @@ memory usage: 87.1+ MB
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;=</span><span class="mi">17</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">50</span><span class="p">)]</span><span class="c1">#considers only underweight - morbidly obese competitors
 </span></code></pre></div></div>
 
-<h1 id="eda">EDA</h1>
+<h2 id="event-performance">Event performance</h2>
 
-<h3 id="lifts">Lifts</h3>
+<p>Before exploring responses, we examine the normalized performance for the male and female athletes surveyed. The distributions are approximately normal in all cases, but the snatch and clean and jerk events have a wider distribution. This is likely the result of the importance of technique in these events, which leads to wider variation in addition to natural differences in strength.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="n">style</span><span class="p">.</span><span class="nf">use</span><span class="p">(</span><span class="sh">'</span><span class="s">ggplot</span><span class="sh">'</span><span class="p">)</span>
 <span class="kn">from</span> <span class="n">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">rcParams</span>
@@ -612,7 +598,7 @@ memory usage: 87.1+ MB
 <span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><img src="output_28_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_26_0.png" alt="lift data"></p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#total lift 
 </span><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">kde</span> <span class="o">=</span> <span class="bp">True</span><span class="p">);</span>
@@ -620,44 +606,43 @@ memory usage: 87.1+ MB
 <span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p><img src="output_29_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_27_0.png" alt="total lift data"></p>
 
-<h3 id="region">Region</h3>
+<h2 id="athlete-demographics-and-performance">Athlete demographics and performance</h2>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Region</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">region</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
+<p>Athlete demographics were collected as part of provided survey:</p>
+<ul>
+  <li>Gender</li>
+  <li>BMI (from height and weight)</li>
+  <li>Age</li>
+  <li>Region</li>
+</ul>
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Country</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">non-US</span><span class="sh">'</span><span class="p">,(</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">()))</span>
+<p>We explore the data and look for correlations with performance.</p>
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+<h3 id="gender">Gender</h3>
 
-<p><img src="output_31_0.png" alt="png"></p>
+<p>Male competitors outnumber female competitors by 2.6 to 1. This is unsurprising as CrossFit is a strength-based sport, which typically attracts men.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">region</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span> <span class="o">=</span> <span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue_order</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">])</span>
+<span class="c1">#df.groupby('gender').agg('count') #20996/7999
+</span></code></pre></div></div>
+
+<p><img src="\assets\img\crossfit_explore\output_29_1.png" alt="gender lift histogram"></p>
+
+<p>We see expected gender differences in performance between the male and female groups. Male athletes outlifted female athletes on a body weight normalized basis by 24.5%.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">)</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift (bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">US</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">,</span> <span class="n">hue</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift (bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">Outside US</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
 
-<p><img src="output_32_0.png" alt="png"></p>
+<span class="c1">#df[['total_lift','gender']].groupby('gender').agg('mean') #(6.05-4.86)/4.86
+</span></code></pre></div></div>
+
+<p><img src="\assets\img\crossfit_explore\output_31_1.png" alt="mean age lifts"></p>
 
 <h3 id="bmi">BMI</h3>
+
+<p>The distributions of heights and weights of CrossFit competitors are not smooth despite the large sample size. However, converting these non-independent metrics to BMI results in normal distributions with a positive skew that is particularly pronounced in the male population.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Mean BMI
 </span><span class="k">def</span> <span class="nf">standard_error</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -672,19 +657,21 @@ memory usage: 87.1+ MB
 </code></pre></div></div>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hue_order</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">])</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hue_order</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">])</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><img src="output_35_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_34_0.png" alt="gender"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hue_order</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">])</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><img src="output_36_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_35_0.png" alt="BMI"></p>
+
+<p>The figures below show BMI and total lift unaggregated in the left plot and aggregated to the nearest BMI with standard error in the right plot. Male athletes tend towards higher BMIs and lift more weight as expected. Interestingly, there appears to be a strong dependency between BMI and total lift with performance peaks observed at BMIs of 23 kg/m2 and 27 kg/m2 for female and male athletes respectively. Likely, this represents athletes gaining more muscle and eventually more fat, as more muscle would help performance and more fat would adversely affect performance. Thus, this analysis suggests that male and female athletes should adjust their training and diet to reach BMIs of 27 and 23 respectively with lean body compositions.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">BMI</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">],</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">crimson</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">)</span>
@@ -708,17 +695,22 @@ memory usage: 87.1+ MB
 <span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><img src="output_37_0.png" alt="png"></p>
-
-<p>The normalized total weight lifted for each competitor is shown in the figure on the left against BMI. Male athletes tend towards higher BMIs and lift more weight. Averaged data is shown in the right plot with standard error and indicates performance peaks at BMIs of 23 kg/m2 and 27 kg/m2 for female and male athletes respectively. Likely, this represents athletes gaining more muscle and eventually more fat, as more muscle would help performance and more fat would adversely affect performance. Thus, this analysis suggests that male and female athletes should adjust their training and diet to reach BMIs of 27 and 23 respectively with lean body compositions.</p>
+<p><img src="\assets\img\crossfit_explore\output_37_1.png" alt="agg BMI data"></p>
 
 <h3 id="age">Age</h3>
 
+<p>The age distributions for male and female athletes is approximately normal with a slight positive skew that is more pronounced for female athletes. The mean ages for both male and female populations was 32.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kde</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+<span class="c1">#df[['gender','age']].groupby('gender').agg('mean')
+</span></code></pre></div></div>
 
-<p><img src="output_40_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_39_0.png" alt="age data"></p>
+
+<p>The normalized total lift for all athletes is shown against age in the figure on the left below. Male competitors lift slightly more, and a general decrease in performance past 25 is apparent. This data is grouped to the nearest BMI and shown with standard error on the plot on the right. Male performance shows a clear peak around 20 years of age, and female performance maintains a plateau until around 30 years of age. Both populations show distinct decreases in performance with increased age.</p>
+
+<p>Interestingly, male performance appears to be more sensitive to age than female performance. Testosterone is extremely important to building and maintaining muscle and strength, and it is possible that declines in testosterone characteristic to male aging underly this observation. Slower recovery with age in both genders is likely also a significant factor of age-related decline.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_age</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]].</span><span class="nf">groupby</span><span class="p">([</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]).</span><span class="nf">agg</span><span class="p">([</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">,</span><span class="n">standard_error</span><span class="p">,</span><span class="sh">'</span><span class="s">size</span><span class="sh">'</span><span class="p">]).</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">).</span><span class="nf">reset_index</span><span class="p">()</span>
 <span class="n">df_age_f</span> <span class="o">=</span> <span class="n">df_age</span><span class="p">[(</span><span class="n">df_age</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df_age</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">size</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">5</span><span class="p">)]</span>
@@ -745,13 +737,60 @@ memory usage: 87.1+ MB
 <span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><img src="output_41_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_41_1.png" alt="age data"></p>
 
-<p>The normalized total lift for all athletes is shown against age in the figure on the left. Male competitors lift slightly more, and a general decrease in performance past 25 is apparent. This data is averaged and shown with standard error on the plot on the right. Male performance shows a clear peak around 20 years of age, and female performance maintains a plateau until around 30 years of age. Both populations show distinct decreases in performance with increased age.</p>
+<h3 id="region">Region</h3>
 
-<p>Interestingly, male performance appears to be more sensitive to age than female performance. Testosterone is extremely important to building and maintaining muscle and strength, and it is possible that declines in testosterone characteristic to male aging underly this observation.</p>
+<p>Most competitors are based in the US, and CrossFit appears to be particularly popular in California. Outside the US, the most popular locations for CrossFit are Canada and Europe.</p>
 
-<h3 id="athlete-lifestyle">Athlete lifestyle</h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Region</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">region</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Country</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">non-US</span><span class="sh">'</span><span class="p">,(</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">()))</span>
+
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="\assets\img\crossfit_explore\output_43_0.png" alt="region"></p>
+
+<p>CrossFit athletes in the US appear to slightly outperform CrossFit athletes outside of the US. This could be due to increased local competition driving athletes to higher levels of performance or access to sophisticated training facilities and experienced coaches.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">region</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift (bodyweight)</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">US</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">,</span> <span class="n">hue</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift (bodyweight)</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">Outside US</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">))</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="\assets\img\crossfit_explore\output_45_0.png" alt="region"></p>
+
+<h2 id="lifestyle-factors">Lifestyle factors</h2>
+
+<p>Training and lifestyle choices are important factors for athlete performance. The following factors were surveyed:</p>
+
+<ul>
+  <li>CrossFit age (time doing CrossFit)</li>
+  <li>Two-a-day training session frequency</li>
+  <li>Frequency of rest days</li>
+  <li>Athletic history</li>
+  <li>Eating habits</li>
+</ul>
+
+<p>We examine these responses and identify key factors for improved performance. Histograms of these survey responses are shown below.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Lifestyle Survey Responses</span><span class="sh">'</span><span class="p">)</span>
@@ -817,7 +856,26 @@ memory usage: 87.1+ MB
 <span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><img src="output_44_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_41_7.png" alt="lifestyle data"></p>
+
+<p>Key take-aways:</p>
+
+<ul>
+  <li>
+    <p>Most CrossFit athletes wait to participate in the CrossFit games until they have some experience with the sport under their belt.</p>
+  </li>
+  <li>
+    <p>It is unusual for athletes to do CrossFit for more than four years, possibly due to the intensity of the training sessions in terms of time commitment and potential for injury.</p>
+  </li>
+  <li>
+    <p>Most athletes adhere to the recommended 1 day per week rest day schedule.</p>
+  </li>
+  <li>
+    <p>Most athletes have some athletic background prior to starting CrossFit.</p>
+  </li>
+</ul>
+
+<p>Next, we look at how these factors correlate to performance.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#melting data for boxplots
 </span><span class="n">df_exp</span> <span class="o">=</span>  <span class="n">pd</span><span class="p">.</span><span class="nf">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span> <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_4plus</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">])</span>
@@ -878,11 +936,13 @@ memory usage: 87.1+ MB
 <span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><img src="output_45_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_49_0.png" alt="lifestyle data"></p>
 
-<p>CrossFit age (years doing CrossFit), frequency of two-a-day session, taking sufficient rest days, and athletic background all correlate with improved athletic performance as would be expected from conventional knowledge. Interestingly, starting CrossFit alone rather than at a facility with a coach appears to also correlate with improved performance. Reported eating habits, however, do not appear strongly correlated with performance.</p>
+<p>CrossFit age (years doing CrossFit), frequency of two-a-day session, taking sufficient rest days, and athletic background all correlate with improved athletic performance as would be expected from conventional knowledge. Interestingly, starting CrossFit alone rather than at a facility with a coach appears to also correlate with improved performance. This is perhaps indirectly a result of self-starting athletes having a stronger athletic history. Reported eating habits, however, do not appear strongly correlated with performance.</p>
 
-<h3 id="has-crossfit-been-life-changing">Has CrossFit been life changing?</h3>
+<h2 id="has-crossfit-been-life-changing">Has CrossFit been life changing?</h2>
+
+<p>Previous analysis focused on athlete attributes and lifestyle. Survey respondents were additionally asked if CrossFit has been life changing, and this reponse can be used to isolate and guage the effect of attitude on performance.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">changed</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">life_changing</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">()</span>
 <span class="n">not_changed</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">changed</span> <span class="c1">#non-answers are considered non-life changing responses
@@ -897,11 +957,15 @@ memory usage: 87.1+ MB
 <span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><img src="output_48_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_52_0.png" alt="life changing"></p>
 
-<p>Seeing crossfit as a life changing event, likely represents strong athelte enthusiasim. However, this metric does not apperar strongly correlated to athlete performance. It seems that enjoying the ritual and community of crossfit may not be linked to athletic performance.</p>
+<p>Interestingly, strong positive attitudes towards CrossFit do not appear to correlate with improved performance. This is counter intuitive as enjoying the ritual and community of CrossFit should increase the likelihood of continuing to train and participate in CrossFit.</p>
 
-<h3 id="correlation-matrix">Correlation matrix</h3>
+<h2 id="feature-correlation">Feature correlation</h2>
+
+<p>The Pearson correlation coefficient is a statistical measure that quantifies the strength and direction of the linear relationship between two continuous variables. It ranges from -1 to 1, where a value of 1 indicates a perfect positive correlation, -1 indicates a perfect negative correlation, and 0 indicates no linear correlation. Frequency of two-a-day training sessions, completing a level 1 certification, starting CrossFit alone, and working as a CrossFit trainer are all correlated to improved performance, while having no athletic background prior to CrossFit is correlated to worse performance.</p>
+
+<p>The strong non-linear correlations between performance and BMI and age are not captured in the above matrix. It is important to note that the Pearson correlation coefficient only measures linear relationships and may not capture non-linear associations or other types of relationships between variables.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Heat map 
 </span>
@@ -922,864 +986,38 @@ memory usage: 87.1+ MB
 <span class="c1">#print(mask)
 </span></code></pre></div></div>
 
-<p><img src="output_51_0.png" alt="png"></p>
+<p><img src="\assets\img\crossfit_explore\output_55_1.png" alt="correlation matrix"></p>
 
-<p>The Pearson correlation coefficient is a statistical measure that quantifies the strength and direction of the linear relationship between two continuous variables. It ranges from -1 to 1, where a value of 1 indicates a perfect positive correlation, -1 indicates a perfect negative correlation, and 0 indicates no linear correlation. Frequency of two-a-day training sessions, completing a level 1 certification, starting CrossFit alone, and working as a CrossFit trainer are all correlated to improved performance, while having no athletic background prior to CrossFit is correlated to worse performance.</p>
-
-<p>The strong non-linear correlations between performance and BMI and age are not captured in the above matrix. It is important to note that the Pearson correlation coefficient only measures linear relationships and may not capture non-linear associations or other types of relationships between variables.</p>
-
-<h1 id="predicting-normalized-total-lift">Predicting normalized total lift</h1>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span><span class="n">cross_val_score</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestRegressor</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
-<span class="kn">import</span> <span class="n">xgboost</span> <span class="k">as</span> <span class="n">xgb</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#pickeling cleaned data
+</span><span class="n">df</span><span class="p">.</span><span class="nf">to_pickle</span><span class="p">(</span><span class="sh">'</span><span class="s">cleaned_cf_data.pkl</span><span class="sh">'</span><span class="p">)</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_select</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">region</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">candj</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">snatch</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">norm_bs</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">norm_dl</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">norm_j</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">norm_s</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">backsq</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">])</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Selected features:</span><span class="se">\n</span><span class="sh">'</span><span class="p">,</span><span class="n">df_select</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="n">values</span><span class="p">)</span>
-</code></pre></div></div>
+<h2 id="conclusion-and-recommendations">Conclusion and recommendations</h2>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Selected features:
- ['age' 'rec' 'high_school' 'college' 'pro' 'no_background' 'exp_coach'
- 'exp_alone' 'exp_courses' 'life_changing' 'exp_trainer' 'exp_level1'
- 'exp_start_nr' 'rest_plus' 'rest_minus' 'rest_sched' 'sched_0extra'
- 'sched_1extra' 'sched_2extra' 'sched_3extra' 'sched_nr' 'rest_nr'
- 'exp_1to2yrs' 'exp_2to4yrs' 'exp_4plus' 'exp_6to12mo' 'exp_lt6mo'
- 'eat_conv' 'eat_cheat' 'eat_quality' 'eat_paleo' 'eat_weigh' 'US'
- 'gender_' 'total_lift' 'BMI']
-</code></pre></div></div>
+<p>The results of this investigation indicate that key factors for CrossFit athlete performance are body composition, age, and gender. Other contributing factors include CrossFit age (years doing CrossFit), frequency of two-a-day sessions, taking sufficient rest days, and athletic background. Interestingly, passion for CrossFit and dietary choices did not correlate with athlete performance.</p>
 
-<p>Features are selected for use in predictive models. Features that are redundant, have been encoded, or have been engineered into new features are not included in further analyses. Individual event performances are no longer considered, and the target is the total weight lifted normalized by athlete bodyweight.</p>
+<p>CrossFit athletes are encouraged to follow a paleo diet. A modern paleo diet includes fruits, vegetables, lean meats, eggs, nuts and seeds and is not calorie or macro based. However, adherence to a paleo diet is uncorrelated with athlete performance. To better understand how athlete diet influences performance, additional questions could be added to future surveys. For example, caloric intake and protein consumption may be better predictors of performance, as sufficient protein and fuel are required to build and maintain muscle. If these features can be correlated with improved performance, CrossFit as an organization may have sufficient grounds to restructure their dietary recommendations for athletes.</p>
 
-<h3 id="random-forest-regression-model">Random forest regression model</h3>
-
-<p>A random forest regression model is optimized to predict athlete performance. The random forest regressor randomly selects subsets of the original dataset with replacement, creating multiple training sets known as bootstrap samples. For each bootstrap sample, a decision tree is constructed using a subset of features. The decision tree is built by recursively splitting the data based on the selected features and their optimal thresholds. The final prediction is obtained by aggregating or “bagging” the individual predictions made by each decision tree. Random forest regression models work well with tabular data, large datasets, high-dimensional data, and non-linear data.</p>
-
-<p>In our modeling we use the root mean squared error is used as a cost function:</p>
-
-<p><img src="https://miro.medium.com/max/327/1*9hQVcasuwx5ddq_s3MFCyw.gif"></p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Assigning test and train sets
-</span><span class="n">train_set</span><span class="p">,</span> <span class="n">test_set</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="n">df_select</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">train_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]),</span> <span class="n">train_set</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">test_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]),</span> <span class="n">test_set</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#random forest baseline
-</span><span class="n">rnd_clf</span> <span class="o">=</span> <span class="nc">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_depth</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span><span class="n">oob_score</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
-<span class="n">rnd_pred</span> <span class="o">=</span> <span class="n">rnd_clf</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-<span class="n">rnd_score</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">rnd_pred</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Random forest regression model baseline RMSE: </span><span class="se">\n</span><span class="si">{</span><span class="n">rnd_score</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Random forest regression model baseline RMSE: 
-0.863
-</code></pre></div></div>
-
-<h3 id="xgboost">XGBoost</h3>
-
-<p>XGBoost stands for eXtreme gradient boosting and is a gradient boosted trees algorithm. In boosting, trees are sequentially built such that each subsequent tree aims to reduce the errors of the previous tree. Custom XGBoost callbacks were created during model optimizaiton to control learning rate decay, implement early stopping, and plot training results. A schematic of this iterative process is shown in the figure below.
-<br>
-<img src="https://docs.aws.amazon.com/images/sagemaker/latest/dg/images/xgboost_illustration.png">
-&lt;/br&gt;
-<br>
-Image from <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowItWorks.html" rel="external nofollow noopener" target="_blank">AWS, How XGBoost Works</a>
-&lt;/br&gt;</p>
-
-<p>In addition, several features of XGBoost often lead to superior performance with tabular data. For example, XGBoost grows trees up to a specifiable maximum depth and prunes backwards to improve model fit. This is unlike other algorithms that build trees from the top down and stop once a negative loss is encountered on a single splitting step using a “greedy” algorithm. Additionally, there is built in regularization to avoid overfitting and capacity for parallelization.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining custom learning rate decay
-</span><span class="k">def</span> <span class="nf">learning_rate_decay</span><span class="p">(</span><span class="n">boosting_round</span><span class="p">):</span> <span class="c1">#, num_boost_round):
-</span>    <span class="n">learning_rate_start</span> <span class="o">=</span> <span class="mf">0.4</span>
-    <span class="n">learning_rate_min</span> <span class="o">=</span> <span class="mf">0.05</span>
-    <span class="n">lr_decay</span> <span class="o">=</span> <span class="mf">0.7</span>
-    <span class="n">lr</span> <span class="o">=</span> <span class="n">learning_rate_start</span> <span class="o">*</span> <span class="n">np</span><span class="p">.</span><span class="nf">power</span><span class="p">(</span><span class="n">lr_decay</span><span class="p">,</span> <span class="n">boosting_round</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nf">max</span><span class="p">(</span><span class="n">learning_rate_min</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
-
-<span class="n">lr_callback</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="n">callback</span><span class="p">.</span><span class="nc">LearningRateScheduler</span><span class="p">(</span><span class="n">learning_rate_decay</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining callback for plotting XGBoost fit progress, adapting from XGBoost documentation
-</span><span class="k">class</span> <span class="nc">Plotting</span><span class="p">(</span><span class="n">xgb</span><span class="p">.</span><span class="n">callback</span><span class="p">.</span><span class="n">TrainingCallback</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">rounds</span><span class="p">):</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">()</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">fig</span><span class="p">.</span><span class="nf">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">rounds</span> <span class="o">=</span> <span class="n">rounds</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">fig</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">rounds</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">rounds</span><span class="p">)</span>
-        <span class="n">plt</span><span class="p">.</span><span class="nf">ion</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_get_key</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">metric</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="sh">'</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s">-</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="sh">'</span>
-
-    <span class="k">def</span> <span class="nf">after_iteration</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">evals_log</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">self</span><span class="p">.</span><span class="n">lines</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">evals_log</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">metric</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
-                    <span class="n">key</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">_get_key</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
-                    <span class="n">expanded</span> <span class="o">=</span> <span class="n">log</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">rounds</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">log</span><span class="p">))</span>
-                    <span class="n">self</span><span class="p">.</span><span class="n">lines</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>  <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">ax</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">expanded</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-                    <span class="n">self</span><span class="p">.</span><span class="n">ax</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">evals_log</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">metric</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
-                    <span class="n">key</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">_get_key</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
-                    <span class="n">expanded</span> <span class="o">=</span> <span class="n">log</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">rounds</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">log</span><span class="p">))</span>
-                    <span class="n">self</span><span class="p">.</span><span class="n">lines</span><span class="p">[</span><span class="n">key</span><span class="p">].</span><span class="nf">set_ydata</span><span class="p">(</span><span class="n">expanded</span><span class="p">)</span>
-            <span class="n">self</span><span class="p">.</span><span class="n">fig</span><span class="p">.</span><span class="n">canvas</span><span class="p">.</span><span class="nf">draw</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">False</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining early stopping callback
-</span><span class="n">es</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="n">callback</span><span class="p">.</span><span class="nc">EarlyStopping</span><span class="p">(</span><span class="n">rounds</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">save_best</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#XGBoost 
-</span><span class="n">dtrain</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
-<span class="n">dtest</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
-<span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="sh">'</span><span class="s">max_depth</span><span class="sh">'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span><span class="sh">'</span><span class="s">subsample</span><span class="sh">'</span><span class="p">:.</span><span class="mi">6</span><span class="p">,</span><span class="sh">'</span><span class="s">reg_alpha</span><span class="sh">'</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
-<span class="n">evallist</span> <span class="o">=</span> <span class="p">[(</span><span class="n">dtrain</span><span class="p">,</span> <span class="sh">'</span><span class="s">train</span><span class="sh">'</span><span class="p">),</span> <span class="p">(</span><span class="n">dtest</span><span class="p">,</span> <span class="sh">'</span><span class="s">eval</span><span class="sh">'</span><span class="p">)]</span>
-<span class="n">num_round</span> <span class="o">=</span> <span class="mi">1500</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Training and evluation RMSE scores:</span><span class="sh">'</span><span class="p">)</span>
-<span class="c1">#bst = xgb.train(param, dtrain, num_round, evallist, verbose_eval=100,early_stopping_rounds=100,callbacks=[lr_callback, Plotting(num_round)])
-</span><span class="n">bst</span><span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nf">train</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">dtrain</span><span class="p">,</span> <span class="n">num_round</span><span class="p">,</span> <span class="n">evals</span><span class="o">=</span><span class="n">evallist</span><span class="p">,</span> <span class="n">verbose_eval</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">lr_callback</span><span class="p">,</span> <span class="nc">Plotting</span><span class="p">(</span><span class="n">num_round</span><span class="p">),</span><span class="n">es</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Training round</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">RMSE</span><span class="sh">'</span><span class="p">);</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Training XGBoost</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="n">bst</span><span class="p">.</span><span class="n">best_iteration</span><span class="p">));</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Training and evluation RMSE scores:
-[0]	train-rmse:3.80923	eval-rmse:3.81266
-[100]	train-rmse:0.82707	eval-rmse:0.85081
-[200]	train-rmse:0.81175	eval-rmse:0.84634
-[300]	train-rmse:0.80052	eval-rmse:0.84445
-[400]	train-rmse:0.79081	eval-rmse:0.84269
-[500]	train-rmse:0.78215	eval-rmse:0.84173
-[600]	train-rmse:0.77440	eval-rmse:0.84027
-[700]	train-rmse:0.76668	eval-rmse:0.83956
-[800]	train-rmse:0.75950	eval-rmse:0.83924
-[900]	train-rmse:0.75302	eval-rmse:0.83926
-[1000]	train-rmse:0.74687	eval-rmse:0.83898
-[1100]	train-rmse:0.74078	eval-rmse:0.83858
-[1123]	train-rmse:0.73955	eval-rmse:0.83868
-</code></pre></div></div>
-
-<p><img src="output_64_1.png" alt="png"></p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bst_pred</span> <span class="o">=</span> <span class="n">bst</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">dtest</span><span class="p">)</span>
-<span class="n">bst_rmse</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">bst_pred</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Best iteration and score:</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">bst</span><span class="p">.</span><span class="n">best_iteration</span><span class="p">,</span> <span class="nf">round</span><span class="p">(</span><span class="n">bst_rmse</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Best iteration and score:
-
-
-
-
-
-(1024, 0.839)
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Improvement over random forest regression model:</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">improvement</span> <span class="o">=</span> <span class="p">(</span><span class="n">rnd_score</span> <span class="o">-</span> <span class="n">bst_rmse</span><span class="p">)</span><span class="o">/</span><span class="n">rnd_score</span> <span class="o">*</span><span class="mi">100</span>
-<span class="nf">print</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">improvement</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">+</span><span class="sh">'</span><span class="s">%</span><span class="sh">'</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Improvement over random forest regression model:
-2.8%
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">xgb</span><span class="p">.</span><span class="nf">plot_tree</span><span class="p">(</span><span class="n">bst</span><span class="p">,</span> <span class="n">num_trees</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
-</code></pre></div></div>
-
-<p><img src="output_67_0.png" alt="png"></p>
-
-<h3 id="feature-importance">Feature Importance</h3>
-<p>One benefit of tree-based models is the ability to extract the predictive importance of input features. For random forest models, the built-in feature importance metric measures the average improvement to a prediction when each feature is used as a splitting node. For XGBoost models, weight, gain or cover metrics are built-in feature importance metrics. Gain is most like the random forest feature importance metric, while weight represents the relative number of times a feature is used as a splitting node and cover represents the number of observations split by a feature. While potentially insightful, these metrics tend to inflate the importance of continuous or high-cardinality categorical variables.</p>
-
-<p>Permutation importance algorithms evaluate the importance of a feature by comparing the performance of the baseline model to the performance with each feature permuted. This strategy does not require sequentially retraining the model necessarily but instead re-runs a trained model with each input feature permutated. The built-in Scikit-learn permutation importance function cannot be used with XGBoost. Thus, a custom permutation algorithm is developed.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">feature_importance</span><span class="p">(</span><span class="n">bst</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">):</span>
-    <span class="n">baseline_d</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
-    <span class="n">y_baseline</span> <span class="o">=</span> <span class="n">bst</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">baseline_d</span><span class="p">)</span>
-    <span class="n">baseline</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_baseline</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    
-    <span class="n">f_imp</span> <span class="o">=</span> <span class="p">[]</span>
-    
-    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">X_test</span><span class="p">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">save</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">[</span><span class="n">col</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
-        <span class="n">X_test</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">permutation</span><span class="p">(</span><span class="n">X_test</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
-
-        <span class="n">perm_d</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
-        <span class="n">y_perm</span> <span class="o">=</span> <span class="n">bst</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">perm_d</span><span class="p">)</span>
-        <span class="n">perm_baseline</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_perm</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-        <span class="n">f_imp</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">perm_baseline</span><span class="o">-</span><span class="n">baseline</span><span class="p">)</span>
-        
-        <span class="n">X_test</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">save</span> <span class="c1">#resets values
-</span>       
-    <span class="k">return</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">f_imp</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="n">values</span><span class="p">).</span><span class="nf">sort_values</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">).</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">,</span><span class="n">ylabel</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Decrease in RMSE from baseline</span><span class="sh">'</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sh">'</span><span class="s">Feature Importance by permutation</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">feature_importance</span><span class="p">(</span><span class="n">bst</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">);</span>
-</code></pre></div></div>
-
-<p><img src="output_70_0.png" alt="png"></p>
-
-<p>The most significant decreases to the RMSE were observed when gender, age and BMI were permutated. This is in line with strong the correlations observed in our EDA with these features and performance. Secondary features of importance were CrossFit age, frequency of extra training sessions, athletic background, and region. Interestingly, taking rest days and all dietary habits were not of consequence to the model. It is possible that these behaviors don’t significantly affect performance.</p>
-
-<h1 id="dense-neural-network">Dense neural network</h1>
-
-<p>A dense neural network was created to predict CrossFit athlete performance.  Neural networks are useful in situations where identifying complex patterns aids in predictive performance. Neural networks have been outperformed by XGBoost when working with smaller amounts of data and tabular data.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
-<span class="kn">from</span> <span class="n">keras.layers</span> <span class="kn">import</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span>
-<span class="kn">from</span> <span class="n">functools</span> <span class="kn">import</span> <span class="n">partial</span> 
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#splitting test data to make a validation dataset
-</span><span class="n">valid_set_nn</span><span class="p">,</span> <span class="n">test_set_nn</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="n">test_set</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">X_valid_nn</span> <span class="o">=</span> <span class="n">valid_set_nn</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">y_valid_nn</span> <span class="o">=</span> <span class="n">valid_set_nn</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">].</span><span class="n">values</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">X_test_nn</span> <span class="o">=</span> <span class="n">test_set_nn</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">y_test_nn</span> <span class="o">=</span> <span class="n">test_set_nn</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#building neural network
-</span><span class="n">tf</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">set_seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-
-<span class="n">layer_size</span> <span class="o">=</span> <span class="mi">300</span>
-<span class="n">RegularizedDense</span> <span class="o">=</span> <span class="nf">partial</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dense</span><span class="p">,</span>
-                           <span class="n">activation</span> <span class="o">=</span> <span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span>
-                           <span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">)</span>
-                           <span class="c1">#kernel_regularizer = tf.keras.regularizers.l2(0.001))
-</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Sequential</span><span class="p">([</span>
-    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">X_train</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span>
-    <span class="nc">BatchNormalization</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Batch_Normalization</span><span class="sh">'</span><span class="p">),</span>
-    <span class="nc">RegularizedDense</span><span class="p">(</span><span class="n">layer_size</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Dense_1</span><span class="sh">"</span><span class="p">),</span>
-    <span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Dropout_1</span><span class="sh">'</span><span class="p">),</span>
-    <span class="nc">RegularizedDense</span><span class="p">(</span><span class="n">layer_size</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Dense_2</span><span class="sh">"</span><span class="p">),</span>
-    <span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span> <span class="sh">'</span><span class="s">Dropout_2</span><span class="sh">'</span><span class="p">),</span>
-    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Dense_3</span><span class="sh">'</span><span class="p">)</span>
-<span class="p">])</span>
-
-<span class="n">lr_schedule</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="n">schedules</span><span class="p">.</span><span class="nc">ExponentialDecay</span><span class="p">(</span>
-    <span class="n">initial_learning_rate</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
-    <span class="n">decay_steps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">decay_rate</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)</span>
-    
-<span class="n">opt</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="n">experimental</span><span class="p">.</span><span class="nc">AdamW</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">lr_schedule</span><span class="p">)</span>
-                   
-<span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="sh">'</span><span class="s">mse</span><span class="sh">'</span><span class="p">,</span>
-              <span class="n">optimizer</span> <span class="o">=</span> <span class="n">opt</span><span class="p">,</span>
-              <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">RootMeanSquaredError</span><span class="sh">'</span><span class="p">]</span>
-             <span class="p">)</span>
-
-<span class="n">model</span><span class="p">.</span><span class="n">training</span><span class="o">=</span><span class="bp">True</span>
-<span class="n">model</span><span class="p">.</span><span class="nf">summary</span><span class="p">()</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Model: "sequential"
-_________________________________________________________________
- Layer (type)                Output Shape              Param #   
-=================================================================
- Batch_Normalization (BatchN  (None, 35)               140       
- ormalization)                                                   
-                                                                 
- Dense_1 (Dense)             (None, 300)               10800     
-                                                                 
- Dropout_1 (Dropout)         (None, 300)               0         
-                                                                 
- Dense_2 (Dense)             (None, 300)               90300     
-                                                                 
- Dropout_2 (Dropout)         (None, 300)               0         
-                                                                 
- Dense_3 (Dense)             (None, 1)                 301       
-                                                                 
-=================================================================
-Total params: 101,541
-Trainable params: 101,471
-Non-trainable params: 70
-_________________________________________________________________
-</code></pre></div></div>
-
-<p>A shallow neural network with two hidden layers was created to predict the normalized total lift. The number of neurons in each hidden layer was adjusted upwards until the model overfit the training data, and then regularization techniques were added to prevent overfitting. Dropout was the most effective regularization method sampled, and was used over kernel regularization, gradient clipping, and other techniques. It is possible that the ensemble effect observed with dropout was particularly beneficial to this dataset. The final model had 300 neurons in each of two hidden layers and two dropout layers.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid_nn</span><span class="p">,</span> <span class="n">y_valid_nn</span><span class="p">))</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">).</span><span class="nf">plot</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="sh">'</span><span class="s">Epoch</span><span class="sh">'</span><span class="p">,</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">ylabel</span><span class="o">=</span><span class="sh">'</span><span class="s">Metric</span><span class="sh">'</span><span class="p">);</span>
-</code></pre></div></div>
-
-<p><img src="output_78_0.png" alt="png"></p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="p">.</span><span class="n">training</span><span class="o">=</span><span class="bp">False</span>
-<span class="n">y_pred_nn</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test_nn</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">nn_rmse</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test_nn</span><span class="p">,</span> <span class="n">y_pred_nn</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Neural network RMSE:</span><span class="sh">'</span><span class="p">)</span>
-<span class="nf">round</span><span class="p">(</span><span class="n">nn_rmse</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Neural network RMSE:
-
-
-
-
-
-0.863
-</code></pre></div></div>
-
-<p>XGBoost outperformed the shallow neural network on this dataset. The neural network model had a higher bias than the tree-based models.</p>
-
-<h3 id="benchmarking-model-performance">Benchmarking model performance</h3>
-
-<p>To benchmark model performance, 10 random participants were selected. After careful study and review, I predicted each participant’s normalized total lift from the input features. The RMSE of my predictions is calculated for comparison to the other models. Optimally, the predictions of a team of CrossFit experts and coaches would be used, but lacking these connections and resources my judgement will be used to estimate human-level predictive power.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#selecting index 
-</span><span class="n">benchmark</span> <span class="o">=</span> <span class="n">df_select</span><span class="p">.</span><span class="nf">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">benchmark_X</span> <span class="o">=</span> <span class="n">benchmark</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">benchmark_y</span> <span class="o">=</span> <span class="n">benchmark</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
-<span class="n">pd</span><span class="p">.</span><span class="nf">set_option</span><span class="p">(</span><span class="sh">'</span><span class="s">display.max_columns</span><span class="sh">'</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-<span class="n">pd</span><span class="p">.</span><span class="nf">set_option</span><span class="p">(</span><span class="sh">'</span><span class="s">display.max_rows</span><span class="sh">'</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">benchmark_X</span>
-</code></pre></div></div>
-
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>age</th>
-      <th>rec</th>
-      <th>high_school</th>
-      <th>college</th>
-      <th>pro</th>
-      <th>no_background</th>
-      <th>exp_coach</th>
-      <th>exp_alone</th>
-      <th>exp_courses</th>
-      <th>life_changing</th>
-      <th>exp_trainer</th>
-      <th>exp_level1</th>
-      <th>exp_start_nr</th>
-      <th>rest_plus</th>
-      <th>rest_minus</th>
-      <th>rest_sched</th>
-      <th>sched_0extra</th>
-      <th>sched_1extra</th>
-      <th>sched_2extra</th>
-      <th>sched_3extra</th>
-      <th>sched_nr</th>
-      <th>rest_nr</th>
-      <th>exp_1to2yrs</th>
-      <th>exp_2to4yrs</th>
-      <th>exp_4plus</th>
-      <th>exp_6to12mo</th>
-      <th>exp_lt6mo</th>
-      <th>eat_conv</th>
-      <th>eat_cheat</th>
-      <th>eat_quality</th>
-      <th>eat_paleo</th>
-      <th>eat_weigh</th>
-      <th>US</th>
-      <th>gender_</th>
-      <th>BMI</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>196036</th>
-      <td>27.0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>20.254429</td>
-    </tr>
-    <tr>
-      <th>158151</th>
-      <td>18.0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>26.608364</td>
-    </tr>
-    <tr>
-      <th>81732</th>
-      <td>23.0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>25.632724</td>
-    </tr>
-    <tr>
-      <th>13402</th>
-      <td>31.0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>28.889081</td>
-    </tr>
-    <tr>
-      <th>61466</th>
-      <td>36.0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>43.941813</td>
-    </tr>
-    <tr>
-      <th>4714</th>
-      <td>33.0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>28.696694</td>
-    </tr>
-    <tr>
-      <th>259</th>
-      <td>27.0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>24.394286</td>
-    </tr>
-    <tr>
-      <th>155078</th>
-      <td>39.0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>28.128842</td>
-    </tr>
-    <tr>
-      <th>126860</th>
-      <td>34.0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>27.046190</td>
-    </tr>
-    <tr>
-      <th>103760</th>
-      <td>20.0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>28.974775</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#my guesses
-</span><span class="n">my_y</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mf">6.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
-<span class="c1">#my RMSE
-</span><span class="n">my_rmse</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">benchmark_y</span><span class="p">,</span> <span class="n">my_y</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">My RMSE:</span><span class="sh">'</span><span class="p">)</span>
-<span class="nf">round</span><span class="p">(</span><span class="n">my_rmse</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>My RMSE:
-
-
-
-
-
-1.782
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Summary of model performance
-</span><span class="n">p</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">([</span><span class="n">rnd_score</span><span class="p">,</span> <span class="n">bst_rmse</span><span class="p">,</span> <span class="n">nn_rmse</span><span class="p">,</span> <span class="n">my_rmse</span><span class="p">],</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Random Forest</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">XGBoost</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Neural network</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Me</span><span class="sh">'</span><span class="p">],</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">RMSE</span><span class="sh">'</span><span class="p">]).</span><span class="n">T</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">p</span>
-</code></pre></div></div>
-
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Random Forest</th>
-      <th>XGBoost</th>
-      <th>Neural network</th>
-      <th>Me</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>RMSE</th>
-      <td>0.863</td>
-      <td>0.839</td>
-      <td>0.863</td>
-      <td>1.782</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-<p>All models outperformed my estimation of athlete normalized total lift. While the models were unable to perfectly predict performance, they are better tools than me and likely even other experts at predicting performance.</p>
-
-<h1 id="conclusions-and-recommendations">Conclusions and Recommendations</h1>
-
-<h3 id="advice-for-athletes-and-coaches">Advice for athletes and coaches</h3>
-<p>The results of this investigation indicate that age, BMI and gender are the key metrics for predicting CrossFit athlete performance. Unfortunately for athletes and coaches, age and gender are set and cannot be adjusted through training. However, body composition can be changed through careful training and diet. Our study indicates that male and female CrossFit athletes should target lean body compositions and BMIs of 23 kg/m2 and 27 mg/m2 respectively for optimal performance.</p>
-
-<p>Other features that positively impact performance include CrossFit age, frequency of two-a-day training sessions, and taking rest days. Athletes should be encouraged to be patient, as more experience with CrossFit is correlated with improved performance. Similarly, adding additional training sessions boosts performance up to the surveyed limit of three or more two-a-day sessions per week without any apparent ill effect from overtraining. Athletes should also be encouraged to take ~1 rest day per week, as this will also boost performance. 
-Interestingly, eating habits as surveyed do not appear to impact athlete performance. Adhering to a paleo diet is strongly encouraged for CrossFit athletes. However, this does not appear to be correlated with improved lifts or help our predictive models. Thus, eating paleo may not be important for competitor success.</p>
-
-<h3 id="survey-suggestions">Survey suggestions</h3>
-<p>To improve the usefulness and predictive power of future surveys, the following improvements are suggested:</p>
-
+<p>Finally, this data indicates that the key factors for athlete performance are largely predetermined by age and gender. However, there are key take aways for athletes seeking to improve their performance from their baseline:</p>
 <ul>
   <li>
-    <p>Encode one survey question response per answer rather than collating multiple thematically aligned answers into one response to avoid ambiguity in response interpretation.</p>
+    <p>Athletes should target lean body compositions and BMIs of 23 kg/m<sup>2</sup> and 27 mg/m<sup>2</sup> for females and males respectively.</p>
   </li>
   <li>
-    <p>Encourage athletes to complete more events, as gymnastic-style and cardio intensive events were not included due to the lack of data. Thus, our analysis was limited to strength. Adding cardio and gymnastics may change the training recommendations given.</p>
+    <p>Training should be managed for long-term adherence to CrossFit. While taking an overly aggressive approach to training may seem advantageous, the data indicates that there is a high risk of burnout or injury after four years, while performance continues to improve with CrossFit experience.</p>
   </li>
   <li>
-    <p>Add questions on protein consumption, specifically if protein consumption is tracked and average daily intake if tracked. Protein consumption is known to aid in muscle development and retention and may be more relevant to performance.  Current survey questions on dietary habits may not be useful and do not need to be included in future surveys.</p>
+    <p>Adding two-a-day training sessions is beneficial to performance with no apparent risk of overtraining.</p>
+  </li>
+  <li>
+    <p>Taking one rest day a week will improve performance without adverse effects.</p>
   </li>
 </ul>
 
-<p><br>
-<br></p>
 
           </article>
 
         </div>
-
       
     </div>
 

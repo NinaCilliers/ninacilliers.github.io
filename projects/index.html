@@ -73,7 +73,7 @@
 
               <!-- About -->
               <li class="nav-item ">
-                <a class="nav-link" href="/">about</a>
+                <a class="nav-link" href="/">About</a>
               </li>
               
               <!-- Blog -->
@@ -90,6 +90,9 @@
               </li>
               <li class="nav-item ">
                 <a class="nav-link" href="/repositories/">repositories</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/teaching/">teaching</a>
               </li>
               <li class="nav-item dropdown ">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">submenus</a>
@@ -125,12 +128,12 @@
     <div class="container mt-5">
       
         <!-- page.html -->
+        <style>
+          img {
+            max-width: 100%
+          }
+        </style>
         <div class="post">
-
-          <header class="post-header">
-            <h1 class="post-title">Projects</h1>
-            <p class="post-description">A growing collection of your cool projects.</p>
-          </header>
 
           <article>
             <!-- pages/projects.md -->
@@ -139,84 +142,6 @@
   <h2 class="category">work</h2>
   <!-- Generate cards for each project -->
   <div class="grid">
-<!-- _includes/projects.html -->
-<div class="grid-sizer"></div>
-<div class="grid-item">
-  <a href="/projects/1_project/">
-      <div class="card hoverable">
-<figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/3.jpg" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-        <div class="card-body">
-          <h2 class="card-title text-lowercase">Project 1</h2>
-          <p class="card-text">a project with a background image</p>
-          <div class="row ml-1 mr-1 p-0">
-          </div>
-        </div>
-      </div>
-    </a>
-</div>
-<!-- _includes/projects.html -->
-<div class="grid-sizer"></div>
-<div class="grid-item">
-  <a href="/projects/2_project/">
-      <div class="card hoverable">
-<figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/3.jpg" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-        <div class="card-body">
-          <h2 class="card-title text-lowercase">project 2</h2>
-          <p class="card-text">a project with a background image</p>
-          <div class="row ml-1 mr-1 p-0">
-          </div>
-        </div>
-      </div>
-    </a>
-</div>
-<!-- _includes/projects.html -->
-<div class="grid-sizer"></div>
-<div class="grid-item">
-  <a href="https://unsplash.com" rel="external nofollow noopener" target="_blank">
-      <div class="card hoverable">
-<figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/7.jpg" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-        <div class="card-body">
-          <h2 class="card-title text-lowercase">project 3</h2>
-          <p class="card-text">a project that redirects to another website</p>
-          <div class="row ml-1 mr-1 p-0">
-          </div>
-        </div>
-      </div>
-    </a>
-</div>
   </div>
   <h2 class="category">fun</h2>
   <!-- Generate cards for each project -->
@@ -224,21 +149,7 @@
 <!-- _includes/projects.html -->
 <div class="grid-sizer"></div>
 <div class="grid-item">
-  <a href="/projects/4_project/">
-      <div class="card hoverable">
-        <div class="card-body">
-          <h2 class="card-title text-lowercase">project 4</h2>
-          <p class="card-text">another without an image</p>
-          <div class="row ml-1 mr-1 p-0">
-          </div>
-        </div>
-      </div>
-    </a>
-</div>
-<!-- _includes/projects.html -->
-<div class="grid-sizer"></div>
-<div class="grid-item">
-  <a href="/projects/5_project/">
+  <a href="/projects/crossfit_explore/">
       <div class="card hoverable">
 <figure>
 
@@ -246,15 +157,15 @@
     
 
     <!-- Fallback to the original file -->
-    <img src="/assets/img/1.jpg" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+    <img src="/assets/img/project_previews/crossfit_explore.png" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
 
   </picture>
 
 </figure>
 
         <div class="card-body">
-          <h2 class="card-title text-lowercase">project 5</h2>
-          <p class="card-text">a project with a background image</p>
+          <h2 class="card-title" style="font-size:1.2em">A data-based approach to CrossFit training</h2>
+          <p class="card-text" style="font-size:0.7em">CrossFit game data is explored and analyzed and used to improve athlete preparation.</p>
           <div class="row ml-1 mr-1 p-0">
           </div>
         </div>
@@ -264,11 +175,23 @@
 <!-- _includes/projects.html -->
 <div class="grid-sizer"></div>
 <div class="grid-item">
-  <a href="/projects/6_project/">
+  <a href="/projects/crossfit_predict/">
       <div class="card hoverable">
+<figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/project_previews/crossfit_predict.png" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
         <div class="card-body">
-          <h2 class="card-title text-lowercase">project 6</h2>
-          <p class="card-text">a project with no image</p>
+          <h2 class="card-title" style="font-size:1.2em">Predicting CrossFit performance</h2>
+          <p class="card-text" style="font-size:0.7em">Models are built and optimized to predict the total weight lifted by athletes in the CrossFit games.</p>
           <div class="row ml-1 mr-1 p-0">
           </div>
         </div>
@@ -281,7 +204,6 @@
           </article>
 
         </div>
-
       
     </div>
 

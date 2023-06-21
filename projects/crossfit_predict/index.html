@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Predicting CrossFit performance | Nina  Cilliers</title>
+    <meta name="author" content="Nina  Cilliers">
+    <meta name="description" content="Models are built and optimized to predict the total weight lifted by athletes in the CrossFit games.">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://ninacilliers.github.io/projects/crossfit_predict/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Nina </span>Cilliers</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              
+              <!-- Blog -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/blog/">blog</a>
+              </li>
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">Projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/repositories/">repositories</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/teaching/">teaching</a>
+              </li>
+              <li class="nav-item dropdown ">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">submenus</a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="/publications/">publications</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/projects/">projects</a>
+                </div>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        <!-- page.html -->
+        <style>
+          img {
+            max-width: 100%
+          }
+        </style>
+        <div class="post">
+
+          <article>
+            <h1 id="predicting-crossfit-performance">Predicting CrossFit performance</h1>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>CrossFit is a high-intensity fitness program that combines elements of weightlifting, cardio, and gymnastics. It aims to improve overall physical fitness by incorporating constantly varied functional movements performed at a high intensity. At the pinnacle of CrossFit is the CrossFit Games, an annual competition that showcases the world’s fittest athletes. The CrossFit Games serve as a platform for elite athletes to test their skills and compete in a wide range of demanding workouts, challenging their strength, speed, power, and mental resilience. In this analysis, we will delve into the performance of CrossFit athletes, examining key factors that contribute to their success in this highly demanding and competitive sport.</p>
+
+<p>In a previous project, <i> A data-based approach to CrossFit training</i>, a dataset containing competition results, demographic information, lifestyle and training habits was explored to improve guidelines for training. The dataset used in this project was provided by Ulrik Pedersen and can be found on <a href="https://www.kaggle.com/datasets/ulrikthygepedersen/crossfit-athletes" rel="external nofollow noopener" target="_blank">Kaggle</a>. Many of the factors correlated to CrossFit performance have a non-linear or non-monotonic functionality. Factors with the strongest correlation to performance were age, gender and body composition.</p>
+
+<h2 id="project-overview">Project overview</h2>
+
+<p>In this project, we will predict total weight lifted in four events normalized by athlete body weight: the back squat, the deadlift, the clean and jerk, and the snatch. The total weight is normalized with athlete body weight to negate momentum effects and isolate the athletic contribution of the lift. Three predictive models were optimized and used to predict the total normalized lift:</p>
+<ul>
+  <li>Random forest regression</li>
+  <li>XGBoost</li>
+  <li>Neural network
+The XGBoost and the random forest models are known to work well with tabular data, and all of these models are suitable for capturing non-linear dependencies. In order to benchmark the performance of these models, their performance was compared with my ability to predict total lift from the provided data.</li>
+</ul>
+
+<h2 id="project-outline">Project outline</h2>
+
+<ul>
+  <li>Introduction</li>
+  <li>Project outline</li>
+  <li>Data overview</li>
+  <li>Selecting input features</li>
+  <li>Random forest regression model</li>
+  <li>XGBoost
+    <ul>
+      <li>Model optimization</li>
+      <li>Feature importance</li>
+    </ul>
+  </li>
+  <li>Neural network</li>
+  <li>Benchmarking model performance</li>
+  <li>Conclusions</li>
+</ul>
+
+<h3 id="data-overview">Data overview</h3>
+
+<p>Cleaned data is imported from <i>A data-based approach to CrossFit</i>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="n">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
+<span class="kn">import</span> <span class="n">matplotlib</span> <span class="k">as</span> <span class="n">mpl</span>
+<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="n">os</span>
+<span class="kn">import</span> <span class="n">pickle</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="sh">'</span><span class="s">C:</span><span class="se">\\</span><span class="s">Users</span><span class="se">\\</span><span class="s">corne</span><span class="se">\\</span><span class="s">OneDrive</span><span class="se">\\</span><span class="s">Documents</span><span class="se">\\</span><span class="s">DS_Portfolio</span><span class="se">\\</span><span class="s">crossfit_project</span><span class="se">\\</span><span class="s">crossfit_project</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_pickle</span><span class="p">(</span><span class="sh">'</span><span class="s">cleaned_cf_data.pkl</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">df</span><span class="p">.</span><span class="nf">info</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+Int64Index: 28995 entries, 21 to 422961
+Data columns (total 54 columns):
+ #   Column         Non-Null Count  Dtype  
+---  ------         --------------  -----  
+ 0   region         28995 non-null  object 
+ 1   gender         28995 non-null  object 
+ 2   age            28995 non-null  float64
+ 3   height         28995 non-null  float64
+ 4   weight         28995 non-null  float64
+ 5   candj          28995 non-null  float64
+ 6   snatch         28995 non-null  float64
+ 7   deadlift       28995 non-null  float64
+ 8   backsq         28995 non-null  float64
+ 9   eat            28995 non-null  object 
+ 10  background     28995 non-null  object 
+ 11  experience     28995 non-null  object 
+ 12  schedule       28995 non-null  object 
+ 13  howlong        28995 non-null  object 
+ 14  rec            28995 non-null  int32  
+ 15  high_school    28995 non-null  int32  
+ 16  college        28995 non-null  int32  
+ 17  pro            28995 non-null  int32  
+ 18  no_background  28995 non-null  int32  
+ 19  exp_coach      28995 non-null  int32  
+ 20  exp_alone      28995 non-null  int32  
+ 21  exp_courses    28995 non-null  int32  
+ 22  life_changing  28995 non-null  int32  
+ 23  exp_trainer    28995 non-null  int32  
+ 24  exp_level1     28995 non-null  int32  
+ 25  exp_start_nr   28995 non-null  int32  
+ 26  rest_plus      28995 non-null  int32  
+ 27  rest_minus     28995 non-null  int32  
+ 28  rest_sched     28995 non-null  int32  
+ 29  sched_0extra   28995 non-null  int32  
+ 30  sched_1extra   28995 non-null  int32  
+ 31  sched_2extra   28995 non-null  int32  
+ 32  sched_3extra   28995 non-null  int32  
+ 33  sched_nr       28995 non-null  int32  
+ 34  rest_nr        28995 non-null  int32  
+ 35  exp_1to2yrs    28995 non-null  int32  
+ 36  exp_2to4yrs    28995 non-null  int32  
+ 37  exp_4plus      28995 non-null  int32  
+ 38  exp_6to12mo    28995 non-null  int32  
+ 39  exp_lt6mo      28995 non-null  int32  
+ 40  eat_conv       28995 non-null  int32  
+ 41  eat_cheat      28995 non-null  int32  
+ 42  eat_quality    28995 non-null  int32  
+ 43  eat_paleo      28995 non-null  int32  
+ 44  eat_weigh      28995 non-null  int32  
+ 45  US             28995 non-null  int32  
+ 46  gender_        28995 non-null  int32  
+ 47  norm_dl        28995 non-null  float64
+ 48  norm_j         28995 non-null  float64
+ 49  norm_s         28995 non-null  float64
+ 50  norm_bs        28995 non-null  float64
+ 51  total_lift     28995 non-null  float64
+ 52  BMI            28995 non-null  float64
+ 53  bmi_rounded    28995 non-null  float64
+dtypes: float64(14), int32(33), object(7)
+memory usage: 8.5+ MB
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="nf">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>region</th>
+      <th>gender</th>
+      <th>age</th>
+      <th>height</th>
+      <th>weight</th>
+      <th>candj</th>
+      <th>snatch</th>
+      <th>deadlift</th>
+      <th>backsq</th>
+      <th>eat</th>
+      <th>background</th>
+      <th>experience</th>
+      <th>schedule</th>
+      <th>howlong</th>
+      <th>rec</th>
+      <th>high_school</th>
+      <th>college</th>
+      <th>pro</th>
+      <th>no_background</th>
+      <th>exp_coach</th>
+      <th>exp_alone</th>
+      <th>exp_courses</th>
+      <th>life_changing</th>
+      <th>exp_trainer</th>
+      <th>exp_level1</th>
+      <th>...</th>
+      <th>sched_0extra</th>
+      <th>sched_1extra</th>
+      <th>sched_2extra</th>
+      <th>sched_3extra</th>
+      <th>sched_nr</th>
+      <th>rest_nr</th>
+      <th>exp_1to2yrs</th>
+      <th>exp_2to4yrs</th>
+      <th>exp_4plus</th>
+      <th>exp_6to12mo</th>
+      <th>exp_lt6mo</th>
+      <th>eat_conv</th>
+      <th>eat_cheat</th>
+      <th>eat_quality</th>
+      <th>eat_paleo</th>
+      <th>eat_weigh</th>
+      <th>US</th>
+      <th>gender_</th>
+      <th>norm_dl</th>
+      <th>norm_j</th>
+      <th>norm_s</th>
+      <th>norm_bs</th>
+      <th>total_lift</th>
+      <th>BMI</th>
+      <th>bmi_rounded</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>21</th>
+      <td>Southern California</td>
+      <td>Male</td>
+      <td>30.0</td>
+      <td>71.0</td>
+      <td>200.0</td>
+      <td>235.0</td>
+      <td>175.0</td>
+      <td>385.0</td>
+      <td>315.0</td>
+      <td>I eat whatever is convenient|</td>
+      <td>I played youth or high school level sports|I p...</td>
+      <td>I began CrossFit by trying it alone (without a...</td>
+      <td>I do multiple workouts in a day 1x a week|I ty...</td>
+      <td>1-2 years|</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1.925000</td>
+      <td>1.175000</td>
+      <td>0.875000</td>
+      <td>1.575000</td>
+      <td>5.550000</td>
+      <td>27.894029</td>
+      <td>28.0</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>Africa</td>
+      <td>Male</td>
+      <td>28.0</td>
+      <td>70.0</td>
+      <td>176.0</td>
+      <td>187.0</td>
+      <td>134.0</td>
+      <td>335.0</td>
+      <td>254.0</td>
+      <td>I eat 1-3 full cheat meals per week|</td>
+      <td>I have no athletic background besides CrossFit|</td>
+      <td>I began CrossFit with a coach (e.g. at an affi...</td>
+      <td>I do multiple workouts in a day 1x a week|</td>
+      <td>2-4 years|</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1.903409</td>
+      <td>1.062500</td>
+      <td>0.761364</td>
+      <td>1.443182</td>
+      <td>5.170455</td>
+      <td>25.253091</td>
+      <td>25.0</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>North East</td>
+      <td>Male</td>
+      <td>35.0</td>
+      <td>68.0</td>
+      <td>225.0</td>
+      <td>285.0</td>
+      <td>205.0</td>
+      <td>440.0</td>
+      <td>405.0</td>
+      <td>I eat quality foods but don't measure the amount|</td>
+      <td>I played youth or high school level sports|</td>
+      <td>I began CrossFit with a coach (e.g. at an affi...</td>
+      <td>I typically rest 4 or more days per month|</td>
+      <td>2-4 years|</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1.955556</td>
+      <td>1.266667</td>
+      <td>0.911111</td>
+      <td>1.800000</td>
+      <td>5.933333</td>
+      <td>34.210754</td>
+      <td>34.0</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>North Central</td>
+      <td>Male</td>
+      <td>36.0</td>
+      <td>71.0</td>
+      <td>199.0</td>
+      <td>267.0</td>
+      <td>212.0</td>
+      <td>485.0</td>
+      <td>390.0</td>
+      <td>I eat quality foods but don't measure the amount|</td>
+      <td>I played youth or high school level sports|I p...</td>
+      <td>I began CrossFit with a coach (e.g. at an affi...</td>
+      <td>I do multiple workouts in a day 3+ times a wee...</td>
+      <td>1-2 years|</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2.437186</td>
+      <td>1.341709</td>
+      <td>1.065327</td>
+      <td>1.959799</td>
+      <td>6.804020</td>
+      <td>27.754559</td>
+      <td>28.0</td>
+    </tr>
+    <tr>
+      <th>60</th>
+      <td>North East</td>
+      <td>Male</td>
+      <td>36.0</td>
+      <td>64.0</td>
+      <td>155.0</td>
+      <td>245.0</td>
+      <td>180.0</td>
+      <td>415.0</td>
+      <td>385.0</td>
+      <td>I eat strict Paleo|</td>
+      <td>I played youth or high school level sports|I p...</td>
+      <td>I began CrossFit by trying it alone (without a...</td>
+      <td>I do multiple workouts in a day 2x a week|I st...</td>
+      <td>4+ years|</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2.677419</td>
+      <td>1.580645</td>
+      <td>1.161290</td>
+      <td>2.483871</td>
+      <td>7.903226</td>
+      <td>26.605395</td>
+      <td>27.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 54 columns</p>
+</div>
+
+<h2 id="selecting-input-features">Selecting input features</h2>
+
+<p>Features are selected for predictive modeling. Features that are redundant, have been otherwise encoded, or have been engineered into new features are not selected. Individual event performances are also dropped, and the sole target is the total weight lifted normalized by athlete bodyweight.</p>
+
+<p>A description of each feature if ambiguous is summarized below:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>rec</td>
+      <td>plays or has played recreational sports</td>
+    </tr>
+    <tr>
+      <td>high_school</td>
+      <td>played high school sports</td>
+    </tr>
+    <tr>
+      <td>college</td>
+      <td>played college sports</td>
+    </tr>
+    <tr>
+      <td>pro</td>
+      <td>played professional level sports</td>
+    </tr>
+    <tr>
+      <td>no_background</td>
+      <td>has no athletic background</td>
+    </tr>
+    <tr>
+      <td>exp_coach</td>
+      <td>started CrossFit with a coach</td>
+    </tr>
+    <tr>
+      <td>exp_alone</td>
+      <td>started CrossFit alone</td>
+    </tr>
+    <tr>
+      <td>exp_start_nr</td>
+      <td>did not indicate if started alone or with coach</td>
+    </tr>
+    <tr>
+      <td>life_changing</td>
+      <td>indicates if CrossFit has been life changing</td>
+    </tr>
+    <tr>
+      <td>exp_trainer</td>
+      <td>has worked as a CrossFit coach</td>
+    </tr>
+    <tr>
+      <td>exp_level1</td>
+      <td>has completed a level 1 class</td>
+    </tr>
+    <tr>
+      <td>rest_plus</td>
+      <td>takes 4+ rest days per month</td>
+    </tr>
+    <tr>
+      <td>rest_minus</td>
+      <td>takes less than 4 rest days per month</td>
+    </tr>
+    <tr>
+      <td>rest_sched</td>
+      <td>intentionally schedules rest days</td>
+    </tr>
+    <tr>
+      <td>rest_nr</td>
+      <td>no response on rest day frequency</td>
+    </tr>
+    <tr>
+      <td>sched_nr</td>
+      <td>no response on rest day scheduling</td>
+    </tr>
+    <tr>
+      <td>sched_0extra</td>
+      <td>does not do two a day training sessions</td>
+    </tr>
+    <tr>
+      <td>sched_1extra</td>
+      <td>does one two a day training sessions per week</td>
+    </tr>
+    <tr>
+      <td>sched_2extra</td>
+      <td>does two two a day training sessions per week</td>
+    </tr>
+    <tr>
+      <td>sched_3extra</td>
+      <td>does three or more two a day training sessions per week</td>
+    </tr>
+    <tr>
+      <td>exp_*</td>
+      <td>CrossFit age/experience doing CrossFit</td>
+    </tr>
+    <tr>
+      <td>eat_conv</td>
+      <td>eats what is convenient</td>
+    </tr>
+    <tr>
+      <td>eat_cheat</td>
+      <td>eats cheat meals</td>
+    </tr>
+    <tr>
+      <td>eat_quality</td>
+      <td>eats high quality foods</td>
+    </tr>
+    <tr>
+      <td>eat_paleo</td>
+      <td>follows paleo diet</td>
+    </tr>
+    <tr>
+      <td>eat_weigh</td>
+      <td>weighs food</td>
+    </tr>
+    <tr>
+      <td>US</td>
+      <td>athlete competes in the US</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_select</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">region</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">candj</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">snatch</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">norm_bs</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">norm_dl</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">norm_j</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">norm_s</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">backsq</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">])</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Selected features:</span><span class="se">\n</span><span class="sh">'</span><span class="p">,</span><span class="n">df_select</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="n">values</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Selected features:
+ ['age' 'rec' 'high_school' 'college' 'pro' 'no_background' 'exp_coach'
+ 'exp_alone' 'exp_courses' 'life_changing' 'exp_trainer' 'exp_level1'
+ 'exp_start_nr' 'rest_plus' 'rest_minus' 'rest_sched' 'sched_0extra'
+ 'sched_1extra' 'sched_2extra' 'sched_3extra' 'sched_nr' 'rest_nr'
+ 'exp_1to2yrs' 'exp_2to4yrs' 'exp_4plus' 'exp_6to12mo' 'exp_lt6mo'
+ 'eat_conv' 'eat_cheat' 'eat_quality' 'eat_paleo' 'eat_weigh' 'US'
+ 'gender_' 'total_lift' 'BMI']
+</code></pre></div></div>
+
+<h3 id="random-forest-regression-model">Random forest regression model</h3>
+
+<p>The random forest regressor randomly selects subsets of the original dataset with replacement, creating multiple training sets known as bootstrap samples. For each bootstrap sample, a decision tree is constructed using a subset of features. The decision tree is built by recursively splitting the data based on the selected features and their optimal thresholds. The final prediction is obtained by aggregating or “bagging” the individual predictions made by each decision tree. Random forest regression models work well with tabular data, large datasets, high-dimensional data, and non-linear data.</p>
+
+<p>In our modeling we use the root mean squared error is used as a cost function:</p>
+
+<p><img src="https://miro.medium.com/max/327/1*9hQVcasuwx5ddq_s3MFCyw.gif"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span><span class="n">cross_val_score</span>
+<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestRegressor</span>
+<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+<span class="kn">import</span> <span class="n">xgboost</span> <span class="k">as</span> <span class="n">xgb</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Assigning test and train sets
+</span><span class="n">train_set</span><span class="p">,</span> <span class="n">test_set</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="n">df_select</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">train_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]),</span> <span class="n">train_set</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">test_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]),</span> <span class="n">test_set</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#fit score
+</span><span class="n">rnd_clf</span> <span class="o">=</span> <span class="nc">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_depth</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span><span class="n">oob_score</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">rnd_pred</span> <span class="o">=</span> <span class="n">rnd_clf</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">rnd_score</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">rnd_pred</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Random forest regression model RMSE: </span><span class="se">\n</span><span class="si">{</span><span class="n">rnd_score</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Random forest regression model RMSE: 
+0.863
+</code></pre></div></div>
+
+<h2 id="xgboost">XGBoost</h2>
+
+<h3 id="model-optimization">Model optimization</h3>
+
+<p>XGBoost stands for eXtreme gradient boosting and is a gradient boosted trees algorithm. In boosting, trees are sequentially built such that each subsequent tree aims to reduce the errors of the previous tree. Custom XGBoost callbacks were created during model optimization to control learning rate decay, implement early stopping, and plot training results. A schematic of this iterative process is shown in the figure below.
+<br>
+<br>
+<img src="https://docs.aws.amazon.com/images/sagemaker/latest/dg/images/xgboost_illustration.png">
+&lt;/br&gt;
+<br>
+Image from <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowItWorks.html" rel="external nofollow noopener" target="_blank">AWS, How XGBoost Works</a>
+&lt;/br&gt;</p>
+
+<p>XGBoost has been shown to be highly accurate, often out-performing other models in Kaggle competitions. Optimizations to the XGBoost algorithm underlie this predictive power. For example, XGBoost grows trees up to a specifiable maximum depth and prunes backwards to improve model fit. This is unlike other algorithms that build trees from the top down and stop once a negative loss is encountered on a single splitting step using a “greedy” algorithm. Additionally, there is built in regularization to avoid overfitting and capacity for parallelization.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining custom learning rate decay
+</span><span class="k">def</span> <span class="nf">learning_rate_decay</span><span class="p">(</span><span class="n">boosting_round</span><span class="p">):</span> <span class="c1">#, num_boost_round):
+</span>    <span class="n">learning_rate_start</span> <span class="o">=</span> <span class="mf">0.4</span>
+    <span class="n">learning_rate_min</span> <span class="o">=</span> <span class="mf">0.05</span>
+    <span class="n">lr_decay</span> <span class="o">=</span> <span class="mf">0.7</span>
+    <span class="n">lr</span> <span class="o">=</span> <span class="n">learning_rate_start</span> <span class="o">*</span> <span class="n">np</span><span class="p">.</span><span class="nf">power</span><span class="p">(</span><span class="n">lr_decay</span><span class="p">,</span> <span class="n">boosting_round</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nf">max</span><span class="p">(</span><span class="n">learning_rate_min</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
+
+<span class="n">lr_callback</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="n">callback</span><span class="p">.</span><span class="nc">LearningRateScheduler</span><span class="p">(</span><span class="n">learning_rate_decay</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining callback for plotting XGBoost fit progress, adapting from XGBoost documentation
+</span><span class="k">class</span> <span class="nc">Plotting</span><span class="p">(</span><span class="n">xgb</span><span class="p">.</span><span class="n">callback</span><span class="p">.</span><span class="n">TrainingCallback</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">rounds</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">fig</span><span class="p">.</span><span class="nf">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">rounds</span> <span class="o">=</span> <span class="n">rounds</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">fig</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">rounds</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">rounds</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="nf">ion</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_key</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">metric</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="sh">'</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s">-</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="sh">'</span>
+
+    <span class="k">def</span> <span class="nf">after_iteration</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">evals_log</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">self</span><span class="p">.</span><span class="n">lines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">evals_log</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">metric</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">_get_key</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
+                    <span class="n">expanded</span> <span class="o">=</span> <span class="n">log</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">rounds</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">log</span><span class="p">))</span>
+                    <span class="n">self</span><span class="p">.</span><span class="n">lines</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>  <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">ax</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">expanded</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">self</span><span class="p">.</span><span class="n">ax</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">evals_log</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">metric</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">_get_key</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
+                    <span class="n">expanded</span> <span class="o">=</span> <span class="n">log</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">rounds</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">log</span><span class="p">))</span>
+                    <span class="n">self</span><span class="p">.</span><span class="n">lines</span><span class="p">[</span><span class="n">key</span><span class="p">].</span><span class="nf">set_ydata</span><span class="p">(</span><span class="n">expanded</span><span class="p">)</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">fig</span><span class="p">.</span><span class="n">canvas</span><span class="p">.</span><span class="nf">draw</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining early stopping callback
+</span><span class="n">es</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="n">callback</span><span class="p">.</span><span class="nc">EarlyStopping</span><span class="p">(</span><span class="n">rounds</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">save_best</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#XGBoost 
+</span><span class="n">dtrain</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">dtest</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
+<span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="sh">'</span><span class="s">max_depth</span><span class="sh">'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span><span class="sh">'</span><span class="s">subsample</span><span class="sh">'</span><span class="p">:.</span><span class="mi">6</span><span class="p">,</span><span class="sh">'</span><span class="s">reg_alpha</span><span class="sh">'</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+<span class="n">evallist</span> <span class="o">=</span> <span class="p">[(</span><span class="n">dtrain</span><span class="p">,</span> <span class="sh">'</span><span class="s">train</span><span class="sh">'</span><span class="p">),</span> <span class="p">(</span><span class="n">dtest</span><span class="p">,</span> <span class="sh">'</span><span class="s">eval</span><span class="sh">'</span><span class="p">)]</span>
+<span class="n">num_round</span> <span class="o">=</span> <span class="mi">1500</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Training and evluation RMSE scores:</span><span class="sh">'</span><span class="p">)</span>
+<span class="c1">#bst = xgb.train(param, dtrain, num_round, evallist, verbose_eval=100,early_stopping_rounds=100,callbacks=[lr_callback, Plotting(num_round)])
+</span><span class="n">bst</span><span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nf">train</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">dtrain</span><span class="p">,</span> <span class="n">num_round</span><span class="p">,</span> <span class="n">evals</span><span class="o">=</span><span class="n">evallist</span><span class="p">,</span> <span class="n">verbose_eval</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">lr_callback</span><span class="p">,</span> <span class="nc">Plotting</span><span class="p">(</span><span class="n">num_round</span><span class="p">),</span><span class="n">es</span><span class="p">])</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Training round</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">RMSE</span><span class="sh">'</span><span class="p">);</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Training XGBoost</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="n">bst</span><span class="p">.</span><span class="n">best_iteration</span><span class="p">));</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Training and evluation RMSE scores:
+[0]	train-rmse:3.80923	eval-rmse:3.81266
+[100]	train-rmse:0.82707	eval-rmse:0.85081
+[200]	train-rmse:0.81175	eval-rmse:0.84634
+[300]	train-rmse:0.80052	eval-rmse:0.84445
+[400]	train-rmse:0.79081	eval-rmse:0.84269
+[500]	train-rmse:0.78215	eval-rmse:0.84173
+[600]	train-rmse:0.77440	eval-rmse:0.84027
+[700]	train-rmse:0.76668	eval-rmse:0.83956
+[800]	train-rmse:0.75950	eval-rmse:0.83924
+[900]	train-rmse:0.75302	eval-rmse:0.83926
+[1000]	train-rmse:0.74687	eval-rmse:0.83898
+[1100]	train-rmse:0.74078	eval-rmse:0.83858
+[1123]	train-rmse:0.73955	eval-rmse:0.83868
+</code></pre></div></div>
+
+<p><img src="\assets\img\crossfit_predict\output_15_3.png" alt="training data"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bst_pred</span> <span class="o">=</span> <span class="n">bst</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">dtest</span><span class="p">)</span>
+<span class="n">bst_rmse</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">bst_pred</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Best iteration and RMSE:</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">bst</span><span class="p">.</span><span class="n">best_iteration</span><span class="p">,</span> <span class="nf">round</span><span class="p">(</span><span class="n">bst_rmse</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Best iteration and RMSE:
+
+
+
+
+
+(1024, 0.839)
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Improvement over random forest regression model:</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">improvement</span> <span class="o">=</span> <span class="p">(</span><span class="n">rnd_score</span> <span class="o">-</span> <span class="n">bst_rmse</span><span class="p">)</span><span class="o">/</span><span class="n">rnd_score</span> <span class="o">*</span><span class="mi">100</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">improvement</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">+</span><span class="sh">'</span><span class="s">%</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Improvement over random forest regression model:
+2.8%
+</code></pre></div></div>
+
+<h3 id="feature-importance">Feature Importance</h3>
+<p>One benefit of using tree-based models is the ability to extract the predictive importance of input features. For random forest models, there is a built-in feature importance metric included in the scikit-learn package that indicates the average improvement to a prediction when each feature is used as a splitting node. For XGBoost models, the built in feature importance metrics are expanded and include weight, gain or cover metrics. Gain is most like the random forest feature importance metric, while weight represents the relative number of times a feature is used as a splitting node and cover represents the number of observations split by a feature. While potentially insightful, these metrics tend to inflate the importance of continuous or high-cardinality categorical variables.</p>
+
+<p>Permutation importance algorithms evaluate the importance of a feature by comparing the performance of the baseline model to the performance with each feature permuted. This strategy does not require sequentially retraining the model necessarily but instead re-runs a trained model with each input feature permutated. The built-in Scikit-learn permutation importance function cannot be used with XGBoost. Thus, a custom permutation algorithm is developed here.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">feature_importance</span><span class="p">(</span><span class="n">bst</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">):</span>
+    <span class="n">baseline_d</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
+    <span class="n">y_baseline</span> <span class="o">=</span> <span class="n">bst</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">baseline_d</span><span class="p">)</span>
+    <span class="n">baseline</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_baseline</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    
+    <span class="n">f_imp</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">X_test</span><span class="p">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">save</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">[</span><span class="n">col</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+        <span class="n">X_test</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">permutation</span><span class="p">(</span><span class="n">X_test</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+
+        <span class="n">perm_d</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
+        <span class="n">y_perm</span> <span class="o">=</span> <span class="n">bst</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">perm_d</span><span class="p">)</span>
+        <span class="n">perm_baseline</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_perm</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">f_imp</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">perm_baseline</span><span class="o">-</span><span class="n">baseline</span><span class="p">)</span>
+        
+        <span class="n">X_test</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">save</span> <span class="c1">#resets values
+</span>       
+    <span class="k">return</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">f_imp</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="n">values</span><span class="p">).</span><span class="nf">sort_values</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">).</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">,</span><span class="n">ylabel</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Decrease in RMSE from baseline</span><span class="sh">'</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sh">'</span><span class="s">Feature Importance by permutation</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">feature_importance</span><span class="p">(</span><span class="n">bst</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="\assets\img\crossfit_predict\output_20_0.png" alt="feature importance"></p>
+
+<p>The most significant decreases to the RMSE were observed when gender, age and BMI were permutated. This is in line with strong the correlations observed in our previous work with these features and performance. Secondary features of importance were CrossFit age, frequency of extra training sessions, athletic background, and region. Interestingly, taking rest days and all dietary habits were not of consequence to the model. It is possible that these behaviors don’t significantly affect performance.</p>
+
+<h2 id="neural-network">Neural network</h2>
+
+<p>A dense neural network was created to predict CrossFit athlete performance.  Neural networks are useful in situations where identifying complex patterns aids in predictive performance. Neural networks have been outperformed by XGBoost when working with smaller amounts of data and tabular data.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
+<span class="kn">from</span> <span class="n">keras.layers</span> <span class="kn">import</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span>
+<span class="kn">from</span> <span class="n">functools</span> <span class="kn">import</span> <span class="n">partial</span> 
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#splitting test data to make a validation dataset
+</span><span class="n">valid_set_nn</span><span class="p">,</span> <span class="n">test_set_nn</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="n">test_set</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">X_valid_nn</span> <span class="o">=</span> <span class="n">valid_set_nn</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">])</span>
+<span class="n">y_valid_nn</span> <span class="o">=</span> <span class="n">valid_set_nn</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">].</span><span class="n">values</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">X_test_nn</span> <span class="o">=</span> <span class="n">test_set_nn</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">])</span>
+<span class="n">y_test_nn</span> <span class="o">=</span> <span class="n">test_set_nn</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#building neural network
+</span><span class="n">tf</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">set_seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">layer_size</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">RegularizedDense</span> <span class="o">=</span> <span class="nf">partial</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dense</span><span class="p">,</span>
+                           <span class="n">activation</span> <span class="o">=</span> <span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span>
+                           <span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">)</span>
+                           <span class="c1">#kernel_regularizer = tf.keras.regularizers.l2(0.001))
+</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Sequential</span><span class="p">([</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">X_train</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span>
+    <span class="nc">BatchNormalization</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Batch_Normalization</span><span class="sh">'</span><span class="p">),</span>
+    <span class="nc">RegularizedDense</span><span class="p">(</span><span class="n">layer_size</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Dense_1</span><span class="sh">"</span><span class="p">),</span>
+    <span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Dropout_1</span><span class="sh">'</span><span class="p">),</span>
+    <span class="nc">RegularizedDense</span><span class="p">(</span><span class="n">layer_size</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Dense_2</span><span class="sh">"</span><span class="p">),</span>
+    <span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span> <span class="sh">'</span><span class="s">Dropout_2</span><span class="sh">'</span><span class="p">),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Dense_3</span><span class="sh">'</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="n">lr_schedule</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="n">schedules</span><span class="p">.</span><span class="nc">ExponentialDecay</span><span class="p">(</span>
+    <span class="n">initial_learning_rate</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
+    <span class="n">decay_steps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">decay_rate</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)</span>
+    
+<span class="n">opt</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="n">experimental</span><span class="p">.</span><span class="nc">AdamW</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">lr_schedule</span><span class="p">)</span>
+                   
+<span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="sh">'</span><span class="s">mse</span><span class="sh">'</span><span class="p">,</span>
+              <span class="n">optimizer</span> <span class="o">=</span> <span class="n">opt</span><span class="p">,</span>
+              <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">RootMeanSquaredError</span><span class="sh">'</span><span class="p">]</span>
+             <span class="p">)</span>
+
+<span class="n">model</span><span class="p">.</span><span class="n">training</span><span class="o">=</span><span class="bp">True</span>
+<span class="n">model</span><span class="p">.</span><span class="nf">summary</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ Batch_Normalization (BatchN  (None, 35)               140       
+ ormalization)                                                   
+                                                                 
+ Dense_1 (Dense)             (None, 300)               10800     
+                                                                 
+ Dropout_1 (Dropout)         (None, 300)               0         
+                                                                 
+ Dense_2 (Dense)             (None, 300)               90300     
+                                                                 
+ Dropout_2 (Dropout)         (None, 300)               0         
+                                                                 
+ Dense_3 (Dense)             (None, 1)                 301       
+                                                                 
+=================================================================
+Total params: 101,541
+Trainable params: 101,471
+Non-trainable params: 70
+_________________________________________________________________
+</code></pre></div></div>
+
+<p>A shallow neural network with two hidden layers was created to predict the normalized total lift. The number of neurons in each hidden layer was adjusted upwards until the model overfit the training data, and then regularization techniques were added to prevent overfitting. Dropout was the most effective regularization method sampled, and was used over kernel regularization, gradient clipping, and other techniques. It is possible that the ensemble effect observed with dropout was particularly beneficial to this dataset. The final model had 300 neurons in each of two hidden layers and two dropout layers.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid_nn</span><span class="p">,</span> <span class="n">y_valid_nn</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="p">.</span><span class="n">training</span><span class="o">=</span><span class="bp">False</span>
+<span class="n">y_pred_nn</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test_nn</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">nn_rmse</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test_nn</span><span class="p">,</span> <span class="n">y_pred_nn</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Neural network RMSE:</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">nn_rmse</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Neural network RMSE:
+
+
+
+
+
+0.863
+</code></pre></div></div>
+
+<p>XGBoost outperformed the shallow neural network on this dataset. The neural network model had a higher bias than the tree-based models.</p>
+
+<h2 id="benchmarking-model-performance">Benchmarking model performance</h2>
+
+<p>To benchmark model performance, 10 random participants were selected. After careful study and review, I predicted each participant’s normalized total lift from the input features. The RMSE of my predictions is calculated for comparison to the other models. Optimally, the predictions of a team of CrossFit experts and coaches would be used, but lacking these resources my judgement will be used to estimate human-level predictive power.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#selecting index 
+</span><span class="n">benchmark</span> <span class="o">=</span> <span class="n">df_select</span><span class="p">.</span><span class="nf">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">benchmark_X</span> <span class="o">=</span> <span class="n">benchmark</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">])</span>
+<span class="n">benchmark_y</span> <span class="o">=</span> <span class="n">benchmark</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
+<span class="n">pd</span><span class="p">.</span><span class="nf">set_option</span><span class="p">(</span><span class="sh">'</span><span class="s">display.max_columns</span><span class="sh">'</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">pd</span><span class="p">.</span><span class="nf">set_option</span><span class="p">(</span><span class="sh">'</span><span class="s">display.max_rows</span><span class="sh">'</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">benchmark_X</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>age</th>
+      <th>rec</th>
+      <th>high_school</th>
+      <th>college</th>
+      <th>pro</th>
+      <th>no_background</th>
+      <th>exp_coach</th>
+      <th>exp_alone</th>
+      <th>exp_courses</th>
+      <th>life_changing</th>
+      <th>exp_trainer</th>
+      <th>exp_level1</th>
+      <th>exp_start_nr</th>
+      <th>rest_plus</th>
+      <th>rest_minus</th>
+      <th>rest_sched</th>
+      <th>sched_0extra</th>
+      <th>sched_1extra</th>
+      <th>sched_2extra</th>
+      <th>sched_3extra</th>
+      <th>sched_nr</th>
+      <th>rest_nr</th>
+      <th>exp_1to2yrs</th>
+      <th>exp_2to4yrs</th>
+      <th>exp_4plus</th>
+      <th>exp_6to12mo</th>
+      <th>exp_lt6mo</th>
+      <th>eat_conv</th>
+      <th>eat_cheat</th>
+      <th>eat_quality</th>
+      <th>eat_paleo</th>
+      <th>eat_weigh</th>
+      <th>US</th>
+      <th>gender_</th>
+      <th>BMI</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>196036</th>
+      <td>27.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>20.254429</td>
+    </tr>
+    <tr>
+      <th>158151</th>
+      <td>18.0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>26.608364</td>
+    </tr>
+    <tr>
+      <th>81732</th>
+      <td>23.0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>25.632724</td>
+    </tr>
+    <tr>
+      <th>13402</th>
+      <td>31.0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>28.889081</td>
+    </tr>
+    <tr>
+      <th>61466</th>
+      <td>36.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>43.941813</td>
+    </tr>
+    <tr>
+      <th>4714</th>
+      <td>33.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>28.696694</td>
+    </tr>
+    <tr>
+      <th>259</th>
+      <td>27.0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>24.394286</td>
+    </tr>
+    <tr>
+      <th>155078</th>
+      <td>39.0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>28.128842</td>
+    </tr>
+    <tr>
+      <th>126860</th>
+      <td>34.0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>27.046190</td>
+    </tr>
+    <tr>
+      <th>103760</th>
+      <td>20.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>28.974775</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#my guesses
+</span><span class="n">my_y</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mf">6.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+<span class="c1">#my RMSE
+</span><span class="n">my_rmse</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">benchmark_y</span><span class="p">,</span> <span class="n">my_y</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">My RMSE:</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="n">my_rmse</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>My RMSE:
+
+
+
+
+
+1.782
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Summary of model performance
+</span><span class="n">p</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">([</span><span class="n">rnd_score</span><span class="p">,</span> <span class="n">bst_rmse</span><span class="p">,</span> <span class="n">nn_rmse</span><span class="p">,</span> <span class="n">my_rmse</span><span class="p">],</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Random Forest</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">XGBoost</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Neural network</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Me</span><span class="sh">'</span><span class="p">],</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">RMSE</span><span class="sh">'</span><span class="p">]).</span><span class="n">T</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="n">T</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">RMSE</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RMSE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>XGBoost</th>
+      <td>0.839</td>
+    </tr>
+    <tr>
+      <th>Random Forest</th>
+      <td>0.863</td>
+    </tr>
+    <tr>
+      <th>Neural network</th>
+      <td>0.863</td>
+    </tr>
+    <tr>
+      <th>Me</th>
+      <td>1.782</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>XGBoost outperformed the shallow neural network on this dataset. The neural network model had a higher bias than the tree-based models.</p>
+
+<h2 id="conclusions">Conclusions</h2>
+
+<p>Given the strong correlations observed in my previous project, <i> A data-based approach to CrossFit training</i>, it is reasonable that predictive models could be built and optimized to predict CrossFit performance. Indeed, all selected models out-perform my predictive human-level abilities by a significant margin.</p>
+
+<p>The top performing model was XGBoost by ~3%. XGBoost is particularly well suited for this type of non-linear, tabular data and outperformed the random forest and neural network models. A custom feature importance algorithm was built to determine the feature importance for XGBoost using a permutation algorithm. The most important features were gender, age and body composition, while taking rest day and eating paleo were not important to the model.</p>
+
+
+          </article>
+
+        </div>
+      
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Nina  Cilliers. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank" rel="external nofollow noopener">Unsplash</a>.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js"></script>
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js"></script>
+  <script defer src="/assets/js/common.js"></script>
+  <script defer src="/assets/js/copy_code.js" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>
