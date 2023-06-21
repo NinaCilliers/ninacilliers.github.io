@@ -1,11 +1,10 @@
 ---
-layout: post
+layout: page
 title: A data-based approach to CrossFit training
-date: 2023-06-01 15:53:00-0400
-description: Exploring CrossFit Games data to improve training strategies
-categories: sample-posts blockquotes
-giscus_comments: true
-related_posts: true
+description: CrossFit game data is explored and analyzed and used to improve athlete preparation.
+img:
+importance: 1
+category: fun
 ---
 
 # A data-based approach to CrossFit training 
