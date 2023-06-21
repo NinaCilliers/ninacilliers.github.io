@@ -2,7 +2,7 @@
 layout: page
 title: A data-based approach to CrossFit training
 description: CrossFit game data is explored and analyzed and used to improve athlete preparation.
-img: assets/img/project_1_preview.png
+img: assets/img/project_previews/crossfit_explore.png
 importance: 1
 category: fun
 ---
