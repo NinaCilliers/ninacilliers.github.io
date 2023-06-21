@@ -658,12 +658,6 @@ plt.xlim((0,bst.best_iteration));
 
     Training and evluation RMSE scores:
     [0]	train-rmse:3.80923	eval-rmse:3.81266
-    
-
-    C:\Users\corne\AppData\Local\Temp\ipykernel_3540\1138537394.py:8: UserWarning: Matplotlib is currently using module://matplotlib_inline.backend_inline, which is a non-GUI backend, so cannot show the figure.
-      self.fig.show()
-    
-
     [100]	train-rmse:0.82707	eval-rmse:0.85081
     [200]	train-rmse:0.81175	eval-rmse:0.84634
     [300]	train-rmse:0.80052	eval-rmse:0.84445
@@ -679,8 +673,7 @@ plt.xlim((0,bst.best_iteration));
     
 
 
-    
-![png](output_15_3.png)
+![training data](\assets\img\crossfit_predict\output_15_3.png)    
     
 
 
@@ -748,8 +741,7 @@ feature_importance(bst, X_test, y_test);
 ```
 
 
-    
-![png](output_20_0.png)
+![feature importance](\assets\img\crossfit_predict\output_20_0.png)    
     
 
 
