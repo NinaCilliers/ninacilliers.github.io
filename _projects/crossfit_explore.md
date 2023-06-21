@@ -279,7 +279,7 @@ msno.matrix(df, figsize=(14,6),fontsize=11);
 
 
     
-![png](output_5_0.png)
+![missing data](\assets\img\crossfit_explore\output_5_0.png)
     
 
 
@@ -301,7 +301,7 @@ msno.matrix(df, figsize=(14,6),fontsize=11);
 
 
     
-![png](output_8_0.png)
+![missing data](\assets\img\crossfit_explore\output_8_0.png)
     
 
 
@@ -510,8 +510,7 @@ plt.tight_layout()
 ```
 
 
-    
-![png](output_26_0.png)
+![lift data](\assets\img\crossfit_explore\output_26_0.png)
     
 
 
@@ -524,9 +523,7 @@ plt.xlabel(xlabel);
 ```
 
 
-    
-![png](output_27_0.png)
-    
+![total lift data](\assets\img\crossfit_explore\output_27_0.png)    
 
 
 ## Athlete demographics and performance
@@ -549,16 +546,7 @@ sns.histplot(data = df, x = 'gender', hue = 'gender', hue_order = ['Female','Mal
 #df.groupby('gender').agg('count') #20996/7999
 ```
 
-
-
-
-    <Axes: xlabel='gender', ylabel='Count'>
-
-
-
-
-    
-![png](output_29_1.png)
+ ![gender lift histogram](\assets\img\crossfit_explore\output_29_1.png)   
     
 
 
@@ -572,16 +560,7 @@ plt.ylabel('Total lift (bodyweight)')
 #df[['total_lift','gender']].groupby('gender').agg('mean') #(6.05-4.86)/4.86
 ```
 
-
-
-
-    Text(0, 0.5, 'Total lift (bodyweight)')
-
-
-
-
-    
-![png](output_31_1.png)
+![mean age lifts](\assets\img\crossfit_explore\output_31_1.png) 
     
 
 
@@ -613,8 +592,7 @@ plt.show()
 ```
 
 
-    
-![png](output_34_0.png)
+![gender](\assets\img\crossfit_explore\output_34_0.png)    
     
 
 
@@ -625,8 +603,7 @@ plt.show()
 ```
 
 
-    
-![png](output_35_0.png)
+![BMI](\assets\img\crossfit_explore\output_35_0.png)    
     
 
 
@@ -655,14 +632,10 @@ plt.legend()
 
 plt.tight_layout()
 ```
-
-    C:\Users\corne\AppData\Local\Temp\ipykernel_3540\3713589120.py:7: MatplotlibDeprecationWarning: The legendHandles attribute was deprecated in Matplotlib 3.7 and will be removed two minor releases later. Use legend_handles instead.
-      for lh in leg.legendHandles:
-    
+   
 
 
-    
-![png](output_37_1.png)
+![agg BMI data](\assets\img\crossfit_explore\output_37_1.png) 
     
 
 
@@ -678,8 +651,7 @@ plt.show()
 ```
 
 
-    
-![png](output_39_0.png)
+ ![age data](\assets\img\crossfit_explore\output_39_0.png)   
     
 
 
@@ -714,13 +686,8 @@ plt.ylabel('Mean total lift \n(bodyweight)')
 plt.tight_layout()
 ```
 
-    C:\Users\corne\AppData\Local\Temp\ipykernel_3540\3865571106.py:11: MatplotlibDeprecationWarning: The legendHandles attribute was deprecated in Matplotlib 3.7 and will be removed two minor releases later. Use legend_handles instead.
-      for lh in leg.legendHandles:
-    
 
-
-    
-![png](output_41_1.png)
+![age data](\assets\img\crossfit_explore\output_41_1.png)
     
 
 
@@ -746,9 +713,7 @@ plt.show()
 ```
 
 
-    
-![png](output_43_0.png)
-    
+![region](\assets\img\crossfit_explore\output_43_0.png)   
 
 
 CrossFit athletes in the US appear to slightly outperform CrossFit athletes outside of the US. This could be due to increased local competition driving athletes to higher levels of performance or access to sophisticated training facilities and experienced coaches. 
@@ -770,8 +735,7 @@ plt.show()
 ```
 
 
-    
-![png](output_45_0.png)
+![region](\assets\img\crossfit_explore\output_45_0.png)    
     
 
 
@@ -853,15 +817,8 @@ plt.title('Eating habits')
 
 plt.tight_layout()
 ```
-
-    C:\Users\corne\AppData\Local\Temp\ipykernel_3540\62988159.py:3: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
-      plt.subplot(2,3,1)
     
-
-
-    
-![png](output_47_1.png)
-    
+![lifestyle data](\assets\img\crossfit_explore\output_41_7.png)    
 
 
 Key take-aways: 
@@ -938,8 +895,7 @@ plt.tight_layout()
 ```
 
 
-    
-![png](output_49_0.png)
+![lifestyle data](\assets\img\crossfit_explore\output_49_0.png)    
     
 
 
@@ -965,8 +921,7 @@ plt.tight_layout()
 ```
 
 
-    
-![png](output_52_0.png)
+![life changing](\assets\img\crossfit_explore\output_52_0.png)    
     
 
 
@@ -998,20 +953,8 @@ sns.heatmap(df_corr,vmin=vmin, vmax=vmax,mask=mask,cmap='seismic')
 plt.grid()
 #print(mask)
 ```
-
-    C:\Users\corne\AppData\Local\Temp\ipykernel_3540\659172391.py:4: FutureWarning: The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
-      vmin = df.corr().min().min()
-    C:\Users\corne\AppData\Local\Temp\ipykernel_3540\659172391.py:5: FutureWarning: The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
-      vmax = df.corr()[df.corr()!=1].max().max()
-    C:\Users\corne\AppData\Local\Temp\ipykernel_3540\659172391.py:8: FutureWarning: The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
-      df_corr  = df.drop(columns=['backsq','deadlift','candj','snatch','exp_start_nr','sched_nr','rest_nr']).corr()[np.absolute(df.corr())>0.2]
     
-
-
-    
-![png](output_55_1.png)
-    
-
+![correlation matrix](\assets\img\crossfit_explore\output_55_1.png)
 
 
 ```python
