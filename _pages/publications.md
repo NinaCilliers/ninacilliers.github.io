@@ -2,7 +2,7 @@
 layout: page
 permalink: /publications/
 title: Publications
-description: Highlighted publications from my time as a scientists
+description: Highlighted publications from my time as a scientist
 years: [2019, 2009]
 nav: true
 nav_order: 1
