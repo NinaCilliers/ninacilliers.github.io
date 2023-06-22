@@ -131,6 +131,7 @@
 
 <p>The dataset used in this project was provided by Ulrik Pedersen and can be found on <a href="https://www.kaggle.com/datasets/ulrikthygepedersen/crossfit-athletes" rel="external nofollow noopener" target="_blank">Kaggle</a>.</p>
 
+<h2><br></h2>
 <h2 id="project-outline">Project outline</h2>
 
 <ul>
@@ -391,6 +392,7 @@ memory usage: 87.1+ MB
 
 <p><img src="\assets\img\crossfit_explore\output_5_0.png" alt="missing data"></p>
 
+<h2><br></h2>
 <h2 id="data-cleaning">Data cleaning</h2>
 
 <h3 id="event-selection">Event selection</h3>
@@ -530,7 +532,7 @@ memory usage: 87.1+ MB
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding gender
 </span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">gender_</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 </code></pre></div></div>
-
+<h2><br></h2>
 <h2 id="feature-engineering">Feature Engineering</h2>
 
 <h3 id="normalizing-lifts">Normalizing lifts</h3>
@@ -552,7 +554,7 @@ memory usage: 87.1+ MB
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;=</span><span class="mi">17</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">50</span><span class="p">)]</span><span class="c1">#considers only underweight - morbidly obese competitors
 </span></code></pre></div></div>
-
+<h2><br></h2>
 <h2 id="event-performance">Event performance</h2>
 
 <p>Before exploring responses, we examine the normalized performance for the male and female athletes surveyed. The distributions are approximately normal in all cases, but the snatch and clean and jerk events have a wider distribution. This is likely the result of the importance of technique in these events, which leads to wider variation in addition to natural differences in strength.</p>
@@ -593,6 +595,7 @@ memory usage: 87.1+ MB
 
 <p><img src="\assets\img\crossfit_explore\output_27_0.png" alt="total lift data"></p>
 
+<h2><br></h2>
 <h2 id="athlete-demographics-and-performance">Athlete demographics and performance</h2>
 
 <p>Athlete demographics were collected as part of provided survey:</p>
@@ -763,6 +766,7 @@ memory usage: 87.1+ MB
 
 <p><img src="\assets\img\crossfit_explore\output_45_0.png" alt="region"></p>
 
+<h2><br></h2>
 <h2 id="lifestyle-factors">Lifestyle factors</h2>
 
 <p>Training and lifestyle choices are important factors for athlete performance. The following factors were surveyed:</p>
@@ -925,6 +929,7 @@ memory usage: 87.1+ MB
 
 <p>CrossFit age (years doing CrossFit), frequency of two-a-day session, taking sufficient rest days, and athletic background all correlate with improved athletic performance as would be expected from conventional knowledge. Interestingly, starting CrossFit alone rather than at a facility with a coach appears to also correlate with improved performance. This is perhaps indirectly a result of self-starting athletes having a stronger athletic history. Reported eating habits, however, do not appear strongly correlated with performance.</p>
 
+<h2><br></h2>
 <h2 id="has-crossfit-been-life-changing">Has CrossFit been life changing?</h2>
 
 <p>Previous analysis focused on athlete attributes and lifestyle. Survey respondents were additionally asked if CrossFit has been life changing, and this reponse can be used to isolate and guage the effect of attitude on performance.</p>
@@ -946,6 +951,7 @@ memory usage: 87.1+ MB
 
 <p>Interestingly, strong positive attitudes towards CrossFit do not appear to correlate with improved performance. This is counter intuitive as enjoying the ritual and community of CrossFit should increase the likelihood of continuing to train and participate in CrossFit.</p>
 
+<h2><br></h2>
 <h2 id="feature-correlation">Feature correlation</h2>
 
 <p>The Pearson correlation coefficient is a statistical measure that quantifies the strength and direction of the linear relationship between two continuous variables. It ranges from -1 to 1, where a value of 1 indicates a perfect positive correlation, -1 indicates a perfect negative correlation, and 0 indicates no linear correlation. Frequency of two-a-day training sessions, completing a level 1 certification, starting CrossFit alone, and working as a CrossFit trainer are all correlated to improved performance, while having no athletic background prior to CrossFit is correlated to worse performance.</p>
@@ -976,7 +982,7 @@ memory usage: 87.1+ MB
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#pickeling cleaned data
 </span><span class="n">df</span><span class="p">.</span><span class="nf">to_pickle</span><span class="p">(</span><span class="sh">'</span><span class="s">cleaned_cf_data.pkl</span><span class="sh">'</span><span class="p">)</span>
 </code></pre></div></div>
-
+<h2><br></h2>
 <h2 id="conclusion-and-recommendations">Conclusion and recommendations</h2>
 
 <p>The results of this investigation indicate that key factors for CrossFit athlete performance are body composition, age, and gender. Other contributing factors include CrossFit age (years doing CrossFit), frequency of two-a-day sessions, taking sufficient rest days, and athletic background. Interestingly, passion for CrossFit and dietary choices did not correlate with athlete performance.</p>
