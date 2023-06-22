@@ -9,20 +9,24 @@ category: fun
 
 # Predicting CrossFit performance
 
+<h2><br></h2>
 ## Introduction
 
 CrossFit is a high-intensity fitness program that combines elements of weightlifting, cardio, and gymnastics. It aims to improve overall physical fitness by incorporating constantly varied functional movements performed at a high intensity. At the pinnacle of CrossFit is the CrossFit Games, an annual competition that showcases the world's fittest athletes. The CrossFit Games serve as a platform for elite athletes to test their skills and compete in a wide range of demanding workouts, challenging their strength, speed, power, and mental resilience. In this analysis, we will delve into the performance of CrossFit athletes, examining key factors that contribute to their success in this highly demanding and competitive sport.  
 
 In a previous project, <i> A data-based approach to CrossFit training</i>, a dataset containing competition results, demographic information, lifestyle and training habits was explored to improve guidelines for training. The dataset used in this project was provided by Ulrik Pedersen and can be found on [Kaggle](https://www.kaggle.com/datasets/ulrikthygepedersen/crossfit-athletes). Many of the factors correlated to CrossFit performance have a non-linear or non-monotonic functionality. Factors with the strongest correlation to performance were age, gender and body composition. 
 
+<h2><br></h2>
 ## Project overview
 
 In this project, we will predict total weight lifted in four events normalized by athlete body weight: the back squat, the deadlift, the clean and jerk, and the snatch. The total weight is normalized with athlete body weight to negate momentum effects and isolate the athletic contribution of the lift. Three predictive models were optimized and used to predict the total normalized lift: 
 -	Random forest regression
 -	XGBoost
 -	Neural network
+<br>
 The XGBoost and the random forest models are known to work well with tabular data, and all of these models are suitable for capturing non-linear dependencies. In order to benchmark the performance of these models, their performance was compared with my ability to predict total lift from the provided data. 
 
+<h2><br></h2>
 ## Project outline
 
  - Introduction
@@ -478,7 +482,7 @@ df.head()
 </div>
 
 
-
+<h2><br></h2>
 ## Selecting input features
 
 Features are selected for predictive modeling. Features that are redundant, have been otherwise encoded, or have been engineered into new features are not selected. Individual event performances are also dropped, and the sole target is the total weight lifted normalized by athlete bodyweight.
@@ -530,8 +534,8 @@ print('Selected features:\n',df_select.columns.values)
      'eat_conv' 'eat_cheat' 'eat_quality' 'eat_paleo' 'eat_weigh' 'US'
      'gender_' 'total_lift' 'BMI']
     
-
-### Random forest regression model
+<h2><br></h2>
+## Random forest regression model
 
 The random forest regressor randomly selects subsets of the original dataset with replacement, creating multiple training sets known as bootstrap samples. For each bootstrap sample, a decision tree is constructed using a subset of features. The decision tree is built by recursively splitting the data based on the selected features and their optimal thresholds. The final prediction is obtained by aggregating or "bagging" the individual predictions made by each decision tree. Random forest regression models work well with tabular data, large datasets, high-dimensional data, and non-linear data. 
 
@@ -569,7 +573,7 @@ print(f'Random forest regression model RMSE: \n{rnd_score.round(3)}')
     Random forest regression model RMSE: 
     0.863
     
-
+<h2><br></h2>
 ## XGBoost
 
 ### Model optimization
@@ -747,6 +751,7 @@ feature_importance(bst, X_test, y_test);
 
 The most significant decreases to the RMSE were observed when gender, age and BMI were permutated. This is in line with strong the correlations observed in our previous work with these features and performance. Secondary features of importance were CrossFit age, frequency of extra training sessions, athletic background, and region. Interestingly, taking rest days and all dietary habits were not of consequence to the model. It is possible that these behaviors don't significantly affect performance.
 
+<h2><br></h2>
 ## Neural network
 
 A dense neural network was created to predict CrossFit athlete performance.  Neural networks are useful in situations where identifying complex patterns aids in predictive performance. Neural networks have been outperformed by XGBoost when working with smaller amounts of data and tabular data. 
@@ -859,6 +864,7 @@ round(nn_rmse,3)
 
 XGBoost outperformed the shallow neural network on this dataset. The neural network model had a higher bias than the tree-based models.
 
+<h2><br></h2>
 ## Benchmarking model performance
 
 To benchmark model performance, 10 random participants were selected. After careful study and review, I predicted each participant’s normalized total lift from the input features. The RMSE of my predictions is calculated for comparison to the other models. Optimally, the predictions of a team of CrossFit experts and coaches would be used, but lacking these resources my judgement will be used to estimate human-level predictive power. 
@@ -1395,6 +1401,7 @@ p.T.sort_values('RMSE')
 
 XGBoost outperformed the shallow neural network on this dataset. The neural network model had a higher bias than the tree-based models. 
 
+<h2><br></h2>
 ## Conclusions
 
 Given the strong correlations observed in my previous project, <i> A data-based approach to CrossFit training</i>, it is reasonable that predictive models could be built and optimized to predict CrossFit performance. Indeed, all selected models out-perform my predictive human-level abilities by a significant margin. 
