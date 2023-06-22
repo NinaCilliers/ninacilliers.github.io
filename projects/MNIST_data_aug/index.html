@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Handwritten digit classification with 99.6% accuracy using a convolutional neural network | Nina  Cilliers</title>
+    <meta name="author" content="Nina  Cilliers">
+    <meta name="description" content="A small convolutional neural network is built to decode the MNIST 784 dataset. The final model was trained in ~30 minutes and achieved 99.6% accuracy. A smart data augmentation strategy is the key to the model's high accuracy.">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://ninacilliers.github.io/projects/MNIST_data_aug/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Nina </span>Cilliers</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">Projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/repositories/">Repositories</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        <!-- page.html -->
+        <style>
+          img {
+            max-width: 100%
+          }
+        </style>
+        <div class="post">
+
+          <article>
+            <h1 id="handwritten-digit-classification-with-996-accuracy-using-a-convolutional-neural-network">Handwritten digit classification with 99.6% accuracy using a convolutional neural network</h1>
+
+<p>A small convolutional neural network is built to decode the MNIST 784 dataset. This dataset contains a subset of 70,000 size-normalized and centered hand written digits. The architecture of the network was built up iteratively until apparent improvements to performance stagnated. Then, the model was optimized by evaluating data augmentation strategies, optimizers and dropout layers. The final model was trained in ~30 minutes and achieved 99.6% accuracy on the test set. The high level of accuracy is due to careful data augmentation during preprocessing.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="n">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_openml</span>
+<span class="kn">from</span> <span class="n">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">from</span> <span class="n">functools</span> <span class="kn">import</span> <span class="n">partial</span> 
+<span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
+<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="n">keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span>
+<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">ConfusionMatrixDisplay</span>
+</code></pre></div></div>
+<h3><br></h3>
+<h3>Importing data</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Loading MNIST_784 dataset from OpenML
+</span><span class="n">mnist</span> <span class="o">=</span> <span class="nf">fetch_openml</span><span class="p">(</span><span class="sh">'</span><span class="s">mnist_784</span><span class="sh">'</span><span class="p">,</span> <span class="n">as_frame</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="sh">'</span><span class="s">auto</span><span class="sh">'</span><span class="p">)</span> 
+<span class="n">X</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">mnist</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">mnist</span><span class="p">.</span><span class="n">target</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="nf">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="n">mnist</span><span class="p">.</span><span class="n">DESCR</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"**Author**: Yann LeCun, Corinna Cortes, Christopher J.C. Burges  \n**Source**: [MNIST Website](http://yann.lecun.com/exdb/mnist/) - Date unknown  \n**Please cite**:  \n\nThe MNIST database of handwritten digits with 784 features, raw data available at: http://yann.lecun.com/exdb/mnist/. It can be split in a training set of the first 60,000 examples, and a test set of 10,000 examples  \n\nIt is a subset of a larger set available from NIST. The digits have been size-normalized and centered in a fixed-size image. It is a good database for people who want to try learning techniques and pattern recognition methods on real-world data while spending minimal efforts on preprocessing and formatting. The original black and white (bilevel) images from NIST were size normalized to fit in a 20x20 pixel box while preserving their aspect ratio. The resulting images contain grey levels as a result of the anti-aliasing technique used by the normalization algorithm. the images were centered in a 28x28 image by computing the center of mass of the pixels, and translating the image so as to position this point at the center of the 28x28 field.  \n\nWith some classification methods (particularly template-based methods, such as SVM and K-nearest neighbors), the error rate improves when the digits are centered by bounding box rather than center of mass. If you do this kind of pre-processing, you should report it in your publications. The MNIST database was constructed from NIST's NIST originally designated SD-3 as their training set and SD-1 as their test set. However, SD-3 is much cleaner and easier to recognize than SD-1. The reason for this can be found on the fact that SD-3 was collected among Census Bureau employees, while SD-1 was collected among high-school students. Drawing sensible conclusions from learning experiments requires that the result be independent of the choice of training set and test among the complete set of samples. Therefore it was necessary to build a new database by mixing NIST's datasets.  \n\nThe MNIST training set is composed of 30,000 patterns from SD-3 and 30,000 patterns from SD-1. Our test set was composed of 5,000 patterns from SD-3 and 5,000 patterns from SD-1. The 60,000 pattern training set contained examples from approximately 250 writers. We made sure that the sets of writers of the training set and test set were disjoint. SD-1 contains 58,527 digit images written by 500 different writers. In contrast to SD-3, where blocks of data from each writer appeared in sequence, the data in SD-1 is scrambled. Writer identities for SD-1 is available and we used this information to unscramble the writers. We then split SD-1 in two: characters written by the first 250 writers went into our new training set. The remaining 250 writers were placed in our test set. Thus we had two sets with nearly 30,000 examples each. The new training set was completed with enough examples from SD-3, starting at pattern # 0, to make a full set of 60,000 training patterns. Similarly, the new test set was completed with SD-3 examples starting at pattern # 35,000 to make a full set with 60,000 test patterns. Only a subset of 10,000 test images (5,000 from SD-1 and 5,000 from SD-3) is available on this site. The full 60,000 sample training set is available.\n\nDownloaded from openml.org."
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Making test and train sets
+</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="mi">60000</span><span class="p">],</span> <span class="n">y</span><span class="p">[:</span><span class="mi">60000</span><span class="p">],</span><span class="n">X</span><span class="p">[</span><span class="mi">60000</span><span class="p">:</span><span class="mi">65000</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="mi">60000</span><span class="p">:</span><span class="mi">65000</span><span class="p">],</span><span class="n">X</span><span class="p">[</span><span class="mi">65000</span><span class="p">:],</span><span class="n">y</span><span class="p">[</span><span class="mi">65000</span><span class="p">:]</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">X_train</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">X_test</span><span class="p">.</span><span class="n">shape</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>((60000, 28, 28, 1), (5000, 28, 28, 1), (5000, 28, 28, 1))
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">y_train</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_test</span><span class="p">.</span><span class="n">shape</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>((60000, 1), (5000, 1), (5000, 1))
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">shape</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>((70000, 28, 28, 1), (28, 28, 1))
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>EDA</h3>
+
+<p>Examples (25) of handwritten digits with their labels are shown below. Note the variation in slanting and character orientation apparent in different handwriting styles.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Looking at 10 random digits
+</span><span class="k">def</span> <span class="nf">show_num</span><span class="p">(</span><span class="n">input_pic</span><span class="p">):</span>
+  <span class="n">plt</span><span class="p">.</span><span class="nf">imshow</span><span class="p">(</span><span class="n">input_pic</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="sh">'</span><span class="s">binary</span><span class="sh">'</span><span class="p">)</span>
+  <span class="n">plt</span><span class="p">.</span><span class="nf">axis</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">25</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nf">show_num</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="nf">squeeze</span><span class="p">()))</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_data_aug/output_10_0.png" alt="data preview"></p>
+
+<p>The distribution of digits is balanced with all digits occurring at approximately the same frequency.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="nc">Counter</span><span class="p">(</span><span class="n">y</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()).</span><span class="nf">items</span><span class="p">(),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Digit</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">]).</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">Digit</span><span class="sh">'</span><span class="p">).</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">Digit</span><span class="sh">'</span><span class="p">).</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
+</code></pre></div></div>
+<p><img src="/assets/img/mnist_data_aug/output_12_0.png" alt="number distribution"></p>
+
+<h3><br></h3>
+<h3>Data Augmentation</h3>
+
+<p>Data augmentation is a powerful method to boost model performance. In data augmentation, variation or noise is added to the training set. By training with this more complicated artificial dataset, neural networks can become better at evaluating test cases. To enhance performance, the added variation needs to be consistent with what is encountered in the test set. For example, if digits aren’t rotated 180 degrees in the test set, rotating digits 180 in the training set may not improve performance.</p>
+
+<p>In our dataset, we see slight variations in digit orientation and slanting. These factors are amplified in our test set by artificially shifting and rotating our test set digits. If features are overly shifted or rotated, it may increase the bias of our model and deviate from what is observed in our test set. For this reason, the levels of shifting and rotation were tuned in our model optimization.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#image rotation (mimicks variation in handwriting slant)
+</span><span class="n">img_rotation</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">RandomRotation</span><span class="p">(</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">),</span>
+    <span class="n">fill_mode</span> <span class="o">=</span> <span class="sh">'</span><span class="s">nearest</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">):</span>
+    <span class="n">aug_img</span> <span class="o">=</span> <span class="nf">img_rotation</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nf">show_num</span><span class="p">(</span><span class="n">aug_img</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="nf">squeeze</span><span class="p">()))</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_data_aug/output_14_0.png" alt="rotated data"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#image shifting - mimicks sligh variation in image centering 
+</span><span class="n">img_shift</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">RandomTranslation</span><span class="p">(</span>
+    <span class="n">height_factor</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">width_factor</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">fill_mode</span> <span class="o">=</span> <span class="sh">'</span><span class="s">nearest</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">):</span>
+    <span class="n">aug_img</span> <span class="o">=</span> <span class="nf">img_shift</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nf">show_num</span><span class="p">(</span><span class="n">aug_img</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_data_aug/output_15_0.png" alt="shifted data"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#combining both augmentations 
+</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">):</span>
+    <span class="n">aug_img</span> <span class="o">=</span> <span class="nf">img_shift</span><span class="p">(</span><span class="nf">img_rotation</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nf">show_num</span><span class="p">(</span><span class="n">aug_img</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_data_aug/output_16_0.png" alt="augmented data"></p>
+
+<h3><br></h3>
+<h3>Model building</h3>
+
+<p>A small convolutional neural network was built to decode our digits. The input image is first rotated and shifted as described previously. The convolutional layers are configured with padding so that dimensionality is not reduced during convolution, use ReLU activation to introduce non-linearity, and are initialized using the He normal initialization method. The number of filters used in each convolution step is increased from 64 to 256 and the filter size is decreased from 7 to 3.</p>
+
+<p>Max pooling layers are added to extract the most prominent features from the input while decreasing the computational complexity of the model. The maximum value of each sliding window is retained in a reduced dimensional space output.</p>
+
+<p>The output of the convolutional layers is flattened and fed into three fully connected layers using ReLU activation. Dropout is also added as a regularization technique, which is discussed further in the optimization section.</p>
+
+<p>The final architecture of this model is the result of iterative trial and error. Layers were added following commonly observed patterns and tweaked until the model trained quickly and with a high level of accuracy (~0.9) after the first epoch.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Layer</span> <span class="o">=</span> <span class="nf">partial</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Conv2D</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="sh">'</span><span class="s">same</span><span class="sh">'</span><span class="p">,</span> <span class="n">activation</span> <span class="o">=</span><span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Sequential</span><span class="p">([</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span>
+    <span class="n">img_rotation</span><span class="p">,</span>
+    <span class="n">img_shift</span><span class="p">,</span>
+    <span class="nc">Layer</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">MaxPool2D</span><span class="p">(),</span>
+    <span class="nc">Layer</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span>
+    <span class="nc">Layer</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">MaxPool2D</span><span class="p">(),</span>
+    <span class="nc">Layer</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">256</span><span class="p">),</span>
+    <span class="nc">Layer</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">256</span><span class="p">),</span>  
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">MaxPool2D</span><span class="p">(),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Flatten</span><span class="p">(),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">softmax</span><span class="sh">'</span><span class="p">,</span><span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="sh">'</span><span class="s">sparse_categorical_crossentropy</span><span class="sh">'</span><span class="p">,</span>
+               <span class="n">optimizer</span> <span class="o">=</span> <span class="sh">'</span><span class="s">adam</span><span class="sh">'</span><span class="p">,</span>
+               <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">])</span>
+
+<span class="n">model</span><span class="p">.</span><span class="nf">summary</span><span class="p">()</span>
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ random_rotation (RandomRota  (None, 28, 28, 1)        0         
+ tion)                                                           
+                                                                 
+ random_translation (RandomT  (None, 28, 28, 1)        0         
+ ranslation)                                                     
+                                                                 
+ conv2d (Conv2D)             (None, 28, 28, 64)        3200      
+                                                                 
+ max_pooling2d (MaxPooling2D  (None, 14, 14, 64)       0         
+ )                                                               
+                                                                 
+ conv2d_1 (Conv2D)           (None, 14, 14, 128)       73856     
+                                                                 
+ conv2d_2 (Conv2D)           (None, 14, 14, 128)       147584    
+                                                                 
+ max_pooling2d_1 (MaxPooling  (None, 7, 7, 128)        0         
+ 2D)                                                             
+                                                                 
+ conv2d_3 (Conv2D)           (None, 7, 7, 256)         295168    
+                                                                 
+ conv2d_4 (Conv2D)           (None, 7, 7, 256)         590080    
+                                                                 
+ max_pooling2d_2 (MaxPooling  (None, 3, 3, 256)        0         
+ 2D)                                                             
+                                                                 
+ flatten (Flatten)           (None, 2304)              0         
+                                                                 
+ dense (Dense)               (None, 128)               295040    
+                                                                 
+ dropout (Dropout)           (None, 128)               0         
+                                                                 
+ dense_1 (Dense)             (None, 64)                8256      
+                                                                 
+ dropout_1 (Dropout)         (None, 64)                0         
+                                                                 
+ dense_2 (Dense)             (None, 10)                650       
+                                                                 
+=================================================================
+Total params: 1,413,834
+Trainable params: 1,413,834
+Non-trainable params: 0
+_________________________________________________________________
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Model optimization</h3>
+
+<p>The model was optimized in three phases:</p>
+<ol>
+  <li>Image augmentaiton</li>
+  <li>Optimize selection</li>
+  <li>Regularization with dropout</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">%%</span><span class="n">time</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Images were first rotated and then shifted independently. The augmentation ranges were fine-tuned so as not to adversely affect model bias. It was found that rotations of 0.1 were too extreme but that 0.05 worked nicely. Similarly, an image shift of 0.1 performed well. The combination of these two augmentations outperformed the individual augmentations and notably decreased the variance of the model. The observed preservation of bias and reduction of variance is optimal for an image augmentation strategy and will be implemented going forward.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Test case</th>
+      <th>Training Accuracy</th>
+      <th>Validation Accuracy</th>
+      <th>Run Time</th>
+      <th>Epochs</th>
+      <th>Optimizer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>No augmentation</td>
+      <td>.9884</td>
+      <td>.9856</td>
+      <td>7:23</td>
+      <td>3</td>
+      <td>sgd</td>
+    </tr>
+    <tr>
+      <td>Image rotation = .1</td>
+      <td>.9781</td>
+      <td>.9806</td>
+      <td>7:34</td>
+      <td>3</td>
+      <td>sgd</td>
+    </tr>
+    <tr>
+      <td>Image rotation = .05</td>
+      <td>.9828</td>
+      <td>.9846</td>
+      <td>7:38</td>
+      <td>3</td>
+      <td>sgd</td>
+    </tr>
+    <tr>
+      <td>Image shift = .1</td>
+      <td>.9821</td>
+      <td>.9832</td>
+      <td>7:38</td>
+      <td>3</td>
+      <td>sgd</td>
+    </tr>
+    <tr>
+      <td>Image rotation = .05 + shift = .1</td>
+      <td>.9757</td>
+      <td>.9878</td>
+      <td>7:52</td>
+      <td>3</td>
+      <td>sgd</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Three optimizers were evaluated by considering training set performance and run time. Overfitting the validation set was not considered, as this could be an indicator of an optimizer working well and can be combated with regularization techniques. Stochastic gradient descent (sgd) adjusts the network’s weights by taking small steps in the direction of the steepest descent of the loss function. Adam and AdamW are variations of sgd that uses an adaptive learning rate based on first and second moments of the gradients. The incorporation of momentum helps accelerate convergence by adding a fraction of the previous gradients to the current updates step. The second moment of the gradient is used to dampen the gradient in the steepest direction, which provides robustness and functionality in noisy environments. AdamW additionally includes weight decay, which is a regularization technique that reduces the size of model’s weights at each training iteration.</p>
+
+<p>Adam was selected for its superior training accuracy and low runtime and is used in all cases going forward.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Test case</th>
+      <th>Training Accuracy</th>
+      <th>Validation Accuracy</th>
+      <th>Run Time</th>
+      <th>Epochs</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>sgd</td>
+      <td>.9757</td>
+      <td>.9878</td>
+      <td>7:52</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>adam</td>
+      <td>.9834</td>
+      <td>.9866</td>
+      <td>8:30</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>adamW</td>
+      <td>.9828</td>
+      <td>.9882</td>
+      <td>13:08</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Dropout is a regularization technique that sets a fraction of the input units to zero during each training iteration. By randomly dropping neurons, dropout forces the network to rely on different subsets of neurons for each training example, which prevents overfitting. Dropout also functions as a form of ensemble learning built from training each varying subset of the network.</p>
+
+<p>We expect to see higher validation accuracy than training accuracy for each case due to differences in the training and test data, as image augmentation will make training predictions more challenging than test predictions. If dropout is not too disruptive, we should see a further improvement to the validation accuracy. For this reason, the validation accuracy will be compared to the validation accuracy of the network with no dropout layers.</p>
+
+<p>Two dropout rates of 0.2 and 0.5 were tested in the fully connected layers and in the convolutional layers. In the convolutional layers, incorporation of 0.5 dropout significantly increased model bias, and 0.2 dropout slightly increased bias, both without a significant reduction in model variance. Thus, dropout was not included in the convolutional layers. In the fully connected layers, both 0.2 and 0.5 dropout levels increased model bias, but 0.2 dropout model’s validation accuracy outperformed the baseline case. Thus, layers of 0.2 dropout were included in the fully connected layers.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Test case</th>
+      <th>Training Accuracy</th>
+      <th>Validation Accuracy</th>
+      <th>Epochs</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>No dropout</td>
+      <td>.9926</td>
+      <td>.9878</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <td>Dropout in fully connected (FC) layers (0.2)</td>
+      <td>.9900</td>
+      <td>.9898</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <td>Dropout in FC layers (0.5)</td>
+      <td>.9872</td>
+      <td>.9846</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <td>Dropout in FC layers (0.2) + Conv2D layers (0.5)</td>
+      <td>.9484</td>
+      <td>.9474</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <td>Dropout in FC layers (0.2) + Conv2D layers (0.2)</td>
+      <td>.9818</td>
+      <td>.9890</td>
+      <td>20</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3><br></h3>
+<h3>Model training</h3>
+
+<p>The optimized model was trained using early stopping and evaluated on the test set.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining callbacks - early stopping and weight saving
+</span>
+<span class="n">early_stopping</span> <span class="o">=</span> <span class="nc">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="sh">'</span><span class="s">val_accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">save_weights</span> <span class="o">=</span> <span class="nc">ModelCheckpoint</span><span class="p">(</span><span class="sh">'</span><span class="s">weights_MNIST784CV.h5</span><span class="sh">'</span><span class="p">,</span> <span class="n">save_best_only</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">save_weights_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">%%</span><span class="n">time</span>
+<span class="c1">#model.load_weights('weights_MNIST784CV.h5')
+</span><span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">),</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">early_stopping</span><span class="p">,</span> <span class="n">save_weights</span><span class="p">])</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Epoch 1/200
+1875/1875 [==============================] - 186s 99ms/step - loss: 0.1814 - accuracy: 0.9507 - val_loss: 0.0842 - val_accuracy: 0.9766
+Epoch 2/200
+1875/1875 [==============================] - 190s 101ms/step - loss: 0.0881 - accuracy: 0.9773 - val_loss: 0.0691 - val_accuracy: 0.9806
+Epoch 3/200
+1875/1875 [==============================] - 177s 94ms/step - loss: 0.0744 - accuracy: 0.9811 - val_loss: 0.0431 - val_accuracy: 0.9886
+Epoch 4/200
+1875/1875 [==============================] - 169s 90ms/step - loss: 0.0639 - accuracy: 0.9835 - val_loss: 0.0583 - val_accuracy: 0.9840
+Epoch 5/200
+1875/1875 [==============================] - 169s 90ms/step - loss: 0.0583 - accuracy: 0.9852 - val_loss: 0.0361 - val_accuracy: 0.9902
+Epoch 6/200
+1875/1875 [==============================] - 170s 91ms/step - loss: 0.0546 - accuracy: 0.9858 - val_loss: 0.0422 - val_accuracy: 0.9876
+Epoch 7/200
+1875/1875 [==============================] - 172s 92ms/step - loss: 0.0488 - accuracy: 0.9874 - val_loss: 0.0318 - val_accuracy: 0.9916
+Epoch 8/200
+1875/1875 [==============================] - 175s 93ms/step - loss: 0.0489 - accuracy: 0.9882 - val_loss: 0.0545 - val_accuracy: 0.9872
+Epoch 9/200
+1875/1875 [==============================] - 169s 90ms/step - loss: 0.0478 - accuracy: 0.9882 - val_loss: 0.0565 - val_accuracy: 0.9846
+Epoch 10/200
+1875/1875 [==============================] - 167s 89ms/step - loss: 0.0452 - accuracy: 0.9884 - val_loss: 0.0283 - val_accuracy: 0.9928
+Epoch 11/200
+1875/1875 [==============================] - 172s 92ms/step - loss: 0.0449 - accuracy: 0.9889 - val_loss: 0.0260 - val_accuracy: 0.9944
+Epoch 12/200
+1875/1875 [==============================] - 170s 91ms/step - loss: 0.0470 - accuracy: 0.9887 - val_loss: 0.0464 - val_accuracy: 0.9872
+Epoch 13/200
+1875/1875 [==============================] - 176s 94ms/step - loss: 0.0445 - accuracy: 0.9885 - val_loss: 0.0443 - val_accuracy: 0.9890
+Epoch 14/200
+1875/1875 [==============================] - 174s 93ms/step - loss: 0.0407 - accuracy: 0.9898 - val_loss: 0.0442 - val_accuracy: 0.9902
+Epoch 15/200
+1875/1875 [==============================] - 171s 91ms/step - loss: 0.0428 - accuracy: 0.9899 - val_loss: 0.0333 - val_accuracy: 0.9906
+Epoch 16/200
+1875/1875 [==============================] - 173s 92ms/step - loss: 0.0391 - accuracy: 0.9903 - val_loss: 0.0387 - val_accuracy: 0.9900
+Epoch 17/200
+1875/1875 [==============================] - 171s 91ms/step - loss: 0.0441 - accuracy: 0.9895 - val_loss: 0.0434 - val_accuracy: 0.9898
+Epoch 18/200
+1875/1875 [==============================] - 176s 94ms/step - loss: 0.0380 - accuracy: 0.9904 - val_loss: 0.0471 - val_accuracy: 0.9874
+Epoch 19/200
+1875/1875 [==============================] - 173s 92ms/step - loss: 0.0411 - accuracy: 0.9897 - val_loss: 0.0662 - val_accuracy: 0.9860
+Epoch 20/200
+1875/1875 [==============================] - 179s 96ms/step - loss: 0.0395 - accuracy: 0.9901 - val_loss: 0.0362 - val_accuracy: 0.9908
+Epoch 21/200
+1875/1875 [==============================] - 173s 92ms/step - loss: 0.0374 - accuracy: 0.9908 - val_loss: 0.0505 - val_accuracy: 0.9896
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">).</span><span class="nf">plot</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">29</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">grid</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="sh">'</span><span class="s">Epoch</span><span class="sh">'</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="sh">'</span><span class="s">Metric</span><span class="sh">'</span><span class="p">,</span><span class="n">style</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">r--</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">r--.</span><span class="sh">'</span><span class="p">,</span><span class="sh">"</span><span class="s">b-</span><span class="sh">"</span><span class="p">,</span><span class="sh">'</span><span class="s">b-*</span><span class="sh">'</span><span class="p">])</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_data_aug/output_27_0.png" alt="model history"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">).</span><span class="nf">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nf">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">y_pred</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>157/157 [==============================] - 5s 35ms/step
+
+
+
+
+
+0.9956
+</code></pre></div></div>
+
+<p>The model accuracy on the test set was 0.9956.</p>
+
+<h3><br></h3>
+<h3>Error analysis</h3>
+
+<p>In order to asses the model’s performance and determine possible pathways for model improvement, we look at the performance of the model. All of the mislabeled digits are displayed with the correct label in the figure below.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Total number of mislabeled instances in test dataset:</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">((</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span> <span class="o">!=</span> <span class="n">y_pred</span><span class="p">).</span><span class="nf">sum</span><span class="p">())</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Total number of mislabeled instances in test dataset:
+22
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">22</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nf">show_num</span><span class="p">(</span><span class="n">X_test</span><span class="p">[</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span> <span class="o">!=</span> <span class="n">y_pred</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Actual: </span><span class="sh">'</span><span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span> <span class="o">!=</span> <span class="n">y_pred</span><span class="p">][</span><span class="n">i</span><span class="p">].</span><span class="nf">squeeze</span><span class="p">())</span> <span class="o">+</span><span class="sh">'</span><span class="se">\n</span><span class="s">Predicted: </span><span class="sh">'</span><span class="o">+</span><span class="nf">str</span><span class="p">(</span><span class="n">y_pred</span><span class="p">[</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span> <span class="o">!=</span> <span class="n">y_pred</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_data_aug/output_32_0.png" alt="misclassified numbers"></p>
+
+<p>Most of the misclassifications are reasonable. For example, classifying 5’s with closed bottom curves as 6’s. The high frequency of digits that appear to be faded in the misclassified set suggest that further image augmentation mimicking this fade may be helpful to future classification efforts.</p>
+
+<p>The frequency of misclassifications is shown in the confusion matrix below. It is noted that the most common misclassification was overly classifying 7’s as 2’s. The misclassified 7’s are shown for reference. For future model development, it may be of interest to obtain more 7’s and 2’s, especially 7’s with a bottom sherif.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cm</span> <span class="o">=</span> <span class="nf">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="n">disp</span> <span class="o">=</span> <span class="nc">ConfusionMatrixDisplay</span><span class="p">(</span><span class="n">confusion_matrix</span><span class="o">=</span><span class="n">cm</span><span class="p">)</span>
+<span class="n">disp</span><span class="p">.</span><span class="nf">plot</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x17c9e1a29d0&gt;
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_data_aug/output_34_1.png" alt="confusion matrix"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nf">show_num</span><span class="p">(</span><span class="n">X_test</span><span class="p">[(</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span><span class="o">==</span><span class="mi">7</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">y_pred</span><span class="o">==</span><span class="mi">2</span><span class="p">)][</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Acutal: </span><span class="sh">'</span><span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">y_test</span><span class="p">[(</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span><span class="o">==</span><span class="mi">7</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">y_pred</span><span class="o">==</span><span class="mi">2</span><span class="p">)][</span><span class="n">i</span><span class="p">].</span><span class="nf">squeeze</span><span class="p">())</span> <span class="o">+</span><span class="sh">'</span><span class="se">\n</span><span class="s">Predicted: </span><span class="sh">'</span><span class="o">+</span><span class="nf">str</span><span class="p">(</span><span class="n">y_pred</span><span class="p">[(</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span><span class="o">==</span><span class="mi">7</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">y_pred</span><span class="o">==</span><span class="mi">2</span><span class="p">)][</span><span class="n">i</span><span class="p">]))</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_data_aug/output_35_0.png" alt="Misclassified sevens"></p>
+
+<h3><br></h3>
+<h3>Benchmarking model performance</h3>
+
+<p>LeChunn has compiled a summary of model performance on the MNIST dataset. The results for convolutional neural networks are shown in the table below. In the first column there is a description of the network, the second column describes preprocessing steps, the third collumn is the test error rate (%), and the fourth column is the reference for the model.</p>
+
+<p><img src="attachment:CV_perf_MNIST784.png" alt="CV_perf_MNIST784.png"></p>
+
+<p>Full table available at http://yann.lecun.com/exdb/mnist/</p>
+
+<p>The error rate is 1 - the accuracy rate, and our model has an error rate percentage of 0.44, which is in line or better than the scores on these larger convenolutional networks. Likely, the preprocessing steps added to our model provide a singificant boost to model performance.</p>
+
+          </article>
+
+        </div>
+      
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Nina  Cilliers. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank" rel="external nofollow noopener">Unsplash</a>.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js"></script>
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js"></script>
+  <script defer src="/assets/js/common.js"></script>
+  <script defer src="/assets/js/copy_code.js" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>
