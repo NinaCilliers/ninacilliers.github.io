@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Handwritten digit classification with transfer learning | Nina  Cilliers</title>
+    <meta name="author" content="Nina  Cilliers">
+    <meta name="description" content="Three pre-trained models are used to classify the MNIST 784 dataset. All models perform well. Mobilenet had the fastest total training time, and Inception had the highest accuracy.">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://ninacilliers.github.io/projects/MNIST784_transfer_learning/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Nina </span>Cilliers</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">Projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/repositories/">Repositories</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        <!-- page.html -->
+        <style>
+          img {
+            max-width: 100%
+          }
+        </style>
+        <div class="post">
+
+          <article>
+            <h1 id="handwritten-digit-classification-with-transfer-learning-resnet50-inception-and-mobilenet">Handwritten digit classification with transfer learning: <br>Resnet50, Inception and Mobilenet</h1>
+<h2><br></h2>
+<h2>Project Overview</h2>
+
+<p>In this project we utilize pre-trained convolutional neural networks to decode the MNIST 784 dataset. We use Resnet50, Inception and Mobilenet with pre-trained weights from the ImageNet dataset. The ImageNet data set contains 100,000 images corresponding to distinct synsets, synonym sets of related words. The features used to classify these images should work well to also classify our handwritten digits.</p>
+
+<p>We utilize the simple MNIST 784 dataset, which contains a subset of 70,000 size-normalized and centered handwritten digits. In a previous project, <i>Handwritten digit classification with 99.6% accuracy</i> a small convolutional neural network was built and achieved 99.6% accuracy through careful data augmentation on the same data set. This data set is used to minimize required pre-processing to focus on model development and also because of the availability of external performance scores for benchmarking. The features used to identify synsets in the Imagenet dataset should also work well to decode handwritten digits.</p>
+
+<p>Because of the modular design of this code, the head of each transfer model can easily be adjusted along with the input image size for utilization on any image set. Thus, the functions developed in this project can easily be applied to future projects classifying other images.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_openml</span>
+<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
+<span class="kn">from</span> <span class="n">tensorflow.keras.applications</span> <span class="kn">import</span> <span class="n">ResNet50</span><span class="p">,</span> <span class="n">MobileNet</span>
+<span class="kn">from</span> <span class="n">tensorflow.keras.applications.inception_v3</span> <span class="kn">import</span> <span class="n">InceptionV3</span>
+<span class="kn">from</span> <span class="n">keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span>
+<span class="kn">from</span> <span class="n">keras.callbacks</span> <span class="kn">import</span> <span class="n">ModelCheckpoint</span>
+<span class="kn">import</span> <span class="n">os</span>
+<span class="kn">import</span> <span class="n">pickle</span>
+<span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="sh">'</span><span class="s">C:</span><span class="se">\\</span><span class="s">Users</span><span class="se">\\</span><span class="s">corne</span><span class="se">\\</span><span class="s">OneDrive</span><span class="se">\\</span><span class="s">Documents</span><span class="se">\\</span><span class="s">DS_Portfolio</span><span class="se">\\</span><span class="s">MNIST784_transfer_learning</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">os</span><span class="p">.</span><span class="nf">getcwd</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\MNIST784_transfer_learning'
+</code></pre></div></div>
+
+<h2><br></h2>
+<h2>Image pre-processing</h2>
+
+<p>Preprocessing is intentionally minimal for this dataset. However, two adjustments are necessary for transfer model performance. First, data is rescaled from 0-255 to -1-1. Normalizing the pixel intensity improves model performance. Second, the shape of the images is adjusted from a 1-D black and white array to a 3-D RGB array by repeating the 1-D image three times. This is necessary as the input images used to train the transfer learning models require a three-channel format, as the shape of the weights of the base layer should not be modified and the models were trained using an RGB formatted image.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Loading MNIST_784 dataset from OpenML
+</span><span class="n">mnist</span> <span class="o">=</span> <span class="nf">fetch_openml</span><span class="p">(</span><span class="sh">'</span><span class="s">mnist_784</span><span class="sh">'</span><span class="p">,</span> <span class="n">as_frame</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="sh">'</span><span class="s">auto</span><span class="sh">'</span><span class="p">)</span> 
+<span class="n">X</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">mnist</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">mnist</span><span class="p">.</span><span class="n">target</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="nf">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#rescaling X
+</span><span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">X range before rescaling:</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">min</span><span class="p">(),</span><span class="mi">2</span><span class="p">),</span> <span class="nf">round</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">max</span><span class="p">(),</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">/</span><span class="mf">127.5</span><span class="o">-</span><span class="mi">1</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">X range after rescaling</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">min</span><span class="p">(),</span><span class="mi">2</span><span class="p">),</span> <span class="nf">round</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">max</span><span class="p">(),</span><span class="mi">2</span><span class="p">))</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>X range before rescaling:
+-1.0 1.0
+X range after rescaling
+-1.01 -0.99
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Defining function to look at a digit
+</span><span class="k">def</span> <span class="nf">show_num</span><span class="p">(</span><span class="n">input_pic</span><span class="p">):</span>
+  <span class="n">plt</span><span class="p">.</span><span class="nf">imshow</span><span class="p">(</span><span class="n">input_pic</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="sh">'</span><span class="s">binary</span><span class="sh">'</span><span class="p">)</span>
+  <span class="n">plt</span><span class="p">.</span><span class="nf">axis</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#repeating gray scale image in 3 channel format for compatability with three channel format 
+#of the pre-trained network
+</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Image shape before:</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>  
+<span class="n">X_rgb</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">repeat</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Image shape after:</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">X_rgb</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="se">\n</span><span class="s">Checking Image:</span><span class="sh">'</span><span class="p">)</span>
+<span class="c1">#checking repeat image 
+</span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nf">show_num</span><span class="p">(</span><span class="n">X_rgb</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,:,</span><span class="n">n</span><span class="p">])</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Image shape before:
+(70000, 28, 28, 1)
+Image shape after:
+(70000, 28, 28, 3)
+
+Checking Image:
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_t_learning/output_7_1.png" alt="RGB format"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Making test and train sets
+</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">X_rgb</span><span class="p">[:</span><span class="mi">60000</span><span class="p">],</span> <span class="n">y</span><span class="p">[:</span><span class="mi">60000</span><span class="p">],</span><span class="n">X_rgb</span><span class="p">[</span><span class="mi">60000</span><span class="p">:</span><span class="mi">65000</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="mi">60000</span><span class="p">:</span><span class="mi">65000</span><span class="p">],</span><span class="n">X_rgb</span><span class="p">[</span><span class="mi">65000</span><span class="p">:],</span><span class="n">y</span><span class="p">[</span><span class="mi">65000</span><span class="p">:]</span>
+
+<span class="n">train_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</code></pre></div></div>
+<h2><br></h2>
+<h2>Functions to build, train and evaluate models</h2>
+
+<p>A function to build models is developed. By inputting the untrained transfer learning model and the desired size of the input to the transfer learning model, the function will resize the pre-processed images to the desired pixel height and width, build the transfer model, and build a fully connected head. The structure of the fully connected head was optimized in a previous project, <i>Handwritten digit classification with 99.6% accuracy,</i> .</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#function for creating transfer learning model
+</span>
+<span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="n">t_model</span><span class="p">,</span> <span class="n">input_size</span><span class="p">):</span>
+    <span class="c1">#creates transfer model
+</span>    <span class="n">transfer_model</span> <span class="o">=</span> <span class="nf">t_model</span><span class="p">(</span><span class="n">include_top</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span><span class="n">input_size</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">weights</span><span class="o">=</span><span class="sh">'</span><span class="s">imagenet</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">transfer_model</span><span class="p">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="bp">False</span> <span class="c1">#freezes model 
+</span>    <span class="c1">#note: setting trainable to false also sets training to false for BN layers in tf version 2.0 and above
+</span>
+    <span class="c1">#creates model with fully connected layers
+</span>    <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Building model...</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">Input</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Resizing</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">input_size</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nf">transfer_model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Flatten</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">relu</span><span class="sh">'</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">linear</span><span class="sh">'</span><span class="p">,</span><span class="n">kernel_initializer</span><span class="o">=</span><span class="sh">'</span><span class="s">he_normal</span><span class="sh">'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Model</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+
+    <span class="nf">print</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="nf">summary</span><span class="p">())</span>
+
+    
+    <span class="c1">#compile model 
+</span>    <span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="nc">SparseCategoricalCrossentropy</span><span class="p">(</span><span class="n">from_logits</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">),</span>
+            <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">])</span>
+    
+
+    <span class="nf">return</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>A function that trains the fully connected head was developed. The layers of the transfer learning model are frozen, and the head is trained with a conservative but effective learning rate of 0.0001. Early stopping with weight saving callbacks are implemented to optimize fit time and save only the weights of the best fitting model.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train_FC</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">iters</span><span class="p">):</span>
+    <span class="c1">#creating callback to save best weights 
+</span>    <span class="n">weight_name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">weights_</span><span class="sh">'</span><span class="o">+</span><span class="nf">str</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">name</span><span class="p">)</span><span class="o">+</span><span class="sh">'</span><span class="s">_fc.h5</span><span class="sh">'</span>
+    <span class="n">save_weights</span> <span class="o">=</span> <span class="nc">ModelCheckpoint</span><span class="p">(</span><span class="n">weight_name</span><span class="p">,</span> <span class="n">save_best_only</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">save_weights_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">early_stopping</span> <span class="o">=</span> <span class="nc">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="sh">'</span><span class="s">val_accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1">#training top layers
+</span>    <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Training top layers...</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">train_data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="mi">2</span><span class="p">:]),</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">iters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">save_weights</span><span class="p">,</span> <span class="n">early_stopping</span><span class="p">],</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1">#saving weights
+</span>    <span class="c1">#model.save_weights(weight_name)
+</span>    
+    <span class="nf">return</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">history</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>A function to fine tune the full model is developed. All model layers are unfrozen except for batch normalization layers in the transfer model. Batch normalization layers contain two learned and two saved parameters and perform differently in training and instance modes. The saved parameters are the running batch mean and standard deviation, which vary with the data set used. In training mode, the saved parameters are updated, whereas in instance mode they are used without update. It is necessary to keep these layers in instance mode in order to preserve the functionality of the transfer model, as otherwise the pre-trained weights would rapidly diverge and model performance would be quickly destroyed. While the learned parameters of the batch normalization layers can also be fine-tuned, <a href="https://arxiv.org/ftp/arxiv/papers/2211/2211.09705.pdf" rel="external nofollow noopener" target="_blank">similar performance</a> has been achieved by keeping these parameters frozen.</p>
+
+<p>The learning rate used (1e-6) is conservative and selected to prevent the transfer weights from diverging too rapidly. Early stopping and weight saving callbacks are used to minimize runtime without sacrificing performance and save only the best performing model’s weights.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">fine_tune</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">iters</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Fine tuning all layers...</span><span class="sh">'</span><span class="p">)</span>
+    
+    <span class="c1">#unfreezing transfer model
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">trainable</span> <span class="o">=</span> <span class="bp">True</span> 
+    <span class="c1">#print(str(model.layers[2].name),str(model.layers[2].trainable))
+</span>
+    <span class="c1">#Checking that BN layers are in inference mode and all layers are trainable
+</span>    <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">layers</span><span class="p">:</span> 
+        <span class="nf">if </span><span class="p">(</span><span class="nf">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">BatchNormalization</span><span class="p">)):</span>
+            <span class="n">layer</span><span class="p">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">assert</span> <span class="n">layer</span><span class="p">.</span><span class="n">trainable</span> <span class="o">==</span> <span class="bp">True</span>
+
+    <span class="c1">#compiling model
+</span>    <span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="nc">SparseCategoricalCrossentropy</span><span class="p">(</span><span class="n">from_logits</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">),</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">])</span>
+
+    <span class="c1">#creatubg callbacks 
+</span>    <span class="n">weight_name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">weights_</span><span class="sh">'</span><span class="o">+</span><span class="nf">str</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">name</span><span class="p">)</span><span class="o">+</span><span class="sh">'</span><span class="s">_ft.h5</span><span class="sh">'</span>
+    <span class="n">save_weights</span> <span class="o">=</span> <span class="nc">ModelCheckpoint</span><span class="p">(</span><span class="n">weight_name</span><span class="p">,</span> <span class="n">save_best_only</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">save_weights_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">early_stopping</span> <span class="o">=</span> <span class="nc">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="sh">'</span><span class="s">val_accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1">#training model
+</span>    <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">train_data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="mi">2</span><span class="p">:]),</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">iters</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">save_weights</span><span class="p">,</span><span class="n">early_stopping</span><span class="p">],</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">trained_models</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="c1">#saving weights
+</span>    <span class="c1">#model.save_weights(weight_name)
+</span>
+    <span class="nf">return</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">history</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>A function to build and train models is developed utilizing the build and train functions above. This function checks that the proper layers are frozen and unfrozen before fine-tuning and also saves the model’s performance.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">build_and_train</span><span class="p">(</span><span class="n">t_model</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">iters</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="nf">build</span><span class="p">(</span><span class="n">t_model</span><span class="p">,</span> <span class="n">input_size</span><span class="p">)</span>
+
+    <span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="nf">train_FC</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">iters</span><span class="p">)</span>
+    <span class="n">acc</span> <span class="o">=</span> <span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">val_acc</span> <span class="o">=</span> <span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">val_accuracy</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">loss</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">val_loss</span> <span class="o">=</span> <span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">val_loss</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">fc_epochs</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+
+    <span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="nf">fine_tune</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">iters</span><span class="p">)</span>
+    <span class="n">acc</span> <span class="o">+=</span> <span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">val_acc</span> <span class="o">+=</span> <span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">val_accuracy</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">loss</span> <span class="o">+=</span> <span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">loss</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">val_loss</span> <span class="o">+=</span> <span class="n">history</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">val_loss</span><span class="sh">'</span><span class="p">]</span>
+
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">(</span><span class="n">acc</span><span class="p">,</span> <span class="n">val_acc</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">fc_epochs</span><span class="p">)</span>
+    <span class="c1">#pickles scores
+</span>    <span class="n">pickle_name</span> <span class="o">=</span> <span class="n">t_model</span><span class="p">.</span><span class="n">__name__</span><span class="o">+</span><span class="sh">'</span><span class="s">_scores.pkl</span><span class="sh">'</span>
+    <span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="nf">open</span><span class="p">(</span><span class="n">pickle_name</span><span class="p">,</span> <span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">))</span>
+
+    <span class="nf">return</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">scores</span><span class="p">)</span>
+    
+</code></pre></div></div>
+
+<p>A function is developed to evaluate each model’s performance. This function returns the accuracy of the model on a test data set.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_data</span><span class="p">):</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">test_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="nf">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nf">accuracy_score</span><span class="p">(</span><span class="n">test_data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">y_pred</span><span class="p">)</span>
+</code></pre></div></div>
+<h2><br></h2>
+<h2> Models </h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#fully connected training iterations
+</span><span class="n">fc_iter</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="c1">#fine tuning traiing iterations
+</span><span class="n">ft_iter</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="n">iters</span> <span class="o">=</span> <span class="p">(</span><span class="n">fc_iter</span><span class="p">,</span> <span class="n">ft_iter</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">trained_models</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">model_names</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Resnet50</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">InceptionV3</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Mobilenet</span><span class="sh">'</span><span class="p">]</span>
+</code></pre></div></div>
+<h3><br></h3>
+<h3>Resnet50</h3>
+
+<p>Resnet 50 is a convolutional neural network that is fifty layers deep and uses skip connections to avoid vanishing or exploding gradients, a common problem in deep neural networks. The output of a previous layer is fed into the output of the next layer using a short cut connection. This keeps the output of the second layer from diverging too rapidly or disappearing as adding the value from the previous output constrains the new output and results in incremental layer performance improvements. The structure of a skip connection is shown below:</p>
+
+<p><img src="https://jananisbabu.github.io/ResNet50_From_Scratch_Tensorflow/images/residualblock.png" alt="skip connection"><br>
+<a href="https://jananisbabu.github.io/ResNet50_From_Scratch_Tensorflow/" rel="external nofollow noopener" target="_blank">Jananisbadu, Github</a></p>
+
+<p>The structure of Resnet50 is built using four stages. The first stage is repeated three times, the second stage is repeated four times, the third stage is repeated six times, and the fourth stage is repeated three times. The architecture of Resnet50 is shown below, with the stages shown in yellow, purple, blue and green below:</p>
+
+<p><img src="https://www.researchgate.net/publication/336805103/figure/fig4/AS:817882309079050@1572009746601/ResNet-50-neural-network-architecture-56.ppm" alt="Resnet50"><br>
+<a href="https://www.researchgate.net/publication/336805103_Privacy-Constrained_Biometric_System_for_Non-Cooperative_Users" rel="external nofollow noopener" target="_blank">Privacy-Constrained Biometric System for Non-Cooperative Users</a></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resnet_model</span><span class="p">,</span> <span class="n">resnet_score</span> <span class="o">=</span> <span class="nf">build_and_train</span><span class="p">(</span><span class="n">ResNet50</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="n">train_data</span><span class="p">,</span><span class="n">iters</span><span class="p">)</span>
+<span class="n">scores</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">resnet_score</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Building model...
+Model: "model"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ Input (InputLayer)          [(None, 28, 28, 3)]       0         
+                                                                 
+ resizing (Resizing)         (None, 32, 32, 3)         0         
+                                                                 
+ resnet50 (Functional)       (None, 1, 1, 2048)        23587712  
+                                                                 
+ flatten (Flatten)           (None, 2048)              0         
+                                                                 
+ dense (Dense)               (None, 128)               262272    
+                                                                 
+ dropout (Dropout)           (None, 128)               0         
+                                                                 
+ dense_1 (Dense)             (None, 64)                8256      
+                                                                 
+ dropout_1 (Dropout)         (None, 64)                0         
+                                                                 
+ dense_2 (Dense)             (None, 10)                650       
+                                                                 
+=================================================================
+Total params: 23,858,890
+Trainable params: 271,178
+Non-trainable params: 23,587,712
+_________________________________________________________________
+None
+Training top layers...
+Fine tuning all layers...
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Inception</h3>
+
+<p>The inception network uses filters of multiple sizes on the same level. The results of these convolutions as well as a max pooling step are concatenated in the inception module:</p>
+
+<p><img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*DKjGRDd_lJeUfVlY50ojOA.png" alt="inception module"><br>
+<a href="https://miro.medium.com/v2/resize:fit:720/format:webp/1*DKjGRDd_lJeUfVlY50ojOA.png" rel="external nofollow noopener" target="_blank">A Simple Guide to the Versions of the Inception Network</a></p>
+
+<p>The computational cost of this module is reduced by implementing a 1x1 convolution before the 3x3 and 5x5 convolutions. Further in Inception V2, the 3x3 and 5x5 convolutions are broken down into computationally cheaper 1xn and nx1 convolutions to the same effect. This greatly improves the speed of the model.</p>
+
+<p>The inception model is a deep network and is subject to the problem of vanishing gradients. To combat this, two auxiliary classifiers are added to the middle of the network, and the final loss is computed as the weighted output of all three outputs. In Inception V3, further improvements to the model are made, including factorized 7x7 convolutions, the use of an auxiliary classifier lower in the network, and the addition of more batch normalization layers. The structure of InceptionV3 is shown below:</p>
+
+<p><img src="https://cloud.google.com/static/tpu/docs/images/inceptionv3onc--oview.png" alt="inception"><br>
+<a href="https://cloud.google.com/tpu/docs/inception-v3-advanced" rel="external nofollow noopener" target="_blank">Advanced Guide to Inception v3</a></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">inception_model</span><span class="p">,</span> <span class="n">inception_score</span> <span class="o">=</span> <span class="nf">build_and_train</span><span class="p">(</span><span class="n">InceptionV3</span><span class="p">,</span><span class="mi">75</span><span class="p">,</span><span class="n">train_data</span><span class="p">,</span><span class="n">iters</span><span class="p">)</span>
+<span class="n">scores</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">inception_score</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Building model...
+Model: "model_1"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ Input (InputLayer)          [(None, 28, 28, 3)]       0         
+                                                                 
+ resizing_1 (Resizing)       (None, 75, 75, 3)         0         
+                                                                 
+ inception_v3 (Functional)   (None, 1, 1, 2048)        21802784  
+                                                                 
+ flatten_1 (Flatten)         (None, 2048)              0         
+                                                                 
+ dense_3 (Dense)             (None, 128)               262272    
+                                                                 
+ dropout_2 (Dropout)         (None, 128)               0         
+                                                                 
+ dense_4 (Dense)             (None, 64)                8256      
+                                                                 
+ dropout_3 (Dropout)         (None, 64)                0         
+                                                                 
+ dense_5 (Dense)             (None, 10)                650       
+                                                                 
+=================================================================
+Total params: 22,073,962
+Trainable params: 271,178
+Non-trainable params: 21,802,784
+_________________________________________________________________
+None
+Training top layers...
+Fine tuning all layers...
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Mobilenet</h3>
+
+<p>Mobilenet uses depthwise convolution to significantly reduce the number of parameters, making it a lightweight alternative to other networks. Depthwise separable convolutions reduce the number of parameters and computation cost involved in convolution operations. Each input channel is convolved with a different kernel and the output is restacked:</p>
+
+<p><img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*yG6z6ESzsRW-9q5F_neOsg.png" alt="depthwise convolution"><br>
+<a href="https://towardsdatascience.com/a-basic-introduction-to-separable-convolutions-b99ec3102728" rel="external nofollow noopener" target="_blank">A Basic Introduction to Seperable Convolutions</a></p>
+
+<p>The structure of mobile net is shown below:</p>
+
+<p><img src="https://static.hindawi.com/articles/misy/volume-2020/7602384/figures/7602384.fig.001.jpg" alt="mobilenet"><br>
+<a href="https://www.hindawi.com/journals/misy/2020/7602384/" rel="external nofollow noopener" target="_blank">A novel image classification approach via dense-mobilenet models</a></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mobilenet_model</span><span class="p">,</span> <span class="n">mobilenet_score</span> <span class="o">=</span> <span class="nf">build_and_train</span><span class="p">(</span><span class="n">MobileNet</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="n">train_data</span><span class="p">,</span><span class="n">iters</span><span class="p">)</span>
+<span class="n">scores</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">mobilenet_score</span><span class="p">)</span>
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Building model...
+Model: "model_2"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ Input (InputLayer)          [(None, 28, 28, 3)]       0         
+                                                                 
+ resizing_2 (Resizing)       (None, 32, 32, 3)         0         
+                                                                 
+ mobilenet_1.00_224 (Functio  (None, 1, 1, 1024)       3228864   
+ nal)                                                            
+                                                                 
+ flatten_2 (Flatten)         (None, 1024)              0         
+                                                                 
+ dense_6 (Dense)             (None, 128)               131200    
+                                                                 
+ dropout_4 (Dropout)         (None, 128)               0         
+                                                                 
+ dense_7 (Dense)             (None, 64)                8256      
+                                                                 
+ dropout_5 (Dropout)         (None, 64)                0         
+                                                                 
+ dense_8 (Dense)             (None, 10)                650       
+                                                                 
+=================================================================
+Total params: 3,368,970
+Trainable params: 140,106
+Non-trainable params: 3,228,864
+_________________________________________________________________
+None
+Training top layers...
+Fine tuning all layers...
+</code></pre></div></div>
+
+<h2><br></h2>
+<h2>Visualizing training</h2>
+
+<p>The accuracy and loss of the validation and training sets is visualized in the graph below. The black line indicates the end of training the fully connected head and start of model fine tuning.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">model_scores</span><span class="p">(</span><span class="n">score</span><span class="p">):</span>
+    <span class="n">acc</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">val_acc</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">val_loss</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">training_epochs</span> <span class="o">=</span> <span class="n">score</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">acc</span><span class="p">,</span> <span class="n">val_acc</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">training_epochs</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">style</span><span class="p">.</span><span class="nf">use</span><span class="p">(</span><span class="sh">'</span><span class="s">ggplot</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">:</span>
+    <span class="n">acc</span><span class="p">,</span> <span class="n">val_acc</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">training_epochs</span> <span class="o">=</span> <span class="nf">model_scores</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+    <span class="n">x_range</span> <span class="o">=</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nf">len</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1">#selecting legend entry 
+</span>    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">label_train</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Training</span><span class="sh">'</span>
+        <span class="n">label_val</span><span class="o">=</span> <span class="sh">'</span><span class="s">Validation</span><span class="sh">'</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="n">label_train</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">label_val</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_train</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">val_acc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_val</span><span class="p">)</span>
+    <span class="c1">#plt.ylim([0.8, 1])
+</span>    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">([</span><span class="n">training_epochs</span><span class="p">,</span> <span class="n">training_epochs</span><span class="p">],</span><span class="n">plt</span><span class="p">.</span><span class="nf">ylim</span><span class="p">(),</span> <span class="n">c</span> <span class="o">=</span> <span class="sh">'</span><span class="s">black</span><span class="sh">'</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Accuracy</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="n">model_names</span><span class="p">[</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">count</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="c1">#plt.ylim([0, 1.0])
+</span>    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">([</span><span class="n">training_epochs</span><span class="p">,</span> <span class="n">training_epochs</span><span class="p">],</span><span class="n">plt</span><span class="p">.</span><span class="nf">ylim</span><span class="p">(),</span> <span class="n">c</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">epoch</span><span class="sh">'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Loss</span><span class="sh">'</span><span class="p">)</span>
+    
+    <span class="n">count</span> <span class="o">+=</span><span class="mi">1</span>
+
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_t_learning/output_30_1.png" alt="model accuracy and loss"></p>
+
+<h2><br></h2>
+<h2>Model performance</h2>
+
+<p>The accuracy of each model using the test dataset was determined. All models performed well with InceptionV3 slightly outperforming Resnet50 and Mobilenet. The total time required to build and train models is plotted.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_accuracy</span> <span class="o">=</span> <span class="p">[</span><span class="nf">predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">trained_models</span><span class="p">]</span>
+<span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1571</span><span class="p">,</span><span class="mi">941</span><span class="p">,</span><span class="mi">592</span><span class="p">]</span>  <span class="c1">#runtimes in minutes
+</span><span class="nf">print</span><span class="p">(</span><span class="n">test_accuracy</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>157/157 [==============================] - 15s 86ms/step
+157/157 [==============================] - 18s 114ms/step
+157/157 [==============================] - 5s 27ms/step
+[0.9912, 0.9932, 0.9912]
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">test_accuracy</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">model_names</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Accuracy</span><span class="sh">'</span><span class="p">])</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Accuracy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Resnet50</th>
+      <td>0.9912</td>
+    </tr>
+    <tr>
+      <th>InceptionV3</th>
+      <td>0.9932</td>
+    </tr>
+    <tr>
+      <th>Mobilenet</th>
+      <td>0.9912</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">model_names</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Models</span><span class="sh">'</span><span class="p">]).</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Total build and train time</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Minutes</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/mnist_t_learning/output_34_1.png" alt="Model run times"></p>
+
+<h2><br></h2>
+<h2>Conclusions</h2>
+
+<p>All of the transfer models performed reasonably well with the test set accuracy ranging from 99.12-99.32%. After finetuning, InceptionV3 performed better than Mobilenet and Resnet50. Without finetuning the transfer model, InceptionV3 and Resnet50 significantly outperform Mobilenet. However, the accuracy of Mobilenet quickly and drastically improves with only slight finetuning. If time is an important consideration, Mobilenet should be used as even though more training epochs are required to fully optimize performance, training time is significantly reduced with only a slight decrease in accuracy.</p>
+
+<p>These models do not out perform a simple small convolutional neural network with careful data augmentation, which reached 99.6% accuracy and trained in ~2 minutes in a previous project, <i>Handwritten digit classification with 99.6% accuracy,</i>. This highlights the importance of data augmentation in improving model accuracy but is also likely the case due to the simplicity of our images. In applications with more complex images, the additional ability of these deeper networks to identify patterns is likely to result in improved performance.</p>
+
+          </article>
+
+        </div>
+      
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Nina  Cilliers. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank" rel="external nofollow noopener">Unsplash</a>.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js"></script>
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js"></script>
+  <script defer src="/assets/js/common.js"></script>
+  <script defer src="/assets/js/copy_code.js" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>

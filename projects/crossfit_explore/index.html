@@ -123,7 +123,7 @@
           <article>
             <h1 id="a-data-based-approach-to-crossfit-training">A data-based approach to CrossFit training</h1>
 
-<h2 id="project-overview">Project Overview</h2>
+<h2>Project Overview</h2>
 
 <p>CrossFit is a high-intensity fitness program that combines elements of weightlifting, cardio, and gymnastics. It aims to improve overall physical fitness by incorporating constantly varied functional movements performed at a high intensity. At the pinnacle of CrossFit is the CrossFit Games, an annual competition that showcases the world’s fittest athletes. The CrossFit Games serve as a platform for elite athletes to test their skills and compete in a wide range of demanding workouts, challenging their strength, speed, power, and mental resilience. In this analysis, we will delve into the performance of CrossFit athletes, examining key factors that contribute to their success in this highly demanding and competitive sport.</p>
 
@@ -132,7 +132,7 @@
 <p>The dataset used in this project was provided by Ulrik Pedersen and can be found on <a href="https://www.kaggle.com/datasets/ulrikthygepedersen/crossfit-athletes" rel="external nofollow noopener" target="_blank">Kaggle</a>.</p>
 
 <h2><br></h2>
-<h2 id="project-outline">Project outline</h2>
+<h2>Project outline</h2>
 
 <ul>
   <li>Data overview</li>
@@ -164,7 +164,8 @@
   <li>Conclusions and recommendations</li>
 </ul>
 
-<h3 id="data-overview">Data overview</h3>
+<h2><br></h2>
+<h2>Data overview</h2>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
 <span class="kn">import</span> <span class="n">missingno</span> <span class="k">as</span> <span class="n">msno</span>
@@ -393,618 +394,706 @@ memory usage: 87.1+ MB
 <p><img src="\assets\img\crossfit_explore\output_5_0.png" alt="missing data"></p>
 
 <h2><br></h2>
-<h2 id="data-cleaning">Data cleaning</h2>
+<h2>Data cleaning<h2>
 
-<h3 id="event-selection">Event selection</h3>
-<p>Data that is not relevant to our analysis was removed from consideration along with the less frequently performed fitness events. It was necessary to remove these less common events to maintain a large dataset.</p>
+### Event selection
+Data that is not relevant to our analysis was removed from consideration along with the less frequently performed fitness events. It was necessary to remove these less common events to maintain a large dataset.
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">region</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">train</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">candj</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">snatch</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">backsq</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">])</span> <span class="c1">#removing NaNs from parameters of interest 
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">affiliate</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">team</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">name</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">athlete_id</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">fran</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">helen</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">grace</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">filthy50</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">fgonebad</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">run400</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">run5k</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">pullups</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">train</span><span class="sh">'</span><span class="p">])</span> <span class="c1">#removing paramters not of interest + less popular events
-</span></code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">msno</span><span class="p">.</span><span class="nf">matrix</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">);</span>
-</code></pre></div></div>
+```python
+df = df.dropna(subset=['region','age','weight','height','howlong','gender','eat','train','background','experience','schedule','howlong','deadlift','candj','snatch','backsq','experience','background','schedule','howlong']) #removing NaNs from parameters of interest 
+df = df.drop(columns=['affiliate','team','name','athlete_id','fran','helen','grace','filthy50','fgonebad','run400','run5k','pullups','train']) #removing paramters not of interest + less popular events
+```
 
-<p><img src="\assets\img\crossfit_explore\output_8_0.png" alt="missing data"></p>
 
-<h3 id="outlier-removal">Outlier Removal</h3>
+```python
+msno.matrix(df, figsize=(14,6),fontsize=11);
+```
 
-<p>Only clear outliers were removed from the dataset. These outliers are suspected to be the result of data entry errors and were diagnosed from highly inprobable heights and weights and performances in events exceeding current world records. Only adults and male and female competitors were considered in this analysis.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#removing problematic entries 
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1500</span><span class="p">]</span> <span class="c1">#removes two anomolous weight entries of 1,750 and 2,113
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">!=</span><span class="sh">'</span><span class="s">--</span><span class="sh">'</span><span class="p">]</span> <span class="c1">#removes 9 non-male/female gender entries due to small sample size
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;=</span><span class="mi">18</span><span class="p">]</span> <span class="c1">#only considering adults 
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">96</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">48</span><span class="p">)]</span><span class="c1">#selects people between 4 and 8 feet
-</span>
-<span class="c1">#no lifts above world recording holding lifts were included
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">1105</span><span class="p">)</span><span class="o">|</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">636</span><span class="p">))]</span> <span class="c1">#removes negative deadlift weights and deadlifts above the current world record
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">candj</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">candj</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">395</span><span class="p">)]</span><span class="c1">#|((df['gender']=='Female')&amp;(df['candj']&lt;=265))] #removes negative clean and jerk value and reported weights above the current world record
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">snatch</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">snatch</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">496</span><span class="p">)]</span><span class="c1">#|((df['gender']=='Female')&amp;(df['snatch']&lt;=341))] #removes weights above the current world record 
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">backsq</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">backsq</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">1069</span><span class="p">)]</span><span class="c1">#|((df['gender']=='Female')&amp;(df['backsq']&lt;=615))] #removes weights over current world record
-</span></code></pre></div></div>
+    
+![missing data](\assets\img\crossfit_explore\output_8_0.png)
+    
 
-<h3 id="cleaning-survey-data">Cleaning survey data</h3>
 
-<p>Survey responses were cleaned and encoded. Problematically, multiple survey questions were collated into single responses on eating, background, training, and CrossFit experience. This means, for example, that if someone had worked as a CrossFit trainer, completed a CrossFit course, started doing CrossFit alone and declined to answer if they found CrossFit life changing, that all responses would be combined into one answer on experience. Similarly, it is possible for a single response to contain contradictory information. For instance, a respondent could indicate that they have no previous athletic background and were also a college athlete.</p>
+### Outlier Removal
 
-<p>Thus, cleaning this data set, separating answers into individual question responses and removing non-sensical responses is non-trivial. Non-sensical survey responses were removed from consideration, and responses were organized to the best extent possible.</p>
+Only clear outliers were removed from the dataset. These outliers are suspected to be the result of data entry errors and were diagnosed from highly inprobable heights and weights and performances in events exceeding current world records. Only adults and male and female competitors were considered in this analysis.
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#get rid of declines to answer as only response 
-</span><span class="n">decline_dict</span> <span class="o">=</span> <span class="p">{</span><span class="sh">'</span><span class="s">Decline to answer|</span><span class="sh">'</span><span class="p">:</span><span class="n">np</span><span class="p">.</span><span class="n">nan</span><span class="p">}</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="n">decline_dict</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">])</span>
-</code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding background data 
-</span>
-<span class="c1">#encoding background questions 
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rec</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I regularly play recreational sports</span><span class="sh">'</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">high_school</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I played youth or high school level sports</span><span class="sh">'</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">college</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I played college sports</span><span class="sh">'</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">pro</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I played professional sports</span><span class="sh">'</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">no_background</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">background</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I have no athletic background besides CrossFit</span><span class="sh">'</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+```python
+#removing problematic entries 
+df = df[df['weight'] &lt; 1500] #removes two anomolous weight entries of 1,750 and 2,113
+df = df[df['gender']!='--'] #removes 9 non-male/female gender entries due to small sample size
+df = df[df['age']&gt;=18] #only considering adults 
+df = df[(df['height']&lt;96)&amp;(df['height']&gt;48)]#selects people between 4 and 8 feet
 
-<span class="c1">#delete nonsense answers
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">(((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">high_school</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">college</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">pro</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rec</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">no_background</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">))]</span> <span class="c1">#you can't have no background and also a background 
-</span></code></pre></div></div>
+#no lifts above world recording holding lifts were included
+df = df[(df['deadlift']&gt;0)&amp;(df['deadlift']&lt;=1105)|((df['gender']=='Female')&amp;(df['deadlift']&lt;=636))] #removes negative deadlift weights and deadlifts above the current world record
+df = df[(df['candj']&gt;0)&amp;(df['candj']&lt;=395)]#|((df['gender']=='Female')&amp;(df['candj']&lt;=265))] #removes negative clean and jerk value and reported weights above the current world record
+df = df[(df['snatch']&gt;0)&amp;(df['snatch']&lt;=496)]#|((df['gender']=='Female')&amp;(df['snatch']&lt;=341))] #removes weights above the current world record 
+df = df[(df['backsq']&gt;0)&amp;(df['backsq']&lt;=1069)]#|((df['gender']=='Female')&amp;(df['backsq']&lt;=615))] #removes weights over current world record
+```
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding experience questions
-</span>
-<span class="c1">#create encoded columns for experience reponse
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_coach</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I began CrossFit with a coach</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_alone</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I began CrossFit by trying it alone</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_courses</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I have attended one or more specialty courses</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">life_changing</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I have had a life changing experience due to CrossFit</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_trainer</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I train other people</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_level1</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I have completed the CrossFit Level 1 certificate course</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+### Cleaning survey data
 
-<span class="c1">#delete nonsense answers
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_coach</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_alone</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">))]</span> <span class="c1">#you can't start alone and with a coach
-</span>
-<span class="c1">#creating no response option for coaching start
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_start_nr</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_coach</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_alone</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+Survey responses were cleaned and encoded. Problematically, multiple survey questions were collated into single responses on eating, background, training, and CrossFit experience. This means, for example, that if someone had worked as a CrossFit trainer, completed a CrossFit course, started doing CrossFit alone and declined to answer if they found CrossFit life changing, that all responses would be combined into one answer on experience. Similarly, it is possible for a single response to contain contradictory information. For instance, a respondent could indicate that they have no previous athletic background and were also a college athlete.
 
-<span class="c1">#other options are assumed to be 0 if not explicitly selected
-</span></code></pre></div></div>
+Thus, cleaning this data set, separating answers into individual question responses and removing non-sensical responses is non-trivial. Non-sensical survey responses were removed from consideration, and responses were organized to the best extent possible. 
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#creating encoded columns with schedule data
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_plus</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I typically rest 4 or more days per month</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_minus</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I typically rest fewer than 4 days per month</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_sched</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I strictly schedule my rest days</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I usually only do 1 workout a day</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I do multiple workouts in a day 1x a week</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_2extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I do multiple workouts in a day 2x a week</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_3extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">schedule</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I do multiple workouts in a day 3\+ times a week</span><span class="sh">'</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+```python
+#get rid of declines to answer as only response 
+decline_dict = {'Decline to answer|':np.nan}
+df = df.replace(decline_dict)
+df = df.dropna(subset=['background','experience','schedule','howlong','eat'])
+```
 
-<span class="c1">#removing/correcting problematic responses 
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_plus</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_minus</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">))]</span> <span class="c1">#you can't have both more than and less than 4 rest days/month 
-</span>
-<span class="c1">#points are only assigned for the highest extra workout value (3x only vs. 3x and 2x and 1x if multi selected)
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_3extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_3extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_2extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_3extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_2extra</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_2extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_2extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">])</span>
 
-<span class="c1">#adding no response columns
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_nr</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_2extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_3extra</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_nr</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_plus</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_minus</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="c1">#schedling rest days is assumed to be 0 if not explicitly selected
-</span></code></pre></div></div>
+```python
+#encoding background data 
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># encoding howlong (crossfit lifetime)
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">1-2 years</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">2-4 years</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_4plus</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">4\+ years</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">6-12 months</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">howlong</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">Less than 6 months</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+#encoding background questions 
+df['rec'] = np.where(df['background'].str.contains('I regularly play recreational sports'), 1, 0)
+df['high_school'] = np.where(df['background'].str.contains('I played youth or high school level sports'), 1, 0)
+df['college'] = np.where(df['background'].str.contains('I played college sports'), 1, 0)
+df['pro'] = np.where(df['background'].str.contains('I played professional sports'), 1, 0)
+df['no_background'] = np.where(df['background'].str.contains('I have no athletic background besides CrossFit'), 1, 0)
 
-<span class="c1">#keeping only higest repsonse 
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_4plus</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_4plus</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_4plus</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_4plus</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">])</span>
-</code></pre></div></div>
+#delete nonsense answers
+df = df[~(((df['high_school']==1)|(df['college']==1)|(df['pro']==1)|(df['rec']==1))&amp;(df['no_background']==1))] #you can't have no background and also a background 
+```
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding dietary preferences 
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_conv</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I eat whatever is convenient</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_cheat</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I eat 1-3 full cheat meals per week</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_quality</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I eat quality foods but don</span><span class="se">\'</span><span class="s">t measure the amount</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_paleo</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I eat strict Paleo</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_cheat</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I eat 1-3 full cheat meals per week</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_weigh</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">I weigh and measure my food</span><span class="sh">'</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-</code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding location as US vs non-US
-</span><span class="n">US_regions</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Southern California</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">North East</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">North Central</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">South East</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">South Central</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">South West</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">Mid Atlantic</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Northern California</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Central East</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">North West</span><span class="sh">'</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">region</span><span class="sh">'</span><span class="p">].</span><span class="nf">isin</span><span class="p">(</span><span class="n">US_regions</span><span class="p">)),</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-</code></pre></div></div>
+```python
+#encoding experience questions
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding gender
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">gender_</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-</code></pre></div></div>
+#create encoded columns for experience reponse
+df['exp_coach'] = np.where(df['experience'].str.contains('I began CrossFit with a coach'),1,0)
+df['exp_alone'] = np.where(df['experience'].str.contains('I began CrossFit by trying it alone'),1,0)
+df['exp_courses'] = np.where(df['experience'].str.contains('I have attended one or more specialty courses'),1,0)
+df['life_changing'] = np.where(df['experience'].str.contains('I have had a life changing experience due to CrossFit'),1,0)
+df['exp_trainer'] = np.where(df['experience'].str.contains('I train other people'),1,0)
+df['exp_level1'] = np.where(df['experience'].str.contains('I have completed the CrossFit Level 1 certificate course'),1,0)
+
+#delete nonsense answers
+df = df[~((df['exp_coach']==1)&amp;(df['exp_alone']==1))] #you can't start alone and with a coach
+
+#creating no response option for coaching start
+df['exp_start_nr'] = np.where(((df['exp_coach']==0)&amp;(df['exp_alone']==0)),1,0)
+
+#other options are assumed to be 0 if not explicitly selected
+```
+
+
+```python
+#creating encoded columns with schedule data
+df['rest_plus'] = np.where(df['schedule'].str.contains('I typically rest 4 or more days per month'),1,0)
+df['rest_minus'] = np.where(df['schedule'].str.contains('I typically rest fewer than 4 days per month'),1,0)
+df['rest_sched'] = np.where(df['schedule'].str.contains('I strictly schedule my rest days'),1,0)
+
+df['sched_0extra'] = np.where(df['schedule'].str.contains('I usually only do 1 workout a day'),1,0)
+df['sched_1extra'] = np.where(df['schedule'].str.contains('I do multiple workouts in a day 1x a week'),1,0)
+df['sched_2extra'] = np.where(df['schedule'].str.contains('I do multiple workouts in a day 2x a week'),1,0)
+df['sched_3extra'] = np.where(df['schedule'].str.contains('I do multiple workouts in a day 3\+ times a week'),1,0)
+
+#removing/correcting problematic responses 
+df = df[~((df['rest_plus']==1)&amp;(df['rest_minus']==1))] #you can't have both more than and less than 4 rest days/month 
+
+#points are only assigned for the highest extra workout value (3x only vs. 3x and 2x and 1x if multi selected)
+df['sched_0extra'] = np.where((df['sched_3extra']==1),0,df['sched_0extra'])
+df['sched_1extra'] = np.where((df['sched_3extra']==1),0,df['sched_1extra'])
+df['sched_2extra'] = np.where((df['sched_3extra']==1),0,df['sched_2extra'])
+df['sched_0extra'] = np.where((df['sched_2extra']==1),0,df['sched_0extra'])
+df['sched_1extra'] = np.where((df['sched_2extra']==1),0,df['sched_1extra'])
+df['sched_0extra'] = np.where((df['sched_1extra']==1),0,df['sched_0extra'])
+
+#adding no response columns
+df['sched_nr'] = np.where(((df['sched_0extra']==0)&amp;(df['sched_1extra']==0)&amp;(df['sched_2extra']==0)&amp;(df['sched_3extra']==0)),1,0)
+df['rest_nr'] = np.where(((df['rest_plus']==0)&amp;(df['rest_minus']==0)),1,0)
+#schedling rest days is assumed to be 0 if not explicitly selected
+```
+
+
+```python
+# encoding howlong (crossfit lifetime)
+df['exp_1to2yrs'] = np.where((df['howlong'].str.contains('1-2 years')),1,0)
+df['exp_2to4yrs'] = np.where((df['howlong'].str.contains('2-4 years')),1,0)
+df['exp_4plus'] = np.where((df['howlong'].str.contains('4\+ years')),1,0)
+df['exp_6to12mo'] = np.where((df['howlong'].str.contains('6-12 months')),1,0)
+df['exp_lt6mo'] = np.where((df['howlong'].str.contains('Less than 6 months')),1,0)
+
+#keeping only higest repsonse 
+df['exp_lt6mo'] = np.where((df['exp_4plus']==1),0,df['exp_lt6mo'])
+df['exp_6to12mo'] = np.where((df['exp_4plus']==1),0,df['exp_6to12mo'])
+df['exp_1to2yrs'] = np.where((df['exp_4plus']==1),0,df['exp_1to2yrs'])
+df['exp_2to4yrs'] = np.where((df['exp_4plus']==1),0,df['exp_2to4yrs'])
+df['exp_lt6mo'] = np.where((df['exp_2to4yrs']==1),0,df['exp_lt6mo'])
+df['exp_6to12mo'] = np.where((df['exp_2to4yrs']==1),0,df['exp_6to12mo'])
+df['exp_1to2yrs'] = np.where((df['exp_2to4yrs']==1),0,df['exp_1to2yrs'])
+df['exp_lt6mo'] = np.where((df['exp_1to2yrs']==1),0,df['exp_lt6mo'])
+df['exp_6to12mo'] = np.where((df['exp_1to2yrs']==1),0,df['exp_6to12mo'])
+df['exp_lt6mo'] = np.where((df['exp_6to12mo']==1),0,df['exp_lt6mo'])
+```
+
+
+```python
+#encoding dietary preferences 
+df['eat_conv'] = np.where((df['eat'].str.contains('I eat whatever is convenient')),1,0)
+df['eat_cheat']= np.where((df['eat'].str.contains('I eat 1-3 full cheat meals per week')),1,0)
+df['eat_quality']= np.where((df['eat'].str.contains('I eat quality foods but don\'t measure the amount')),1,0)
+df['eat_paleo']= np.where((df['eat'].str.contains('I eat strict Paleo')),1,0)
+df['eat_cheat']= np.where((df['eat'].str.contains('I eat 1-3 full cheat meals per week')),1,0)
+df['eat_weigh'] = np.where((df['eat'].str.contains('I weigh and measure my food')),1,0)
+```
+
+
+```python
+#encoding location as US vs non-US
+US_regions = ['Southern California', 'North East', 'North Central','South East', 'South Central', 'South West', 'Mid Atlantic','Northern California','Central East', 'North West']
+df['US'] = np.where((df['region'].isin(US_regions)),1,0)
+```
+
+
+```python
+#encoding gender
+df['gender_'] = np.where(df['gender']=='Male',1,0)
+```
 <h2><br></h2>
-<h2 id="feature-engineering">Feature Engineering</h2>
+<h2>Feature Engineering</h2>
 
-<h3 id="normalizing-lifts">Normalizing lifts</h3>
+### Normalizing lifts
 
-<p>It is customary in powerlifting to normalize the weight lifted to the bodyweight of the athlete. This corrects for the physical advantage of leverage and isolates the athletic contribution to a lift.</p>
+It is customary in powerlifting to normalize the weight lifted to the bodyweight of the athlete. This corrects for the physical advantage of leverage and isolates the athletic contribution to a lift.
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">norm_dl</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">norm_j</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">candj</span><span class="sh">'</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">norm_s</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">snatch</span><span class="sh">'</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">]</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">norm_bs</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">backsq</span><span class="sh">'</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">]</span>
 
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">norm_dl</span><span class="sh">'</span><span class="p">]</span><span class="o">+</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">norm_j</span><span class="sh">'</span><span class="p">]</span><span class="o">+</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">norm_s</span><span class="sh">'</span><span class="p">]</span><span class="o">+</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">norm_bs</span><span class="sh">'</span><span class="p">]</span>
-</code></pre></div></div>
+```python
+df['norm_dl'] = df['deadlift']/df['weight']
+df['norm_j'] = df['candj']/df['weight']
+df['norm_s'] = df['snatch']/df['weight']
+df['norm_bs'] = df['backsq']/df['weight']
 
-<h3 id="calculating-body-mass-index-bmi">Calculating body mass index (BMI)</h3>
-<p>BMI is a measure of body composition based on weight and height. It categorizes individuals as underweight, normal weight, overweight, or obese, and can be used as a starting point to set fitness goals. However, BMI does not distinguish between muscle and fat and can mistake highly muscular individuals as overweight.</p>
+df['total_lift'] = df['norm_dl']+df['norm_j']+df['norm_s']+df['norm_bs']
+```
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">]</span><span class="o">*</span><span class="mf">0.453592</span><span class="o">/</span><span class="n">np</span><span class="p">.</span><span class="nf">square</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">]</span><span class="o">*</span><span class="mf">0.0254</span><span class="p">)</span>
+### Calculating body mass index (BMI)
+BMI is a measure of body composition based on weight and height. It categorizes individuals as underweight, normal weight, overweight, or obese, and can be used as a starting point to set fitness goals. However, BMI does not distinguish between muscle and fat and can mistake highly muscular individuals as overweight.
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;=</span><span class="mi">17</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">50</span><span class="p">)]</span><span class="c1">#considers only underweight - morbidly obese competitors
-</span></code></pre></div></div>
+
+```python
+df['BMI'] = df['weight']*0.453592/np.square(df['height']*0.0254)
+
+df = df[(df['BMI']&gt;=17)&amp;(df['BMI']&lt;=50)]#considers only underweight - morbidly obese competitors
+```
 <h2><br></h2>
-<h2 id="event-performance">Event performance</h2>
+<h2>Event performance</h2>
 
-<p>Before exploring responses, we examine the normalized performance for the male and female athletes surveyed. The distributions are approximately normal in all cases, but the snatch and clean and jerk events have a wider distribution. This is likely the result of the importance of technique in these events, which leads to wider variation in addition to natural differences in strength.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="n">style</span><span class="p">.</span><span class="nf">use</span><span class="p">(</span><span class="sh">'</span><span class="s">ggplot</span><span class="sh">'</span><span class="p">)</span>
-<span class="kn">from</span> <span class="n">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">rcParams</span>
-<span class="n">rcParams</span><span class="p">[</span><span class="sh">'</span><span class="s">figure.figsize</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span><span class="mi">6</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">xlabel</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Lift in body weight</span><span class="sh">'</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">norm_dl</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">kde</span> <span class="o">=</span> <span class="bp">True</span><span class="p">);</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Deadlift</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">222</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">norm_j</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">kde</span> <span class="o">=</span> <span class="bp">True</span><span class="p">);</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Clean and jerk</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">norm_s</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">kde</span> <span class="o">=</span> <span class="bp">True</span><span class="p">);</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Snatch</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">224</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">norm_bs</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">kde</span> <span class="o">=</span> <span class="bp">True</span><span class="p">);</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Back squat</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_26_0.png" alt="lift data"></p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#total lift 
-</span><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">kde</span> <span class="o">=</span> <span class="bp">True</span><span class="p">);</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Normalized total lift</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">);</span>
-</code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_27_0.png" alt="total lift data"></p>
-
-<h2><br></h2>
-<h2 id="athlete-demographics-and-performance">Athlete demographics and performance</h2>
-
-<p>Athlete demographics were collected as part of provided survey:</p>
-<ul>
-  <li>Gender</li>
-  <li>BMI (from height and weight)</li>
-  <li>Age</li>
-  <li>Region</li>
-</ul>
-
-<p>We explore the data and look for correlations with performance.</p>
-
-<h3 id="gender">Gender</h3>
-
-<p>Male competitors outnumber female competitors by 2.6 to 1. This is unsurprising as CrossFit is a strength-based sport, which typically attracts men.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span> <span class="o">=</span> <span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue_order</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">])</span>
-<span class="c1">#df.groupby('gender').agg('count') #20996/7999
-</span></code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_29_1.png" alt="gender lift histogram"></p>
-
-<p>We see expected gender differences in performance between the male and female groups. Male athletes outlifted female athletes on a body weight normalized basis by 24.5%.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift (bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-
-<span class="c1">#df[['total_lift','gender']].groupby('gender').agg('mean') #(6.05-4.86)/4.86
-</span></code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_31_1.png" alt="mean age lifts"></p>
-
-<h3 id="bmi">BMI</h3>
-
-<p>The distributions of heights and weights of CrossFit competitors are not smooth despite the large sample size. However, converting these non-independent metrics to BMI results in normal distributions with a positive skew that is particularly pronounced in the male population.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Mean BMI
-</span><span class="k">def</span> <span class="nf">standard_error</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="n">stdev</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="nf">std</span><span class="p">()</span>
-    <span class="n">counts</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="nf">count</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">stdev</span><span class="o">/</span><span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
-
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span>  <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">].</span><span class="nf">round</span><span class="p">()</span>
-<span class="n">df_bmi</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]].</span><span class="nf">groupby</span><span class="p">([</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]).</span><span class="nf">agg</span><span class="p">([</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">,</span><span class="n">standard_error</span><span class="p">,</span><span class="sh">'</span><span class="s">size</span><span class="sh">'</span><span class="p">]).</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">).</span><span class="nf">reset_index</span><span class="p">()</span>
-<span class="n">df_bmi_f</span> <span class="o">=</span> <span class="n">df_bmi</span><span class="p">[(</span><span class="n">df_bmi</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df_bmi</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">size</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">5</span><span class="p">)]</span>
-<span class="n">df_bmi_m</span> <span class="o">=</span> <span class="n">df_bmi</span><span class="p">[(</span><span class="n">df_bmi</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df_bmi</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">size</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">5</span><span class="p">)]</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">height</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hue_order</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hue_order</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_34_0.png" alt="gender"></p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">BMI</span><span class="sh">'</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hue_order</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_35_0.png" alt="BMI"></p>
-
-<p>The figures below show BMI and total lift unaggregated in the left plot and aggregated to the nearest BMI with standard error in the right plot. Male athletes tend towards higher BMIs and lift more weight as expected. Interestingly, there appears to be a strong dependency between BMI and total lift with performance peaks observed at BMIs of 23 kg/m2 and 27 kg/m2 for female and male athletes respectively. Likely, this represents athletes gaining more muscle and eventually more fat, as more muscle would help performance and more fat would adversely affect performance. Thus, this analysis suggests that male and female athletes should adjust their training and diet to reach BMIs of 27 and 23 respectively with lean body compositions.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">BMI</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">],</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">crimson</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">BMI</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">],</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">teal</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">BMI (kg/m2)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift </span><span class="se">\n</span><span class="s">(body weight)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">leg</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">lh</span> <span class="ow">in</span> <span class="n">leg</span><span class="p">.</span><span class="n">legendHandles</span><span class="p">:</span> 
-    <span class="n">lh</span><span class="p">.</span><span class="nf">set_alpha</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+Before exploring responses, we examine the normalized performance for the male and female athletes surveyed. The distributions are approximately normal in all cases, but the snatch and clean and jerk events have a wider distribution. This is likely the result of the importance of technique in these events, which leads to wider variation in addition to natural differences in strength.
 
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">df_bmi_m</span><span class="p">[</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">],</span><span class="n">df_bmi_m</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">],</span><span class="sh">'</span><span class="s">.-</span><span class="sh">'</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">crimson</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">errorbar</span><span class="p">(</span><span class="n">df_bmi_m</span><span class="p">[</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">],</span><span class="n">df_bmi_m</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">],</span><span class="n">yerr</span><span class="o">=</span><span class="n">df_bmi_m</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">standard_error</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">crimson</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">_male_</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">df_bmi_f</span><span class="p">[</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">],</span><span class="n">df_bmi_f</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">],</span><span class="sh">'</span><span class="s">.-</span><span class="sh">'</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">teal</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">errorbar</span><span class="p">(</span><span class="n">df_bmi_f</span><span class="p">[</span><span class="sh">'</span><span class="s">bmi_rounded</span><span class="sh">'</span><span class="p">],</span><span class="n">df_bmi_f</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">],</span><span class="n">yerr</span><span class="o">=</span><span class="n">df_bmi_f</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">standard_error</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">teal</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">_female_</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">BMI (kg/m2)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Mean total lift </span><span class="se">\n</span><span class="s">(bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
+```python
+plt.style.use('ggplot')
+from matplotlib.pylab import rcParams
+rcParams['figure.figsize'] = 10,6
+```
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
 
-<p><img src="\assets\img\crossfit_explore\output_37_1.png" alt="agg BMI data"></p>
+```python
+xlabel = 'Lift in body weight'
+plt.subplot(221)
+sns.histplot(data = df, x = 'norm_dl', hue='gender',kde = True);
+plt.title('Deadlift')
+plt.xlabel(xlabel)
+plt.subplot(222)
+sns.histplot(data = df, x = 'norm_j', hue='gender',kde = True);
+plt.title('Clean and jerk')
+plt.xlabel(xlabel)
+plt.tight_layout()
+plt.subplot(223)
+sns.histplot(data = df, x = 'norm_s', hue='gender',kde = True);
+plt.title('Snatch')
+plt.xlabel(xlabel)
+plt.subplot(224)
+sns.histplot(data = df, x = 'norm_bs', hue='gender',kde = True);
+plt.title('Back squat')
+plt.xlabel(xlabel)
+plt.tight_layout()
+```
 
-<h3 id="age">Age</h3>
 
-<p>The age distributions for male and female athletes is approximately normal with a slight positive skew that is more pronounced for female athletes. The mean ages for both male and female populations was 32.</p>
+![lift data](\assets\img\crossfit_explore\output_26_0.png)
+    
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kde</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-<span class="c1">#df[['gender','age']].groupby('gender').agg('mean')
-</span></code></pre></div></div>
 
-<p><img src="\assets\img\crossfit_explore\output_39_0.png" alt="age data"></p>
 
-<p>The normalized total lift for all athletes is shown against age in the figure on the left below. Male competitors lift slightly more, and a general decrease in performance past 25 is apparent. This data is grouped to the nearest BMI and shown with standard error on the plot on the right. Male performance shows a clear peak around 20 years of age, and female performance maintains a plateau until around 30 years of age. Both populations show distinct decreases in performance with increased age.</p>
+```python
+#total lift 
+sns.histplot(data = df, x = 'total_lift', hue='gender',kde = True);
+plt.title('Normalized total lift')
+plt.xlabel(xlabel);
+```
 
-<p>Interestingly, male performance appears to be more sensitive to age than female performance. Testosterone is extremely important to building and maintaining muscle and strength, and it is possible that declines in testosterone characteristic to male aging underly this observation. Slower recovery with age in both genders is likely also a significant factor of age-related decline.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_age</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]].</span><span class="nf">groupby</span><span class="p">([</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]).</span><span class="nf">agg</span><span class="p">([</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">,</span><span class="n">standard_error</span><span class="p">,</span><span class="sh">'</span><span class="s">size</span><span class="sh">'</span><span class="p">]).</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">).</span><span class="nf">reset_index</span><span class="p">()</span>
-<span class="n">df_age_f</span> <span class="o">=</span> <span class="n">df_age</span><span class="p">[(</span><span class="n">df_age</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df_age</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">size</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">5</span><span class="p">)]</span>
-<span class="n">df_age_m</span> <span class="o">=</span> <span class="n">df_age</span><span class="p">[(</span><span class="n">df_age</span><span class="p">[</span><span class="sh">'</span><span class="s">gender</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df_age</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">size</span><span class="sh">'</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">5</span><span class="p">)]</span>
-
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">age</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">],</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">crimson</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">age</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="o">==</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">],</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">teal</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Years</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift </span><span class="se">\n</span><span class="s">(bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">leg</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">lh</span> <span class="ow">in</span> <span class="n">leg</span><span class="p">.</span><span class="n">legendHandles</span><span class="p">:</span> 
-    <span class="n">lh</span><span class="p">.</span><span class="nf">set_alpha</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df_age_m</span><span class="p">[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="n">df_age_m</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">crimson</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Male</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">errorbar</span><span class="p">(</span><span class="n">df_age_m</span><span class="p">.</span><span class="n">age</span><span class="p">,</span><span class="n">df_age_m</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">],</span><span class="n">yerr</span><span class="o">=</span><span class="n">df_age_m</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">standard_error</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">crimson</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">_Male_</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df_age_f</span><span class="p">[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="n">df_age_f</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">teal</span><span class="sh">'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">Female</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">errorbar</span><span class="p">(</span><span class="n">df_age_f</span><span class="p">.</span><span class="n">age</span><span class="p">,</span><span class="n">df_age_f</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">mean</span><span class="sh">'</span><span class="p">],</span><span class="n">yerr</span><span class="o">=</span><span class="n">df_age_f</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">][</span><span class="sh">'</span><span class="s">standard_error</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">teal</span><span class="sh">'</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">_Female_</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Years</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Mean total lift </span><span class="se">\n</span><span class="s">(bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_41_1.png" alt="age data"></p>
-
-<h3 id="region">Region</h3>
-
-<p>Most competitors are based in the US, and CrossFit appears to be particularly popular in California. Outside the US, the most popular locations for CrossFit are Canada and Europe.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Region</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="sh">'</span><span class="s">region</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Country</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">non-US</span><span class="sh">'</span><span class="p">,(</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">()))</span>
-
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_43_0.png" alt="region"></p>
-
-<p>CrossFit athletes in the US appear to slightly outperform CrossFit athletes outside of the US. This could be due to increased local competition driving athletes to higher levels of performance or access to sophisticated training facilities and experienced coaches.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">region</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift (bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">US</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">,</span> <span class="n">hue</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">gender</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total lift (bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">Outside US</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">US</span><span class="sh">'</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p><img src="\assets\img\crossfit_explore\output_45_0.png" alt="region"></p>
+![total lift data](\assets\img\crossfit_explore\output_27_0.png)    
 
 <h2><br></h2>
-<h2 id="lifestyle-factors">Lifestyle factors</h2>
+<h2>Athlete demographics and performance</h2>
 
-<p>Training and lifestyle choices are important factors for athlete performance. The following factors were surveyed:</p>
+Athlete demographics were collected as part of provided survey:
+- Gender 
+- BMI (from height and weight)
+- Age
+- Region
 
-<ul>
-  <li>CrossFit age (time doing CrossFit)</li>
-  <li>Two-a-day training session frequency</li>
-  <li>Frequency of rest days</li>
-  <li>Athletic history</li>
-  <li>Eating habits</li>
-</ul>
+We explore the data and look for correlations with performance.
 
-<p>We examine these responses and identify key factors for improved performance. Histograms of these survey responses are shown below.</p>
+### Gender
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Lifestyle Survey Responses</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">&lt;0.5</span><span class="sh">'</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">0.5-1</span><span class="sh">'</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">1-2</span><span class="sh">'</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">2-4</span><span class="sh">'</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">4+</span><span class="sh">'</span><span class="p">,</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_4plus</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Crossfit age</span><span class="sh">'</span><span class="p">);</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Years</span><span class="sh">'</span><span class="p">)</span>
+Male competitors outnumber female competitors by 2.6 to 1. This is unsurprising as CrossFit is a strength-based sport, which typically attracts men. 
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">0</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">1</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">2</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_2extra</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">3+</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_3extra</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Two-a-day frequency</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Frequency per week</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">);</span>
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="c1">#plt.bar('Scheduled', df['rest_sched'].sum())
-</span><span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">4+</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_plus</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">&lt;4 </span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_minus</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Rest days</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Days per month</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">)</span>
+```python
+sns.histplot(data = df, x = 'gender', hue = 'gender', hue_order = ['Female','Male'])
+#df.groupby('gender').agg('count') #20996/7999
+```
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Started with coach</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">No</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_alone</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">()</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_start_nr</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">Yes</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_coach</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">)</span>
-<span class="c1">#plt.bar('Crossfit trainer', df['trainer'].sum())
+ ![gender lift histogram](\assets\img\crossfit_explore\output_29_1.png)   
+    
+
+
+We see expected gender differences in performance between the male and female groups. Male athletes outlifted female athletes on a body weight normalized basis by 24.5%. 
+
+
+```python
+sns.boxplot(x=df.gender, y=df.total_lift)
+plt.ylabel('Total lift (bodyweight)')
+
+#df[['total_lift','gender']].groupby('gender').agg('mean') #(6.05-4.86)/4.86
+```
+
+![mean age lifts](\assets\img\crossfit_explore\output_31_1.png) 
+    
+
+
+### BMI
+
+The distributions of heights and weights of CrossFit competitors are not smooth despite the large sample size. However, converting these non-independent metrics to BMI results in normal distributions with a positive skew that is particularly pronounced in the male population. 
+
+
+```python
+#Mean BMI
+def standard_error(x):
+    stdev = x.std()
+    counts = x.count()
+    return stdev/np.sqrt(counts)
+
+df['bmi_rounded'] =  df['BMI'].round()
+df_bmi = df[['bmi_rounded','total_lift','gender']].groupby(['bmi_rounded','gender']).agg(['mean',standard_error,'size']).sort_values('bmi_rounded').reset_index()
+df_bmi_f = df_bmi[(df_bmi['gender']=='Female')&amp;(df_bmi['total_lift']['size']&gt;5)]
+df_bmi_m = df_bmi[(df_bmi['gender']=='Male')&amp;(df_bmi['total_lift']['size']&gt;5)]
+```
+
+
+```python
+plt.subplot(1,2,1)
+sns.histplot(data=df, x='height', hue='gender', binwidth=1,kde=True, hue_order=['Female','Male'])
+plt.subplot(1,2,2)
+sns.histplot(data=df, x='weight', hue='gender', binwidth=5, kde=True, hue_order = ['Female','Male'])
+plt.show()
+```
+
+
+![gender](\assets\img\crossfit_explore\output_34_0.png)    
+    
+
+
+
+```python
+sns.histplot(data = df, x='BMI',hue='gender',binwidth=1,kde=True, hue_order=['Female','Male'])
+plt.show()
+```
+
+
+![BMI](\assets\img\crossfit_explore\output_35_0.png)    
+    
+
+
+The figures below show BMI and total lift unaggregated in the left plot and aggregated to the nearest BMI with standard error in the right plot. Male athletes tend towards higher BMIs and lift more weight as expected. Interestingly, there appears to be a strong dependency between BMI and total lift with performance peaks observed at BMIs of 23 kg/m2 and 27 kg/m2 for female and male athletes respectively. Likely, this represents athletes gaining more muscle and eventually more fat, as more muscle would help performance and more fat would adversely affect performance. Thus, this analysis suggests that male and female athletes should adjust their training and diet to reach BMIs of 27 and 23 respectively with lean body compositions.
+
+
+```python
+plt.subplot(1,2,1)
+plt.scatter(df.BMI[df.gender=='Male'], df.total_lift[df.gender=='Male'],alpha=0.01,color='crimson',label='Male')
+plt.scatter(df.BMI[df.gender=='Female'], df.total_lift[df.gender=='Female'],alpha=0.01,color='teal',label='Female')
+plt.xlabel('BMI (kg/m2)')
+plt.ylabel('Total lift \n(body weight)')
+leg = plt.legend()
+for lh in leg.legendHandles: 
+    lh.set_alpha(1)
+
+
+plt.subplot(1,2,2)
+plt.plot(df_bmi_m['bmi_rounded'],df_bmi_m['total_lift']['mean'],'.-',color='crimson',label='Male')
+plt.errorbar(df_bmi_m['bmi_rounded'],df_bmi_m['total_lift']['mean'],yerr=df_bmi_m['total_lift']['standard_error'],color='crimson',label='_male_')
+plt.plot(df_bmi_f['bmi_rounded'],df_bmi_f['total_lift']['mean'],'.-',color='teal',label='Female')
+plt.errorbar(df_bmi_f['bmi_rounded'],df_bmi_f['total_lift']['mean'],yerr=df_bmi_f['total_lift']['standard_error'],color='teal',label='_female_')
+plt.xlabel('BMI (kg/m2)')
+plt.ylabel('Mean total lift \n(bodyweight)')
+plt.legend()
+
+plt.tight_layout()
+```
+   
+
+
+![agg BMI data](\assets\img\crossfit_explore\output_37_1.png) 
+    
+
+
+### Age 
+
+The age distributions for male and female athletes is approximately normal with a slight positive skew that is more pronounced for female athletes. The mean ages for both male and female populations was 32. 
+
+
+```python
+sns.histplot(data = df, x = 'age', hue='gender',binwidth=1,kde = True)
+plt.show()
+#df[['gender','age']].groupby('gender').agg('mean')
+```
+
+
+ ![age data](\assets\img\crossfit_explore\output_39_0.png)   
+    
+
+
+The normalized total lift for all athletes is shown against age in the figure on the left below. Male competitors lift slightly more, and a general decrease in performance past 25 is apparent. This data is grouped to the nearest BMI and shown with standard error on the plot on the right. Male performance shows a clear peak around 20 years of age, and female performance maintains a plateau until around 30 years of age. Both populations show distinct decreases in performance with increased age.
+
+Interestingly, male performance appears to be more sensitive to age than female performance. Testosterone is extremely important to building and maintaining muscle and strength, and it is possible that declines in testosterone characteristic to male aging underly this observation. Slower recovery with age in both genders is likely also a significant factor of age-related decline. 
+
+
+```python
+df_age = df[['age','gender','total_lift']].groupby(['age','gender']).agg(['mean',standard_error,'size']).sort_values('age').reset_index()
+df_age_f = df_age[(df_age['gender']=='Female')&amp;(df_age['total_lift']['size']&gt;5)]
+df_age_m = df_age[(df_age['gender']=='Male')&amp;(df_age['total_lift']['size']&gt;5)]
+
+plt.subplot(1,2,1)
+plt.scatter(df.age[df.gender=='Male'], df.total_lift[df.gender=='Male'],alpha=0.01,color='crimson',label='Male')
+plt.scatter(df.age[df.gender=='Female'], df.total_lift[df.gender=='Female'],alpha=0.01,color='teal',label='Female')
+plt.xlabel('Years')
+plt.ylabel('Total lift \n(bodyweight)')
+leg = plt.legend()
+for lh in leg.legendHandles: 
+    lh.set_alpha(1)
+
+plt.subplot(1,2,2)
+sns.lineplot(x=df_age_m['age'],y=df_age_m['total_lift']['mean'],color='crimson',label='Male')
+plt.errorbar(df_age_m.age,df_age_m['total_lift']['mean'],yerr=df_age_m['total_lift']['standard_error'],color='crimson',label='_Male_')
+sns.lineplot(x=df_age_f['age'],y=df_age_f['total_lift']['mean'],color='teal', label='Female')
+plt.errorbar(df_age_f.age,df_age_f['total_lift']['mean'],yerr=df_age_f['total_lift']['standard_error'],color='teal',label='_Female_')
+plt.legend()
+plt.xlabel('Years')
+plt.ylabel('Mean total lift \n(bodyweight)')
+
+plt.tight_layout()
+```
+
+
+![age data](\assets\img\crossfit_explore\output_41_1.png)
+    
+
+
+### Region
+
+Most competitors are based in the US, and CrossFit appears to be particularly popular in California. Outside the US, the most popular locations for CrossFit are Canada and Europe.
+
+
+```python
+plt.subplot(1,2,1)
+plt.title('Region')
+sns.histplot(data = df, x = 'region')
+plt.xlabel('')
+plt.xticks(rotation = 90)
+
+plt.subplot(1,2,2)
+plt.title('Country')
+plt.bar('US',df['US'].sum())
+plt.bar('non-US',(df.shape[0]-df['US'].sum()))
+
+plt.tight_layout()
+plt.show()
+```
+
+
+![region](\assets\img\crossfit_explore\output_43_0.png)   
+
+
+CrossFit athletes in the US appear to slightly outperform CrossFit athletes outside of the US. This could be due to increased local competition driving athletes to higher levels of performance or access to sophisticated training facilities and experienced coaches. 
+
+
+```python
+plt.subplot(1,2,1)
+sns.boxplot(x=df.region,y=df.total_lift)
+plt.xticks(rotation = 90)
+plt.xlabel('')
+plt.ylabel('Total lift (bodyweight)')
+ax = plt.subplot(1,2,2)
+sns.boxplot(x=df.US, y=df.total_lift, hue = df.gender)
+plt.tight_layout()
+plt.ylabel('Total lift (bodyweight)')
+ax.set_xticklabels(('Outside US','US'))
+plt.xlabel('')
+plt.show()
+```
+
+
+![region](\assets\img\crossfit_explore\output_45_0.png)    
+    
+
+<h2><br></h2>
+<h2>Lifestyle factors</h2>
+
+Training and lifestyle choices are important factors for athlete performance. The following factors were surveyed:
+
+- CrossFit age (time doing CrossFit)
+- Two-a-day training session frequency
+- Frequency of rest days 
+- Athletic history 
+- Eating habits
+
+We examine these responses and identify key factors for improved performance. Histograms of these survey responses are shown below. 
+
+
+
+```python
+plt.figure(figsize=(14,9))
+plt.title('Lifestyle Survey Responses')
+plt.subplot(2,3,1)
+plt.bar('&lt;0.5',df['exp_lt6mo'].sum())
+plt.bar('0.5-1',df['exp_6to12mo'].sum())
+plt.bar('1-2',df['exp_1to2yrs'].sum())
+plt.bar('2-4',df['exp_2to4yrs'].sum())
+plt.bar('4+',df['exp_4plus'].sum())
+plt.title('Crossfit age');
+plt.ylabel('Count')
+plt.xlabel('Years')
+
+plt.subplot(2,3,2)
+plt.bar('0', df['sched_0extra'].sum())
+plt.bar('1', df['sched_1extra'].sum())
+plt.bar('2', df['sched_2extra'].sum())
+plt.bar('3+', df['sched_3extra'].sum())
+plt.title('Two-a-day frequency')
+plt.ylabel('Count')
+plt.xlabel('Frequency per week')
+plt.xticks(rotation = 90);
+
+plt.subplot(2,3,3)
+#plt.bar('Scheduled', df['rest_sched'].sum())
+plt.bar('4+', df['rest_plus'].sum())
+plt.bar('&lt;4 ', df['rest_minus'].sum())
+plt.title('Rest days')
+plt.xlabel('Days per month')
+plt.ylabel('Count')
+
+plt.subplot(2,3,4)
+plt.title('Started with coach')
+plt.bar('No', df['exp_alone'].sum()-df['exp_start_nr'].sum())
+plt.bar('Yes', df['exp_coach'].sum())
+plt.ylabel('Count')
+#plt.bar('Crossfit trainer', df['trainer'].sum())
 #plt.bar('Completed specialty course', df['specialty_course'].sum())
 #plt.bar('Completed level 1', df['level_one'].sum())
 #plt.xticks(rotation=90);
-</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">High </span><span class="se">\n</span><span class="s">school</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">high_school</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">College</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">college</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">Pro</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">pro</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">None</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">no_background</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">Rec. </span><span class="se">\n</span><span class="s">sports</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rec</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">)</span>
-<span class="c1">#plt.xlabel('Background')
-</span><span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Athletic history</span><span class="sh">'</span><span class="p">)</span>
-<span class="c1">#plt.xticks(rotation=90)
-</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">Eats </span><span class="se">\n</span><span class="s">quality</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_quality</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">Cheat </span><span class="se">\n</span><span class="s">meals</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_cheat</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">Measures </span><span class="se">\n</span><span class="s">food</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_weigh</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">Paleo</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_paleo</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="sh">'</span><span class="s">Eats </span><span class="se">\n</span><span class="s">convenience</span><span class="sh">'</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_conv</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">())</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Eating habits</span><span class="sh">'</span><span class="p">)</span>
-<span class="c1">#plt.xticks(rotation=90)
-</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
 
-<p><img src="\assets\img\crossfit_explore\output_41_7.png" alt="lifestyle data"></p>
+plt.subplot(2,3,5)
+plt.bar('High \nschool', df['high_school'].sum())
+plt.bar('College', df['college'].sum())
+plt.bar('Pro', df['pro'].sum())
+plt.bar('None', df['no_background'].sum())
+plt.bar('Rec. \nsports', df['rec'].sum())
+plt.ylabel('Count')
+#plt.xlabel('Background')
+plt.title('Athletic history')
+#plt.xticks(rotation=90)
 
-<p>Key take-aways:</p>
+plt.subplot(2,3,6)
+plt.bar('Eats \nquality', df['eat_quality'].sum())
+plt.bar('Cheat \nmeals', df['eat_cheat'].sum())
+plt.bar('Measures \nfood', df['eat_weigh'].sum())
+plt.bar('Paleo', df['eat_paleo'].sum())
+plt.bar('Eats \nconvenience', df['eat_conv'].sum())
+plt.ylabel('Count')
+plt.title('Eating habits')
+#plt.xticks(rotation=90)
 
-<ul>
-  <li>
-    <p>Most CrossFit athletes wait to participate in the CrossFit games until they have some experience with the sport under their belt.</p>
-  </li>
-  <li>
-    <p>It is unusual for athletes to do CrossFit for more than four years, possibly due to the intensity of the training sessions in terms of time commitment and potential for injury.</p>
-  </li>
-  <li>
-    <p>Most athletes adhere to the recommended 1 day per week rest day schedule.</p>
-  </li>
-  <li>
-    <p>Most athletes have some athletic background prior to starting CrossFit.</p>
-  </li>
-</ul>
+plt.tight_layout()
+```
+    
+![lifestyle data](\assets\img\crossfit_explore\output_41_7.png)    
 
-<p>Next, we look at how these factors correlate to performance.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#melting data for boxplots
-</span><span class="n">df_exp</span> <span class="o">=</span>  <span class="n">pd</span><span class="p">.</span><span class="nf">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span> <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_lt6mo</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_6to12mo</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_1to2yrs</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_2to4yrs</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_4plus</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df_exp</span> <span class="o">=</span> <span class="n">df_exp</span><span class="p">[</span><span class="n">df_exp</span><span class="o">!=</span><span class="mi">0</span><span class="p">].</span><span class="nf">dropna</span><span class="p">()</span>
-<span class="n">df_freq</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="sh">'</span><span class="s">freq</span><span class="sh">'</span><span class="p">,</span> <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">sched_0extra</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">sched_1extra</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">sched_2extra</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">sched_3extra</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df_freq</span> <span class="o">=</span> <span class="n">df_freq</span><span class="p">[</span><span class="n">df_freq</span><span class="o">!=</span><span class="mi">0</span><span class="p">].</span><span class="nf">dropna</span><span class="p">()</span>
-<span class="n">df_rest</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="sh">'</span><span class="s">rest</span><span class="sh">'</span><span class="p">,</span> <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">rest_plus</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">rest_minus</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df_rest</span> <span class="o">=</span> <span class="n">df_rest</span><span class="p">[</span><span class="n">df_rest</span><span class="o">!=</span><span class="mi">0</span><span class="p">].</span><span class="nf">dropna</span><span class="p">()</span>
-<span class="n">df_hist</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="sh">'</span><span class="s">hist</span><span class="sh">'</span><span class="p">,</span> <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">high_school</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">college</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">pro</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">no_background</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">rec</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df_hist</span> <span class="o">=</span> <span class="n">df_hist</span><span class="p">[</span><span class="n">df_hist</span><span class="o">!=</span><span class="mi">0</span><span class="p">].</span><span class="nf">dropna</span><span class="p">()</span>
-<span class="n">df_start</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="sh">'</span><span class="s">start</span><span class="sh">'</span><span class="p">,</span> <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">exp_alone</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_coach</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df_start</span> <span class="o">=</span> <span class="n">df_start</span><span class="p">[</span><span class="n">df_start</span><span class="o">!=</span><span class="mi">0</span><span class="p">].</span><span class="nf">dropna</span><span class="p">()</span>
-<span class="n">df_eat</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">,</span> <span class="n">value_vars</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">eat_quality</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat_cheat</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat_weigh</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat_paleo</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">eat_conv</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">df_eat</span> <span class="o">=</span> <span class="n">df_eat</span><span class="p">[</span><span class="n">df_eat</span><span class="o">!=</span><span class="mi">0</span><span class="p">].</span><span class="nf">dropna</span><span class="p">()</span>
+Key take-aways: 
 
-<span class="n">y_label</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Body weights lifted (total)</span><span class="sh">'</span>
+- Most CrossFit athletes wait to participate in the CrossFit games until they have some experience with the sport under their belt. 
 
-<span class="c1">#box plots of above figures 
-</span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
+- It is unusual for athletes to do CrossFit for more than four years, possibly due to the intensity of the training sessions in terms of time commitment and potential for injury. 
 
-<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axs</span><span class="p">.</span><span class="nf">flatten</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]:</span>
-    <span class="n">ax</span><span class="p">.</span><span class="n">yaxis</span><span class="p">.</span><span class="n">label</span><span class="p">.</span><span class="nf">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-    <span class="c1">#ax.yaxis.set_ticks([])
-</span>    
-<span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df_exp</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">experience</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax1</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">&lt;0.5</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">0.5-1</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">1-2</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">2-4</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">4+</span><span class="sh">'</span><span class="p">))</span>
-<span class="n">ax1</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Years</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax1</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="n">y_label</span><span class="p">)</span>
-<span class="n">ax1</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Crossfit age</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>    
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_freq</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">freq</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">0</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">1</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">2</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">3+</span><span class="sh">'</span><span class="p">))</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Frequency per week</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Two-a-day frequency</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>    
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_rest</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">rest</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax3</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">&lt;4</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">4+</span><span class="sh">'</span><span class="p">))</span>
-<span class="n">ax3</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Rest days</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax3</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Days per month</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax4</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> 
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_start</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">start</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax4</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">No</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Yes</span><span class="sh">'</span><span class="p">))</span>
-<span class="n">ax4</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-<span class="n">ax4</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Started with coach</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax4</span><span class="p">.</span><span class="n">yaxis</span><span class="p">.</span><span class="n">label</span><span class="p">.</span><span class="nf">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">ax4</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="n">y_label</span><span class="p">)</span>
-<span class="n">ax5</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>    
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_hist</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">hist</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax5</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">High </span><span class="se">\n</span><span class="s">school</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">College</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Pro</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">None</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Rec. </span><span class="se">\n</span><span class="s">sports</span><span class="sh">'</span><span class="p">))</span>
-<span class="n">ax5</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-<span class="n">ax5</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Athletic history</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax6</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>    
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_eat</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">eat</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax6</span><span class="p">.</span><span class="nf">set_xticklabels</span><span class="p">((</span><span class="sh">'</span><span class="s">Eats </span><span class="se">\n</span><span class="s">quality</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Cheat </span><span class="se">\n</span><span class="s">meals</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Measures </span><span class="se">\n</span><span class="s">food</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Paleo</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Eats </span><span class="se">\n</span><span class="s">convenience</span><span class="sh">'</span><span class="p">))</span>
-<span class="n">ax6</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-<span class="n">ax6</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Eating habits</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
+- Most athletes adhere to the recommended 1 day per week rest day schedule. 
 
-<p><img src="\assets\img\crossfit_explore\output_49_0.png" alt="lifestyle data"></p>
+- Most athletes have some athletic background prior to starting CrossFit. 
 
-<p>CrossFit age (years doing CrossFit), frequency of two-a-day session, taking sufficient rest days, and athletic background all correlate with improved athletic performance as would be expected from conventional knowledge. Interestingly, starting CrossFit alone rather than at a facility with a coach appears to also correlate with improved performance. This is perhaps indirectly a result of self-starting athletes having a stronger athletic history. Reported eating habits, however, do not appear strongly correlated with performance.</p>
+Next, we look at how these factors correlate to performance. 
 
-<h2><br></h2>
-<h2 id="has-crossfit-been-life-changing">Has CrossFit been life changing?</h2>
 
-<p>Previous analysis focused on athlete attributes and lifestyle. Survey respondents were additionally asked if CrossFit has been life changing, and this reponse can be used to isolate and guage the effect of attitude on performance.</p>
+```python
+#melting data for boxplots
+df_exp =  pd.melt(df, id_vars=['total_lift'], var_name='experience', value_vars=['exp_lt6mo','exp_6to12mo','exp_1to2yrs','exp_2to4yrs','exp_4plus','total_lift'])
+df_exp = df_exp[df_exp!=0].dropna()
+df_freq = pd.melt(df, id_vars=['total_lift'], var_name='freq', value_vars=['sched_0extra','sched_1extra','sched_2extra','sched_3extra'])
+df_freq = df_freq[df_freq!=0].dropna()
+df_rest = pd.melt(df, id_vars=['total_lift'], var_name='rest', value_vars=['rest_plus', 'rest_minus'])
+df_rest = df_rest[df_rest!=0].dropna()
+df_hist = pd.melt(df, id_vars=['total_lift'], var_name='hist', value_vars=['high_school','college','pro','no_background','rec'])
+df_hist = df_hist[df_hist!=0].dropna()
+df_start = pd.melt(df, id_vars=['total_lift'], var_name='start', value_vars=['exp_alone','exp_coach'])
+df_start = df_start[df_start!=0].dropna()
+df_eat = pd.melt(df, id_vars=['total_lift'], var_name='eat', value_vars=['eat_quality','eat_cheat','eat_weigh','eat_paleo','eat_conv'])
+df_eat = df_eat[df_eat!=0].dropna()
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">changed</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">life_changing</span><span class="sh">'</span><span class="p">].</span><span class="nf">sum</span><span class="p">()</span>
-<span class="n">not_changed</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">changed</span> <span class="c1">#non-answers are considered non-life changing responses
-</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">pie</span><span class="p">([</span><span class="n">not_changed</span><span class="p">,</span> <span class="n">changed</span><span class="p">],</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Not life changing</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Life changing</span><span class="sh">'</span><span class="p">])</span>
+y_label = 'Body weights lifted (total)'
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">life_changing</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="n">total_lift</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Total Lift (bodyweight)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Is crossfit lifechanging?</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
+#box plots of above figures 
+fig, axs = plt.subplots(nrows=2, ncols=3, sharey=True, figsize=(14,9))
 
-<p><img src="\assets\img\crossfit_explore\output_52_0.png" alt="life changing"></p>
+for ax in axs.flatten()[1:]:
+    ax.yaxis.label.set_visible(False)
+    #ax.yaxis.set_ticks([])
+    
+ax1 = plt.subplot(2,3,1)
+sns.boxplot(data = df_exp, x='experience',y='total_lift')
+ax1.set_xticklabels(('&lt;0.5','0.5-1','1-2','2-4','4+'))
+ax1.set_xlabel('Years')
+ax1.set_ylabel(y_label)
+ax1.set_title('Crossfit age')
+ax2 = plt.subplot(2,3,2)    
+sns.boxplot(data=df_freq, x='freq',y='total_lift')
+ax2.set_xticklabels(('0','1','2','3+'))
+ax2.set_xlabel('Frequency per week')
+ax2.set_title('Two-a-day frequency')
+ax3 = plt.subplot(2,3,3)    
+sns.boxplot(data=df_rest, x='rest',y='total_lift')
+ax3.set_xticklabels(('&lt;4','4+'))
+ax3.set_title('Rest days')
+ax3.set_xlabel('Days per month')
+ax4 = plt.subplot(2,3,4) 
+sns.boxplot(data=df_start,x='start',y='total_lift')
+ax4.set_xticklabels(('No','Yes'))
+ax4.set_xlabel('')
+ax4.set_title('Started with coach')
+ax4.yaxis.label.set_visible(True)
+ax4.set_ylabel(y_label)
+ax5 = plt.subplot(2,3,5)    
+sns.boxplot(data=df_hist, x='hist',y='total_lift')
+ax5.set_xticklabels(('High \nschool','College','Pro','None','Rec. \nsports'))
+ax5.set_xlabel('')
+ax5.set_title('Athletic history')
+ax6 = plt.subplot(2,3,6)    
+sns.boxplot(data=df_eat, x='eat',y='total_lift')
+ax6.set_xticklabels(('Eats \nquality','Cheat \nmeals','Measures \nfood','Paleo','Eats \nconvenience'))
+ax6.set_xlabel('')
+ax6.set_title('Eating habits')
+plt.tight_layout()
+```
 
-<p>Interestingly, strong positive attitudes towards CrossFit do not appear to correlate with improved performance. This is counter intuitive as enjoying the ritual and community of CrossFit should increase the likelihood of continuing to train and participate in CrossFit.</p>
+
+![lifestyle data](\assets\img\crossfit_explore\output_49_0.png)    
+    
+
+
+CrossFit age (years doing CrossFit), frequency of two-a-day session, taking sufficient rest days, and athletic background all correlate with improved athletic performance as would be expected from conventional knowledge. Interestingly, starting CrossFit alone rather than at a facility with a coach appears to also correlate with improved performance. This is perhaps indirectly a result of self-starting athletes having a stronger athletic history. Reported eating habits, however, do not appear strongly correlated with performance. 
 
 <h2><br></h2>
-<h2 id="feature-correlation">Feature correlation</h2>
+<h2>Has CrossFit been life changing?</h2>
 
-<p>The Pearson correlation coefficient is a statistical measure that quantifies the strength and direction of the linear relationship between two continuous variables. It ranges from -1 to 1, where a value of 1 indicates a perfect positive correlation, -1 indicates a perfect negative correlation, and 0 indicates no linear correlation. Frequency of two-a-day training sessions, completing a level 1 certification, starting CrossFit alone, and working as a CrossFit trainer are all correlated to improved performance, while having no athletic background prior to CrossFit is correlated to worse performance.</p>
+Previous analysis focused on athlete attributes and lifestyle. Survey respondents were additionally asked if CrossFit has been life changing, and this reponse can be used to isolate and guage the effect of attitude on performance. 
 
-<p>The strong non-linear correlations between performance and BMI and age are not captured in the above matrix. It is important to note that the Pearson correlation coefficient only measures linear relationships and may not capture non-linear associations or other types of relationships between variables.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Heat map 
-</span>
-<span class="c1">#optimizng range for color scale
-</span><span class="n">vmin</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">().</span><span class="nf">min</span><span class="p">().</span><span class="nf">min</span><span class="p">()</span>
-<span class="n">vmax</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">()[</span><span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">()</span><span class="o">!=</span><span class="mi">1</span><span class="p">].</span><span class="nf">max</span><span class="p">().</span><span class="nf">max</span><span class="p">()</span>
+```python
+changed = df['life_changing'].sum()
+not_changed = df.shape[0]-changed #non-answers are considered non-life changing responses
 
-<span class="c1">#thresholding selected correlations
-</span><span class="n">df_corr</span>  <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">backsq</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">deadlift</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">candj</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">snatch</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">exp_start_nr</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">sched_nr</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">rest_nr</span><span class="sh">'</span><span class="p">]).</span><span class="nf">corr</span><span class="p">()[</span><span class="n">np</span><span class="p">.</span><span class="nf">absolute</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">())</span><span class="o">&gt;</span><span class="mf">0.2</span><span class="p">]</span>
+plt.subplot(1,2,1)
+plt.pie([not_changed, changed],labels=['Not life changing','Life changing'])
 
-<span class="c1">#Mask for selecting only bottom triangle
-</span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">triu</span><span class="p">(</span><span class="n">df_corr</span><span class="p">)</span>
+plt.subplot(1,2,2)
+sns.boxplot(x = df.life_changing, y=df.total_lift)
+plt.ylabel('Total Lift (bodyweight)')
+plt.xlabel('Is crossfit lifechanging?')
+plt.tight_layout()
+```
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="c1">#plt.style.context('default')
-</span><span class="n">sns</span><span class="p">.</span><span class="nf">heatmap</span><span class="p">(</span><span class="n">df_corr</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span><span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="sh">'</span><span class="s">seismic</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">grid</span><span class="p">()</span>
-<span class="c1">#print(mask)
-</span></code></pre></div></div>
 
-<p><img src="\assets\img\crossfit_explore\output_55_1.png" alt="correlation matrix"></p>
+![life changing](\assets\img\crossfit_explore\output_52_0.png)    
+    
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#pickeling cleaned data
-</span><span class="n">df</span><span class="p">.</span><span class="nf">to_pickle</span><span class="p">(</span><span class="sh">'</span><span class="s">cleaned_cf_data.pkl</span><span class="sh">'</span><span class="p">)</span>
-</code></pre></div></div>
+
+Interestingly, strong positive attitudes towards CrossFit do not appear to correlate with improved performance. This is counter intuitive as enjoying the ritual and community of CrossFit should increase the likelihood of continuing to train and participate in CrossFit.
+
+<h2>
+<br>/h2&lt;&gt;
+<h2>Feature correlation</h2>
+
+The Pearson correlation coefficient is a statistical measure that quantifies the strength and direction of the linear relationship between two continuous variables. It ranges from -1 to 1, where a value of 1 indicates a perfect positive correlation, -1 indicates a perfect negative correlation, and 0 indicates no linear correlation. Frequency of two-a-day training sessions, completing a level 1 certification, starting CrossFit alone, and working as a CrossFit trainer are all correlated to improved performance, while having no athletic background prior to CrossFit is correlated to worse performance. 
+
+The strong non-linear correlations between performance and BMI and age are not captured in the above matrix. It is important to note that the Pearson correlation coefficient only measures linear relationships and may not capture non-linear associations or other types of relationships between variables.
+
+
+```python
+#Heat map 
+
+#optimizng range for color scale
+vmin = df.corr().min().min()
+vmax = df.corr()[df.corr()!=1].max().max()
+
+#thresholding selected correlations
+df_corr  = df.drop(columns=['backsq','deadlift','candj','snatch','exp_start_nr','sched_nr','rest_nr']).corr()[np.absolute(df.corr())&gt;0.2]
+
+#Mask for selecting only bottom triangle
+mask = np.triu(df_corr)
+
+plt.figure(figsize=(15,10))
+#plt.style.context('default')
+sns.heatmap(df_corr,vmin=vmin, vmax=vmax,mask=mask,cmap='seismic')
+plt.grid()
+#print(mask)
+```
+    
+![correlation matrix](\assets\img\crossfit_explore\output_55_1.png)
+
+
+```python
+#pickeling cleaned data
+df.to_pickle('cleaned_cf_data.pkl')
+```
 <h2><br></h2>
-<h2 id="conclusion-and-recommendations">Conclusion and recommendations</h2>
+<h2>Conclusion and recommendations</h2>
 
-<p>The results of this investigation indicate that key factors for CrossFit athlete performance are body composition, age, and gender. Other contributing factors include CrossFit age (years doing CrossFit), frequency of two-a-day sessions, taking sufficient rest days, and athletic background. Interestingly, passion for CrossFit and dietary choices did not correlate with athlete performance.</p>
+The results of this investigation indicate that key factors for CrossFit athlete performance are body composition, age, and gender. Other contributing factors include CrossFit age (years doing CrossFit), frequency of two-a-day sessions, taking sufficient rest days, and athletic background. Interestingly, passion for CrossFit and dietary choices did not correlate with athlete performance. 
 
-<p>CrossFit athletes are encouraged to follow a paleo diet. A modern paleo diet includes fruits, vegetables, lean meats, eggs, nuts and seeds and is not calorie or macro based. However, adherence to a paleo diet is uncorrelated with athlete performance. To better understand how athlete diet influences performance, additional questions could be added to future surveys. For example, caloric intake and protein consumption may be better predictors of performance, as sufficient protein and fuel are required to build and maintain muscle. If these features can be correlated with improved performance, CrossFit as an organization may have sufficient grounds to restructure their dietary recommendations for athletes.</p>
+CrossFit athletes are encouraged to follow a paleo diet. A modern paleo diet includes fruits, vegetables, lean meats, eggs, nuts and seeds and is not calorie or macro based. However, adherence to a paleo diet is uncorrelated with athlete performance. To better understand how athlete diet influences performance, additional questions could be added to future surveys. For example, caloric intake and protein consumption may be better predictors of performance, as sufficient protein and fuel are required to build and maintain muscle. If these features can be correlated with improved performance, CrossFit as an organization may have sufficient grounds to restructure their dietary recommendations for athletes. 
 
-<p>Finally, this data indicates that the key factors for athlete performance are largely predetermined by age and gender. However, there are key take aways for athletes seeking to improve their performance from their baseline:</p>
-<ul>
-  <li>
-    <p>Athletes should target lean body compositions and BMIs of 23 kg/m<sup>2</sup> and 27 mg/m<sup>2</sup> for females and males respectively.</p>
-  </li>
-  <li>
-    <p>Training should be managed for long-term adherence to CrossFit. While taking an overly aggressive approach to training may seem advantageous, the data indicates that there is a high risk of burnout or injury after four years, while performance continues to improve with CrossFit experience.</p>
-  </li>
-  <li>
-    <p>Adding two-a-day training sessions is beneficial to performance with no apparent risk of overtraining.</p>
-  </li>
-  <li>
-    <p>Taking one rest day a week will improve performance without adverse effects.</p>
-  </li>
-</ul>
+Finally, this data indicates that the key factors for athlete performance are largely predetermined by age and gender. However, there are key take aways for athletes seeking to improve their performance from their baseline: 
+- Athletes should target lean body compositions and BMIs of 23 kg/m<sup>2</sup> and 27 mg/m<sup>2</sup> for females and males respectively.
 
+- Training should be managed for long-term adherence to CrossFit. While taking an overly aggressive approach to training may seem advantageous, the data indicates that there is a high risk of burnout or injury after four years, while performance continues to improve with CrossFit experience. 
+
+- Adding two-a-day training sessions is beneficial to performance with no apparent risk of overtraining. 
+
+- Taking one rest day a week will improve performance without adverse effects. 
+
+</h2>
+</h2>
+</h2>
 
           </article>
 
