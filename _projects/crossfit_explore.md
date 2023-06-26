@@ -285,7 +285,7 @@ msno.matrix(df, figsize=(14,6),fontsize=11);
     
 
 <h2><br></h2>
-<h2>Data cleaning<h2>
+<h2>Data cleaning</h2>
 
 ### Event selection
 Data that is not relevant to our analysis was removed from consideration along with the less frequently performed fitness events. It was necessary to remove these less common events to maintain a large dataset.
