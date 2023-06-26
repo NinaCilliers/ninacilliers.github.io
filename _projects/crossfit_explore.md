@@ -3,13 +3,13 @@ layout: page
 title: A data-based approach to CrossFit training
 description: CrossFit game data is explored and analyzed and used to improve athlete preparation.
 img: assets/img/project_previews/crossfit_explore.png
-importance: 1
+importance: 2
 category: fun
 ---
 
 # A data-based approach to CrossFit training 
 
-## Project Overview
+<h2>Project Overview</h2>
 
 CrossFit is a high-intensity fitness program that combines elements of weightlifting, cardio, and gymnastics. It aims to improve overall physical fitness by incorporating constantly varied functional movements performed at a high intensity. At the pinnacle of CrossFit is the CrossFit Games, an annual competition that showcases the world's fittest athletes. The CrossFit Games serve as a platform for elite athletes to test their skills and compete in a wide range of demanding workouts, challenging their strength, speed, power, and mental resilience. In this analysis, we will delve into the performance of CrossFit athletes, examining key factors that contribute to their success in this highly demanding and competitive sport.  
 
@@ -18,7 +18,7 @@ In this comprehensive review of survey data from the CrossFit games, we first cl
 The dataset used in this project was provided by Ulrik Pedersen and can be found on [Kaggle](https://www.kaggle.com/datasets/ulrikthygepedersen/crossfit-athletes).
 
 <h2><br></h2>
-## Project outline 
+<h2>Project outline</h2>
 
  - Data overview 
  - Data cleaning 
@@ -39,7 +39,8 @@ The dataset used in this project was provided by Ulrik Pedersen and can be found
 - Feature correlation 
 - Conclusions and recommendations  
 
-### Data overview
+<h2><br></h2>
+<h2>Data overview</h2>
 
 
 ```python
@@ -284,7 +285,7 @@ msno.matrix(df, figsize=(14,6),fontsize=11);
     
 
 <h2><br></h2>
-## Data cleaning
+<h2>Data cleaning<h2>
 
 ### Event selection
 Data that is not relevant to our analysis was removed from consideration along with the less frequently performed fitness events. It was necessary to remove these less common events to maintain a large dataset.
@@ -450,7 +451,7 @@ df['US'] = np.where((df['region'].isin(US_regions)),1,0)
 df['gender_'] = np.where(df['gender']=='Male',1,0)
 ```
 <h2><br></h2>
-## Feature Engineering
+<h2>Feature Engineering</h2>
 
 ### Normalizing lifts
 
@@ -476,7 +477,7 @@ df['BMI'] = df['weight']*0.453592/np.square(df['height']*0.0254)
 df = df[(df['BMI']>=17)&(df['BMI']<=50)]#considers only underweight - morbidly obese competitors
 ```
 <h2><br></h2>
-## Event performance
+<h2>Event performance</h2>
 
 Before exploring responses, we examine the normalized performance for the male and female athletes surveyed. The distributions are approximately normal in all cases, but the snatch and clean and jerk events have a wider distribution. This is likely the result of the importance of technique in these events, which leads to wider variation in addition to natural differences in strength.
 
@@ -527,7 +528,7 @@ plt.xlabel(xlabel);
 ![total lift data](\assets\img\crossfit_explore\output_27_0.png)    
 
 <h2><br></h2>
-## Athlete demographics and performance
+<h2>Athlete demographics and performance</h2>
 
 Athlete demographics were collected as part of provided survey:
 - Gender 
@@ -740,7 +741,7 @@ plt.show()
     
 
 <h2><br></h2>
-## Lifestyle factors
+<h2>Lifestyle factors</h2>
 
 Training and lifestyle choices are important factors for athlete performance. The following factors were surveyed:
 
@@ -903,7 +904,7 @@ plt.tight_layout()
 CrossFit age (years doing CrossFit), frequency of two-a-day session, taking sufficient rest days, and athletic background all correlate with improved athletic performance as would be expected from conventional knowledge. Interestingly, starting CrossFit alone rather than at a facility with a coach appears to also correlate with improved performance. This is perhaps indirectly a result of self-starting athletes having a stronger athletic history. Reported eating habits, however, do not appear strongly correlated with performance. 
 
 <h2><br></h2>
-## Has CrossFit been life changing? 
+<h2>Has CrossFit been life changing?</h2>
 
 Previous analysis focused on athlete attributes and lifestyle. Survey respondents were additionally asked if CrossFit has been life changing, and this reponse can be used to isolate and guage the effect of attitude on performance. 
 
@@ -929,8 +930,8 @@ plt.tight_layout()
 
 Interestingly, strong positive attitudes towards CrossFit do not appear to correlate with improved performance. This is counter intuitive as enjoying the ritual and community of CrossFit should increase the likelihood of continuing to train and participate in CrossFit.
 
-<h2><br></h2>
-## Feature correlation
+<h2><br>/h2<>
+<h2>Feature correlation</h2>
 
 The Pearson correlation coefficient is a statistical measure that quantifies the strength and direction of the linear relationship between two continuous variables. It ranges from -1 to 1, where a value of 1 indicates a perfect positive correlation, -1 indicates a perfect negative correlation, and 0 indicates no linear correlation. Frequency of two-a-day training sessions, completing a level 1 certification, starting CrossFit alone, and working as a CrossFit trainer are all correlated to improved performance, while having no athletic background prior to CrossFit is correlated to worse performance. 
 
@@ -965,7 +966,7 @@ plt.grid()
 df.to_pickle('cleaned_cf_data.pkl')
 ```
 <h2><br></h2>
-## Conclusion and recommendations
+<h2>Conclusion and recommendations</h2>
 
 The results of this investigation indicate that key factors for CrossFit athlete performance are body composition, age, and gender. Other contributing factors include CrossFit age (years doing CrossFit), frequency of two-a-day sessions, taking sufficient rest days, and athletic background. Interestingly, passion for CrossFit and dietary choices did not correlate with athlete performance. 
 

@@ -3,7 +3,7 @@ layout: page
 title: Handwritten digit classification with 99.6% accuracy using a convolutional neural network
 description: A small convolutional neural network is built to decode the MNIST 784 dataset. The final model was trained in ~30 minutes and achieved 99.6% accuracy. A smart data augmentation strategy is the key to the model's high accuracy. 
 img: assets/img/mnist_data_aug/output_10_0.png
-importance: 4
+importance: 5
 category: fun
 ---
 

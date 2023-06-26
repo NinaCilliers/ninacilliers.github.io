@@ -3,7 +3,7 @@ layout: page
 title: An optimized pipeline for Airbnb price prediction
 description: A pipeline is developed to predict Airbnb rental Airbnb prices in Europe. The performance of six data preprocessing strategies was evaluated in nine models against two error metrics. 
 img: assets/img/project_previews/airbnb_pipeline.png
-importance: 3
+importance: 4
 category: fun
 ---
 
