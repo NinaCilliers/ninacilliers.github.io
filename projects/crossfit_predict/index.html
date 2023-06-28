@@ -139,8 +139,10 @@
   <li>XGBoost</li>
   <li>Neural network
 <br>
-The XGBoost and the random forest models are known to work well with tabular data, and all of these models are suitable for capturing non-linear dependencies. In order to benchmark the performance of these models, their performance was compared with my ability to predict total lift from the provided data.</li>
+</li>
 </ul>
+
+<p>The XGBoost and the random forest models are known to work well with tabular data, and all of these models are suitable for capturing non-linear dependencies. In order to benchmark the performance of these models, their performance was compared with my ability to predict total lift from the provided data.</p>
 
 <h2><br></h2>
 <h2>Project outline</h2>
@@ -774,10 +776,8 @@ memory usage: 8.5+ MB
 <br>
 <br>
 <img src="https://docs.aws.amazon.com/images/sagemaker/latest/dg/images/xgboost_illustration.png">
-&lt;/br&gt;
 <br>
-Image from <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowItWorks.html" rel="external nofollow noopener" target="_blank">AWS, How XGBoost Works</a>
-&lt;/br&gt;</p>
+Image from <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowItWorks.html" rel="external nofollow noopener" target="_blank">AWS, How XGBoost Works</a></p>
 
 <p>XGBoost has been shown to be highly accurate, often out-performing other models in Kaggle competitions. Optimizations to the XGBoost algorithm underlie this predictive power. For example, XGBoost grows trees up to a specifiable maximum depth and prunes backwards to improve model fit. This is unlike other algorithms that build trees from the top down and stop once a negative loss is encountered on a single splitting step using a “greedy” algorithm. Additionally, there is built in regularization to avoid overfitting and capacity for parallelization.</p>
 
