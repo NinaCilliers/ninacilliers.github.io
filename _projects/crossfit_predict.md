@@ -24,6 +24,7 @@ In this project, we will predict total weight lifted in four events normalized b
 -	XGBoost
 -	Neural network
 <br>
+
 The XGBoost and the random forest models are known to work well with tabular data, and all of these models are suitable for capturing non-linear dependencies. In order to benchmark the performance of these models, their performance was compared with my ability to predict total lift from the provided data. 
 
 <h2><br></h2>
@@ -582,10 +583,8 @@ XGBoost stands for eXtreme gradient boosting and is a gradient boosted trees alg
 <br>
 <br>
 <img src="https://docs.aws.amazon.com/images/sagemaker/latest/dg/images/xgboost_illustration.png" />
-</br>
 <br>
 Image from [AWS, How XGBoost Works](https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowItWorks.html)
-</br>
 
 XGBoost has been shown to be highly accurate, often out-performing other models in Kaggle competitions. Optimizations to the XGBoost algorithm underlie this predictive power. For example, XGBoost grows trees up to a specifiable maximum depth and prunes backwards to improve model fit. This is unlike other algorithms that build trees from the top down and stop once a negative loss is encountered on a single splitting step using a "greedy" algorithm. Additionally, there is built in regularization to avoid overfitting and capacity for parallelization.
 
