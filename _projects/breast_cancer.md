@@ -4,7 +4,7 @@ title: Extracting genetic drivers of breast cancer mortality
 description: Binary classifiers are combined to extract key genetic drivers of breast cancer patient mortality.
 img: assets/img/breast_cancer/output_59_0.png
 importance: 2
-category: fun
+category: Scikit-learn
 ---
 
 <h1>Extracting genetic drivers of breast cancer mortality from binary classifiers </h1>

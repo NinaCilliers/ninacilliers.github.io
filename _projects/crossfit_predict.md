@@ -4,7 +4,7 @@ title: Predicting CrossFit performance
 description: Models are built and optimized to predict the total weight lifted by athletes in the CrossFit games. 
 img: assets/img/project_previews/crossfit_predict.png
 importance: 3
-category: fun
+category: Scikit-learn
 ---
 
 # Predicting CrossFit performance

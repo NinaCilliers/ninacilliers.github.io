@@ -4,7 +4,7 @@ title: A data-based approach to CrossFit training
 description: CrossFit game data is explored and analyzed and used to improve athlete preparation.
 img: assets/img/project_previews/crossfit_explore.png
 importance: 2
-category: fun
+category: Scikit-learn
 ---
 
 # A data-based approach to CrossFit training 
@@ -973,7 +973,9 @@ The results of this investigation indicate that key factors for CrossFit athlete
 CrossFit athletes are encouraged to follow a paleo diet. A modern paleo diet includes fruits, vegetables, lean meats, eggs, nuts and seeds and is not calorie or macro based. However, adherence to a paleo diet is uncorrelated with athlete performance. To better understand how athlete diet influences performance, additional questions could be added to future surveys. For example, caloric intake and protein consumption may be better predictors of performance, as sufficient protein and fuel are required to build and maintain muscle. If these features can be correlated with improved performance, CrossFit as an organization may have sufficient grounds to restructure their dietary recommendations for athletes. 
 
 Finally, this data indicates that the key factors for athlete performance are largely predetermined by age and gender. However, there are key take aways for athletes seeking to improve their performance from their baseline: 
-- Athletes should target lean body compositions and BMIs of 23 kg/m<sup>2</sup> and 27 mg/m<sup>2</sup> for females and males respectively.
+- Athletes should target lean body compositions and BMIs of 23 kg/m<sup>2</sup> and 27 mg/m<sup>
+
+2</sup> for females and males respectively.
 
 - Training should be managed for long-term adherence to CrossFit. While taking an overly aggressive approach to training may seem advantageous, the data indicates that there is a high risk of burnout or injury after four years, while performance continues to improve with CrossFit experience. 
 

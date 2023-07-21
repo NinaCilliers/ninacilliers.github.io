@@ -4,7 +4,7 @@ title: Painting with convolutional neural networks
 description: A novel image is generated with distinct user selected style and content.
 img: /assets/img/style_transfer/output_44_0.png
 importance: 1
-category: fun
+category: Deep learning
 ---
 
 <h1>Painting with convolutional neural networks</h1>
