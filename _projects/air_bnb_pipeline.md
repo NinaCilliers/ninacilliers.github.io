@@ -63,17 +63,22 @@ from sklearn import set_config
 
 
 ```python
-plt.style.use('ggplot')
-pd.set_option('display.max_columns', 100)
-#set_config(transform_output="pandas") #doesn't work here :(
-```
+<details>
+  <summary>System settings and directory</summary>
 
+  plt.style.use('ggplot')
+  pd.set_option('display.max_columns', 100)
+  #set_config(transform_output="pandas") #doesn't work here :(
+  ```
+</details>
 
 ```python
 os.chdir('/kaggle/input/airbnb-cleaned-europe-dataset')
 df = pd.read_csv('Aemf1.csv')
 df
 ```
+
+
 
 
 
