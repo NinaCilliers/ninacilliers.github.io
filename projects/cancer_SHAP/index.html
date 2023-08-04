@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Getting into SHAP | Nina  Cilliers</title>
+    <meta name="author" content="Nina  Cilliers">
+    <meta name="description" content="Genetic drivers of breast cancer mortality are extracted from a black-box model as SHAP values.">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://ninacilliers.github.io/projects/cancer_SHAP/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Nina </span>Cilliers</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">Projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/repositories/">Repositories</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        <!-- page.html -->
+        <style>
+          img {
+            max-width: 100%
+          }
+        </style>
+        <div class="post">
+
+          <article>
+            <h1>Getting into SHAP</h1>
+<h4><i>Identifying drivers of breast cancer related mortality with SHAP values</i></h4>
+<h3><br></h3>
+<h2>Introduction</h2>
+<p>In this project we use SHAP values to assess the drivers of breast cancer mortality from the Molecular Taxonomy of Breast Cancer International Consortium, <a href="https://www.kaggle.com/datasets/raghadalharbi/breast-cancer-gene-expression-profiles-metabric" rel="external nofollow noopener" target="_blank">(METABRIC) database</a>. The METABRIC database is a Canada-UK Project which contains targeted sequencing data of 1,980 primary breast cancer samples originally downloaded from <a href="https://www.cbioportal.org/" rel="external nofollow noopener" target="_blank">cBioPortal</a> and available on Kaggle.  A full understanding of the genetic underpinnings of cancer would enable scientists to develop effective treatments for each target and clinicians to select optimal treatment strategies. A full exploration of this dataset and development of predictive model can be found in <a href="https://ninacilliers.github.io/projects/breast_cancer/">Extracting genetic causes of breast cancer mortality from binary classifiers</a>. We first present needed context for the interpretation of SHAP values.</p>
+
+<h3><br></h3>
+<h3>What is game theory? </h3>
+<p>Game theory is a branch of mathematics and economics that deals with the study of strategic decision-making in situations where the outcome of one individual’s choices depends on the actions of others. It provides a framework to analyze interactions between rational agents and the strategies they employ to achieve their objectives. In the context of machine learning and explainable AI, SHAP values draw inspiration from game theory principles to attribute contributions to each feature in a prediction, allowing for a more interpretable and transparent understanding of the model’s decision-making process.</p>
+<h3><br></h3>
+
+<h3>What is a SHAP  value?</h3>
+<p>A SHAP value (SHapley Additive exPlanations) is a concept from cooperative game theory that has been adapted for use in machine learning and explainable artificial intelligence (AI). The idea is to attribute the prediction outcome to the individual features by considering all possible feature combinations and calculating their respective contributions. These contributions are then combined to provide a comprehensive and coherent explanation of the model’s decision. This can explain predictions made by complex models, such as machine learning models. SHAP values can be positive or negative, depending on the relationship between the target and the feature. The magnitude of the SHAP value indicates the contribution of the feature.</p>
+<h3><br></h3>
+
+<h3>How are SHAP values used?</h3>
+
+<ul>
+  <li>
+<b> Model validation </b> - Understanding how a model works increases user trust.
+<br>
+</li>
+  <li>
+<b>Debugging</b> - Interpretability allows for easier identification of errors.
+<br>
+</li>
+  <li>
+<b>Bias reduction</b> - Models that are used to make real-world decisions can be evaluated for bias. 
+<br>
+</li>
+  <li>
+<b>Scientific understanding</b> - Key features can be identified for further exploration by 
+scientists and researchers.
+<br>
+</li>
+  <li>
+<b>Local interpretability</b> - Factors influencing individual predictions can be examined.</li>
+</ul>
+<h3><br></h3>
+
+<h3>What conditions must SHAP values satisfy?</h3>
+<p>The SHAP value applies primarily in situations when the contributions of each actor are unequal, but they work in cooperation with each other to obtain the payoff.</p>
+
+<ul>
+  <li>All the gains from cooperation are distributed among the players—none is wasted.</li>
+  <li>Players that make equal contributions receive equal payoffs.</li>
+  <li>The game cannot be divided into a set of smaller games that together achieve greater total gains</li>
+  <li>A player that makes zero marginal contribution to the gains from cooperation receives zero payoff.</li>
+</ul>
+
+<h3><br></h3>
+
+<h3>How do SHAP values differ from permutation importances?</h3>
+<p>Permutation importance is based on the decrease in model performance after scrambling the values of a feature, while SHAP importance is based on the magnitude of feature attributions. To assess feature importance by permutation, the values of a single feature are shuffled and the resulting drop in model performance is taken to represent the feature importance. The greater the drop in performance, the more important the feature is considered to be. Permutation importance does not offer local interpretability and is often less consistent. Permutation importance is computationally less intensive as only one case is considered per feature importance, whereas the computing time for SHAP values grows exponentially with feature number.</p>
+<h3><br></h3>
+
+<h3>How are SHAP values calculated?</h3>
+<p>The equation to compute the SHAP value of a single feature (A) is presented below with annotation, from <a href="http://adamlineberry.ai/shap/" rel="external nofollow noopener" target="_blank">[1]</a>. Here, the contribution of A is considered in a collation of features A,B, and C. Possible arrangements with A in the first, second and third position and shown. These permutations are grouped into four coalitions, each with a distinct functional value before A is added to the set. The difference in predicted value of the model after and before A is added to the coalition is weighted by the probability the given arrangement of A,B and C occurs and summed over all coalitions. <br><br></p>
+
+<p><img src="/assets/img/cancer_shap/shapley-equation.png" alt="png"><br></p>
+
+<p>In the above equation, F is the set of all features, so in this case F={A,B,C}. S is a subset of features. A single dash ‘\’ denotes ‘without.’ The fractional perfector in the sum indicates the probability of a coalition, and the term in brackets represent A’s contribution to the coalition.
+<br><br></p>
+
+<h3><br></h3>
+<h3>What is the computational cost of SHAP value determination?</h3>
+<p>Computing a single SHAP value requires sampling many coalitions. The computation time for SHAP value determination grows exponentially with feature number using the equation shown above, which would make calculations intractable on datasets with many features. Luckily approximate methods and optimizations are available, such as the Kernel SHAP method in Python’s SHAP package, which will be used here. Kernel SHAP uses a special weighted linear regression to compute the importance of each feature. The coefficients from this local linear regression are SHAP values.</p>
+
+<h2><br></h2>
+<h2>Project Outline</h2>
+
+<ol>
+  <li>Feature importance from SHAP<br>
+    <ul>
+      <li>SHAP values are determined using the SHAP kernel method in the Python SHAP package. <br>
+</li>
+      <li>Local SHAP values for distinct patient outcomes are visualized. <br>
+</li>
+      <li>Global SNAP values are visualized in force and beeswarm plots. <br><br>
+</li>
+    </ul>
+  </li>
+  <li>Comparison to permutation importance scores <br>
+    <ul>
+      <li>Feature importances from permutation and SHAP indicate that similar features underly breast cancer mortality. <br>
+</li>
+      <li>Additional features identified by SHAP are contextualized in the existing clinical breast cancer research space.</li>
+    </ul>
+  </li>
+</ol>
+
+<h2><br></h2>
+<h2>Feature importance from SHAP</h2>
+<h3><br></h3>
+<h3>Calculating SHAP value using Kernel SHAP</h3>
+<p><br></p>
+
+<details>
+  <summary>Click to expand hidden code. </summary>
+
+  <pre>
+  import pickle
+  import shap
+  import pandas as pd
+  shap.initjs()
+  </pre>
+
+  <pre>
+  #loading cleaned data from previous project
+  _ = pickle.load(open('./test_train_cancer_data.pickle', 'rb'))
+  X_train= _[0]
+  y_train = _[1]
+  X_test = _[2]
+  y_test = _[3]
+  </pre>
+
+  <pre>
+  #loading trained model from previous project
+  model = pickle.load(open('./svc_cancer_model.pickle','rb'))
+  </pre>
+
+</details>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#load or calculate SHAP values 
+</span><span class="k">try</span><span class="p">:</span> 
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">shap.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">rb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">pickle</span><span class="p">.</span><span class="nf">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="p">.</span><span class="nc">KernelExplainer</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">predict</span><span class="p">,</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="n">shap_values</span> <span class="o">=</span> <span class="nf">explainer</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">shap.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Exploring local SHAP values</h3>
+<p>Local SHAP values are shown in waterfall plots for two cases. In the first case, the model predicts survival, and in the second case the model predicts mortality. Each plot starts at the average expected value of the model and shows the pathway to the predicted output. The value in grey next to the feature name indicates the local value of each feature. These plots could be generated for each patient to help doctors develop custom treatment plans for patients.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#preidicted survival
+</span><span class="n">shap</span><span class="p">.</span><span class="n">plots</span><span class="p">.</span><span class="nf">waterfall</span><span class="p">(</span><span class="n">shap_values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">max_display</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/cancer_SHAP/output_6_0.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#preidicted mortality
+</span><span class="n">shap</span><span class="p">.</span><span class="n">plots</span><span class="p">.</span><span class="nf">waterfall</span><span class="p">(</span><span class="n">shap_values</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">max_display</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/cancer_SHAP/output_7_0.png" alt="png"></p>
+
+<h3><br></h3>
+<h3>Exploring global SHAP values</h3>
+
+<p>The force plot is a useful way to view all local SHAP values. In the above waterfall plots, the local SHAP value of features is spatially stratified. The same information can be condensed into a force plot, shown below for case 1 above. We see the path to the predicted value in one dimension with the input from every feature shown as a blue or red arrow:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">shap</span><span class="p">.</span><span class="n">plots</span><span class="p">.</span><span class="nf">force</span><span class="p">(</span><span class="n">shap_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</code></pre></div></div>
+<p><img src="/assets/img/cancer_SHAP/force_plot_local.png" alt="png"></p>
+
+<p>Individual force plots are combined into an interactive global plot by stacking all local force plots together and rotating vertically. Samples can be arranged by predicted model value or by any input feature on the x-axis, and the SHAP values of all features or individual features can be selected for visualization on the y-axis. Here we order the samples by age at diagnosis from youngest to oldest, and visualize all local SHAP values. We see the model shift from predicting survival to death along the x-axis:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">shap</span><span class="p">.</span><span class="n">plots</span><span class="p">.</span><span class="nf">force</span><span class="p">(</span><span class="n">shap_values</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/cancer_SHAP/force_plot_all.png" alt="png"></p>
+
+<p>We also look at the average SHAP value of features by averaging the absolute value of local SHAP values for each feature. The directionality of each SHAP value is lost, but we gain an efficient summary of what is important to the model globally:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">shap</span><span class="p">.</span><span class="n">plots</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span><span class="n">max_display</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/cancer_SHAP/output_13_0.png" alt="png"><br></p>
+
+<p>Using a beeswarm plot, we visualize global SHAP averages as in the above plot with directional and distributional information. Each local SHAP value is plotted a single point against the x-axis, and recurring SHAP values are stacked vertically for each feature. The resulting stacking and clustering of local SHAP values enables us to view the global distribution. The color of each point is set by the value of each individual feature, so that relatively high feature values are red and relatively low feature values are blue. Thus, we can visualize the functional relationship between feature and predicted output For example, we see that the probability of mortality increases with age but that the probability of  mortality decreases with bbc3 gene expression level.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">shap</span><span class="p">.</span><span class="n">plots</span><span class="p">.</span><span class="nf">beeswarm</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span><span class="n">max_display</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/cancer_SHAP/output_15_1.png" alt="png"><br></p>
+
+<h2><br></h2>
+<h2>Comparison to permutation importance scores</h2>
+
+<p>Feature importances from permutation were previously determined in <a href="">Extracting genetic causes of breast cancer mortality from binary classifiers</a>, and a summarizing figure is shown below:</p>
+
+<p><img src="/assets/img/cancer_SHAP/permutation_importance.png" alt="img"></p>
+
+<p>Several features are identified by both techniques:</p>
+<ul>
+  <li>Age at diagnosis</li>
+  <li>BBC3</li>
+  <li>CDKN2A</li>
+  <li>INHBA</li>
+  <li>STAT5A</li>
+  <li>CHEK2</li>
+  <li>SIK1</li>
+  <li>ALK</li>
+</ul>
+
+<p>Other features are only identified by SHAP:</p>
+<ul>
+  <li>Positive lymph nodes</li>
+  <li>Tumor size</li>
+  <li>KDR</li>
+  <li>WFDC5</li>
+  <li>DNAH2</li>
+  <li>RAD50</li>
+  <li>NCOA3</li>
+  <li>SMAD2</li>
+  <li>HRAS</li>
+  <li>SMARCD1</li>
+</ul>
+
+<p>And others are only identified by permutation:</p>
+<ul>
+  <li>cohort 1 and 3</li>
+  <li>Tumor stage</li>
+  <li>Surgery type (mastectomy)</li>
+  <li>CASP8</li>
+  <li>JAK1</li>
+  <li>NOTCH3</li>
+  <li>NRIP1</li>
+  <li>CDKN2C</li>
+  <li>E2F6</li>
+  <li>GATA</li>
+</ul>
+
+<p>Correlations between both positive lymph nodes and tumor size and mortality were identified previously during EDA, and the emergence of these features as significant by SHAP value analysis is not surprising. The genes of importance to both models and permutations were <a href="https://ninacilliers.github.io/projects/breast_cancer/">previously explored</a>. The top 5 genes identified by SHAP value analysis are explored below:</p>
+
+<ol>
+  <li>
+<strong>KDR</strong>  - Kinase insert domain receptor (KDR) is the primary vascular endothelial growth factor receptor mediating survival, growth, and migration of endothelial cells and is expressed in tumor cells. Favorable prognosis has been observed when KDR is highly expressed, and expression levels of another gene ANLN are low <a href="https://doi.org/10.3389/fgene.2019.00790" rel="external nofollow noopener" target="_blank">[2]</a> <br><br>
+</li>
+  <li>
+<strong>WFDC5</strong> - The role of WFDC5 expression in breast cancer has not been extensively investigated. The WFDC5 protein is a member of the whey acidic protein (WAP) domain with a four-disulfide core, which is characteristic of protease inhibition. WFDC5 has been shown to be upregulated in genes unerong induced apoptosis <a href="https://doi.org/10.1006/bbrc.1999.1123" rel="external nofollow noopener" target="_blank">[3]</a>.<br><br>
+</li>
+  <li>
+<strong>DNAH2</strong> - DNAH2 is a member of the dynein axonemal heavy chain (DNAH) family of genes involved in cell motility, and mutations are frequently reported in malignant tumors and may increase the efficacy of chemotherapy <a href="https://doi.org/10.1186/s12967-019-1867-6" rel="external nofollow noopener" target="_blank">[4]</a>. The relationship between DNAH2 and breast cancer has not been extensively studied. <br><br>
+</li>
+  <li>
+<strong>RAD50</strong> - The RAD50 protein is essential for cell growth and viability and is involved in DNA double-strand break repair. RAD50 germline mutations are associated with poor survival in BRCA1/2-negative breast cancer patients <a href="https://doi.org/10.1002/ijc.31579" rel="external nofollow noopener" target="_blank">[5]</a>.<br>
+</li>
+</ol>
+
+<h2><br></h2>
+<h2>Works referenced </h2>
+
+<ol>
+  <li>Getting Up to Speed with SHAP for Model Interpretability. Adam Lindeberry, Machine Learning Blog, 2022. http://adamlineberry.ai/shap/.</li>
+  <li>Dai, X., Mei, Y., Chen, X., &amp; Cai, D. (2018). ANLN and KDR Are Jointly Prognostic of Breast Cancer Survival and Can Be Modulated for Triple Negative Breast Cancer Control. Frontiers in Genetics, 10.</li>
+  <li>Horikoshi, N., Cong, J., Kley, N., &amp; Shenk, T. (1999). Isolation of Differentially Expressed cDNAs from p53-Dependent Apoptotic Cells: Activation of the Human Homologue of the Drosophila Peroxidasin Gene. Biochemical and Biophysical Research Communications, 261(3), 864-869.</li>
+  <li>Zhu, C., Yang, Q., Xu, J. et al. Somatic mutation of DNAH genes implicated higher chemotherapy response rate in gastric adenocarcinoma patients. J Transl Med 17, 109 (2019).</li>
+  <li>Fan, C., Zhang, J., Ouyang, T., Li, J., Wang, T., Fan, Z., Fan, T., Lin, B., &amp; Xie, Y. (2018). RAD50 germline mutations are associated with poor survival in BRCA1/2-negative breast cancer patients. International journal of cancer, 143(8), 1935–1942.</li>
+</ol>
+
+          </article>
+
+        </div>
+      
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Nina  Cilliers. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank" rel="external nofollow noopener">Unsplash</a>.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js"></script>
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js"></script>
+  <script defer src="/assets/js/common.js"></script>
+  <script defer src="/assets/js/copy_code.js" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>
