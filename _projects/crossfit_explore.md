@@ -1,8 +1,8 @@
 ---
 layout: page
 title: A data-based approach to CrossFit training
-description: CrossFit game data is explored and analyzed and used to improve athlete preparation.
-img: assets/img/project_previews/crossfit_explore.png
+description: Messy survey data is tranformed into usable training advice for CrossFit athletes.
+img: /assets/img/rossfit_explore/crossfit_image.jpg
 importance: 2
 category: Scikit-learn
 ---
