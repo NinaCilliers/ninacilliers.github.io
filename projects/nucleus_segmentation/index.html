@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Nucleus segmentation with UNet | Nina  Cilliers</title>
+    <meta name="author" content="Nina  Cilliers">
+    <meta name="description" content="A model with UNet architecture is built for semantic segmentation of cell nuclei microscopy image and evaluated against traditional Otsu thresholding.">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://ninacilliers.github.io/projects/nucleus_segmentation/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Nina </span>Cilliers</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">Projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/repositories/">Repositories</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        <!-- page.html -->
+        <style>
+          img {
+            max-width: 100%
+          }
+        </style>
+        <div class="post">
+
+          <article>
+            <h1>Nucleus segmentation with UNet </h1>
+<h4><i>Semantic segmentation vs. Otsu thresholding </i></h4>
+<h4><br></h4>
+<h2> Introduction </h2>
+<p>Microscopy image segmentation is of paramount significance in image processing, particularly for images featuring cell nuclei. This essential initial step involves partitioning the image into distinct regions, each corresponding to specific objects of interest, such as individual nuclei. Accurate segmentation of nuclei is crucial for applications like cell counting, tracking, and cancer diagnosis. It enables researchers to analyze cellular structures and functions more deeply, advancing biomedical research and medical treatments. Automation of data analysis through segmentation enhances efficiency and reliability, benefiting fields like genetics, pathology, and drug development. Overall, microscopy image segmentation plays a pivotal role in unlocking valuable insights from microscopic data and driving scientific. <br><br>
+The microscopy image dataset we are using to train and test our model contains many segmented nuclei images. The images were acquired under a variety of conditions and vary in the cell type, magnification, and imaging modality (brightfield vs. fluorescence). The dataset is designed to challenge an algorithm’s ability to generalize across these variations. Additionally, lower quality images are provided without masks for final manual performance comparison. The dataset comes from the 2018 Data Science Bowl on <a href="https://kaggle.com/competitions/data-science-bowl-2018" rel="external nofollow noopener" target="_blank">Kaggle</a> and was originally provided by Allen Goodman and team.<br><br></p>
+
+<p>Traditionally, segmentation is done manually by scientists using the ImageJ software package. Researchers manually outline the regions of interest. Researchers carefully trace the boundaries of individual nuclei in the image, and then the software creates a closed region based on the drawn outline. If the object of interest has a distinct intensity profile, image thresholding may offer a faster alternative. Otsu thresholding is a popular thresholding technique that will be used as a baseline for model performance. <br></p>
+
+<blockquote>
+  <h4><b>What is Otsu Thresholding?</b></h4>
+  <p>Otsu thresholding automatically determines an optimal threshold value to convert a grayscale image into a binary image. Otsu’s method calculates the threshold value by maximizing the variance between two classes of pixels: the object and the background. The algorithm works by iterating over all possible threshold values and computing the variance for each threshold. The threshold that results in the maximum inter-class variance is then selected as the optimal threshold to segment the image into foreground and background regions. This means that one thresholding operation can be used for images with different lighting.</p>
+
+  <p><img src="https://scipy-lectures.org/_images/sphx_glr_plot_threshold_001.png" alt="png"><br>
+<a href="https://scipy-lectures.org/packages/scikit-image/auto_examples/plot_threshold.html" rel="external nofollow noopener" target="_blank">Otsu thresholding</a></p>
+</blockquote>
+
+<p>We create a model with a U-net architecture to segment microscopy images. The model was built intentionally to accommodate the limited computational resources of most experimental scientists and can be quickly trained. Thus, we can quickly segment large batches of realistic microscopy images taken at different imaging conditions. UNet performs semantic segmentation, which means that segmentation is not based on population intensity differences but on high-level patterns.</p>
+
+<blockquote>
+
+  <h4> <b>What is UNet?</b>
+</h4>
+  <p>We build a fast UNet using MobileNetV2 to encode microscopy images and the pix2pix network to decode the encoded image into a segmented image. Skip connections are used to transfer image details to the decoding network. This architecture is based on the segmentation <a href="https://www.tensorflow.org/tutorials/generative/pix2pix" rel="external nofollow noopener" target="_blank">doumentation</a> provided by TensorFlow.</p>
+
+  <p>The pix2pix network is used as the decoding network. This network is a conditional generative adversarial network (cGAN) that learns mapping from input images to output images based on the work by <a href="https://arxiv.org/abs/1611.07004" rel="external nofollow noopener" target="_blank">Isola et al. 2017</a>. The GAN model architecture combines two sub-models, a generator for generating new examples and a discriminator that classifies the generated models as real or fake. These models compete against each other, to generate realistic fake images and discern the real from the fake respectively. In conditional GANS, additional information is provided, in this case pixel class on which the sub-models are conditioned. Below is an example of output generated by the pix2pix cGAN on a facade dataset:
+<br>
+<img src="https://www.tensorflow.org/images/gan/pix2pix_1.png" alt="img">
+<br>
+<a href="https://www.tensorflow.org/tutorials/generative/pix2pix" rel="external nofollow noopener" target="_blank">Tensorflow pix2pix documentation</a></p>
+</blockquote>
+<p><br></p>
+
+<p>Our final model performs similarly to Otsu thresholding in precision, recall and dice loss on high quality images in our test set. Also, we evaluate the ability of our final model to segment real microscopy images of mixed quality. We do not have true masks for this real image set, so the performance is assessed by comparison manually. Our semantic segmentation model is able to discern noise from image quality defects whereas the Otsu model is not. Thus, we expect our model to outperform Otsu thresholding in real situations. Adding lower quality data to the training set would significantly boost UNet’s performance, as we are currently training on cleaner images than our use-case, which is not ideal.</p>
+
+<h2><br></h2>
+<h2>Project outline</h2>
+
+<h4>1. Data preparation </h4>
+
+<ul>
+  <li>Microscopy images are imported, resized, and converted to grey scale.</li>
+  <li>Masks of individually segmented nuclei are combined into one mask for each image.</li>
+</ul>
+
+<h4>2. Visualizing data augmentation </h4>
+
+<ul>
+  <li>Image augmentation strategies are selected for trial.</li>
+  <li>The resulting images after augmentation are visualized. 
+<br>
+</li>
+</ul>
+<h4>3. Otsu segmentation </h4>
+
+<ul>
+  <li>Images are manually segmented using an Otsu threshold to mimic the capabilities of scientists using ImageJ.</li>
+</ul>
+
+<h4>4. Building segmentation model</h4>
+
+<ul>
+  <li>An image segmentation model is built with a Unet architecture.</li>
+  <li>MobilenetV2 is used as an encoding network, and the pix2pix network is used as a decoding network.</li>
+  <li>Optimal class weights and loss function are identified.</li>
+  <li>Performance metrics are selected including precision, recall and the dice coefficient.</li>
+</ul>
+
+<h4>5. Optimizing image augmentation strategy</h4>
+
+<ul>
+  <li>The effect of image augmentation on model performance was assessed.</li>
+  <li>A mixture of all selected augmentations outperformed other models and the test set.</li>
+</ul>
+
+<h4>6. Fine-tuning selected model</h4>
+
+<ul>
+  <li>Final model is optimized with additional training using callbacks.</li>
+  <li>Performance of final model on real microscopy images is visualized.</li>
+  <li>Final model matches Otsu thresholding’s performance on clean images and is superior on low quality images.</li>
+</ul>
+<h2><br></h2>
+<h2>Data Preparation</h2>
+<h3>Importing microscopy images</h3>
+
+<details>
+    <summary>Click to expand hidden code. </summary>
+
+    <pre>
+    from PIL import Image
+    from PIL import ImageFilter
+
+    import tensorflow as tf
+    import keras
+    from keras.layers import Input, SeparableConv2D, BatchNormalization, Dropout, MaxPooling2D, Conv2DTranspose, Activation, concatenate, Conv2D
+    from tensorflow_examples.models.pix2pix import pix2pix
+    from keras.callbacks import ModelCheckpoint, EarlyStopping
+    from keras.models import Model
+    from keras.optimizers import Adam
+    from keras.callbacks import EarlyStopping, ModelCheckpoint
+
+    import os
+    import pandas as pd
+    from sklearn.metrics import precision_score, accuracy_score, recall_score
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from skimage.filters import threshold_otsu
+    import pickle
+    </pre>
+
+    <pre>
+    os.chdir('C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\nucleus_segmentation')
+    </pre>
+</details>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ImageImport</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">img_size</span><span class="p">,</span> <span class="n">path_name</span><span class="p">,</span><span class="n">show</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">img_size</span> <span class="o">=</span> <span class="n">img_size</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">path_name</span> <span class="o">=</span> <span class="n">path_name</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">show</span> <span class="o">=</span> <span class="n">show</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="nf">clean_imgs</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">X</span>
+
+    <span class="k">def</span> <span class="nf">clean_imgs</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="nf">next</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="nf">walk</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">path_name</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1">#X = np.zeros((len(ids),self.img_size,self.img_size,1))
+</span>        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">((</span><span class="nf">len</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span><span class="n">self</span><span class="p">.</span><span class="n">img_size</span><span class="p">,</span><span class="n">self</span><span class="p">.</span><span class="n">img_size</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">path_name</span><span class="o">+</span><span class="sh">'</span><span class="s">/</span><span class="sh">'</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="sh">'</span><span class="s">/images/</span><span class="sh">'</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="sh">'</span><span class="s">.png</span><span class="sh">'</span>
+            <span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">repeat</span><span class="p">((</span><span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">Image</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="nf">resize</span><span class="p">((</span><span class="n">self</span><span class="p">.</span><span class="n">img_size</span><span class="p">,</span><span class="n">self</span><span class="p">.</span><span class="n">img_size</span><span class="p">)).</span><span class="nf">convert</span><span class="p">(</span><span class="sh">'</span><span class="s">L</span><span class="sh">'</span><span class="p">))</span><span class="o">/</span><span class="mi">255</span><span class="p">)[:,:,</span><span class="bp">None</span><span class="p">],</span><span class="mi">3</span><span class="p">,</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1">#X[n] = np.array(Image.open(path).convert('L').resize((self.img_size,self.img_size)))[:,:,None]/255
+</span>            <span class="nf">if </span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">show</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">):</span>
+                <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">plt</span><span class="p">.</span><span class="nf">imshow</span><span class="p">(</span><span class="n">orig_img</span><span class="p">)</span>
+                <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">plt</span><span class="p">.</span><span class="nf">imshow</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+                <span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">train_path</span> <span class="o">=</span> <span class="sh">'</span><span class="s">./stage1_train</span><span class="sh">'</span>
+<span class="n">real_path</span> <span class="o">=</span> <span class="sh">'</span><span class="s">./stage2_test_final</span><span class="sh">'</span>
+<span class="n">img_size</span> <span class="o">=</span> <span class="mi">128</span>
+</code></pre></div></div>
+<h3><br></h3>
+<h3>Combining masks into target</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">combine_masks</span><span class="p">(</span><span class="n">path_name</span><span class="p">,</span><span class="n">img_size</span><span class="p">):</span>
+    <span class="n">train_ids</span> <span class="o">=</span> <span class="nf">next</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="nf">walk</span><span class="p">(</span><span class="n">path_name</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">((</span><span class="nf">len</span><span class="p">(</span><span class="n">train_ids</span><span class="p">),</span><span class="n">img_size</span><span class="p">,</span><span class="n">img_size</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">filename</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">train_ids</span><span class="p">):</span>
+        <span class="n">path_name</span> <span class="o">=</span> <span class="n">train_path</span><span class="o">+</span><span class="sh">'</span><span class="s">/</span><span class="sh">'</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="sh">'</span><span class="s">/masks</span><span class="sh">'</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="nf">next</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="nf">walk</span><span class="p">(</span><span class="n">path_name</span><span class="p">))[</span><span class="mi">2</span><span class="p">]</span> <span class="c1">#lists mask files in each stage1_train file
+</span>        <span class="n">y_full</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">((</span><span class="nf">len</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span><span class="n">img_size</span><span class="p">,</span><span class="n">img_size</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">m</span><span class="p">,</span><span class="nb">id</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span> 
+            <span class="n">mask_name</span> <span class="o">=</span> <span class="n">path_name</span><span class="o">+</span><span class="sh">'</span><span class="s">/</span><span class="sh">'</span><span class="o">+</span><span class="nb">id</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">Image</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="n">mask_name</span><span class="p">).</span><span class="nf">resize</span><span class="p">((</span><span class="n">img_size</span><span class="p">,</span><span class="n">img_size</span><span class="p">)))[:,:,</span><span class="bp">None</span><span class="p">]</span>
+            <span class="n">y_full</span><span class="p">[</span><span class="n">m</span><span class="p">,:,:,:]</span> <span class="o">=</span> <span class="n">img</span><span class="o">/</span><span class="mi">255</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">,:,:,:]</span> <span class="o">=</span> <span class="n">y_full</span><span class="p">.</span><span class="nf">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">y</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">y.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">rb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pickle</span><span class="p">.</span><span class="nf">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="nf">combine_masks</span><span class="p">(</span><span class="n">train_path</span><span class="p">,</span><span class="n">img_size</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">y.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+</code></pre></div></div>
+<h3><br></h3>
+<h3>Creating test, validation and train sets</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Assigning test and train sets
+</span>
+<span class="c1">#loading X
+</span><span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">X.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">rb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">pickle</span><span class="p">.</span><span class="nf">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="nc">ImageImport</span><span class="p">(</span><span class="n">img_size</span><span class="p">,</span> <span class="n">train_path</span><span class="p">)()</span>
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">X.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+
+<span class="c1">#loading X_real
+</span><span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">X_real.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">rb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">X_real</span> <span class="o">=</span> <span class="n">pickle</span><span class="p">.</span><span class="nf">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">X_real</span> <span class="o">=</span> <span class="nc">ImageImport</span><span class="p">(</span><span class="n">img_size</span><span class="p">,</span> <span class="n">real_path</span><span class="p">)()</span>
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">X_real.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="n">X_real</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+
+<span class="n">data_size</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">train_size</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="n">data_size</span><span class="o">*</span><span class="p">.</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">valid_size</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="n">data_size</span><span class="o">*</span><span class="p">.</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="n">train_size</span><span class="p">],</span> <span class="n">y</span><span class="p">[:</span><span class="n">train_size</span><span class="p">]</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span><span class="o">+</span><span class="n">valid_size</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span><span class="o">+</span><span class="n">valid_size</span><span class="p">]</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">train_size</span><span class="o">+</span><span class="n">valid_size</span><span class="p">:],</span><span class="n">y</span><span class="p">[</span><span class="n">train_size</span><span class="o">+</span><span class="n">valid_size</span><span class="p">:]</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Original size of x and y: </span><span class="si">{</span><span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="s">,</span><span class="si">{</span><span class="n">y</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Shape of train set: </span><span class="si">{</span><span class="n">X_train</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="s">,</span><span class="si">{</span><span class="n">y_train</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Shape of validation set: </span><span class="si">{</span><span class="n">X_valid</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="s">,</span><span class="si">{</span><span class="n">y_valid</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Shape of test set: </span><span class="si">{</span><span class="n">X_test</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="s">,</span><span class="si">{</span><span class="n">y_test</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Original size of x and y: (670, 128, 128, 3),(670, 128, 128, 1)
+Shape of train set: (536, 128, 128, 3),(536, 128, 128, 1)
+Shape of validation set: (67, 128, 128, 3),(67, 128, 128, 1)
+Shape of test set: (67, 128, 128, 3),(67, 128, 128, 1)
+</code></pre></div></div>
+
+<details>
+    <summary>Click to expand hidden code.</summary>
+    <pre>
+    #images and masks
+    row_max = 10
+
+    plt.figure(figsize=(10,3))
+    plt.suptitle('Images and masks:',size=16)
+    for num in range(1,row_max+1):
+        ax = plt.subplot(2,row_max,num)
+        plt.imshow(X[num])
+        plt.title(str(num))
+        ax.set_xticks([])
+        ax.set_yticks([])
+        if num == 1:
+            plt.ylabel('Image',rotation=90)
+        ax = plt.subplot(2,row_max,num+row_max)
+        plt.imshow(y[num])
+        ax.set_xticks([])
+        ax.set_yticks([])
+        if num == 1:
+            plt.ylabel('Mask',rotation=90)
+    plt.tight_layout()
+    </pre>
+    </details>
+
+<p><img src="/assets/img/nucleus_seg/output_11_0.png" alt="png"></p>
+
+<h2><br></h2>
+<h2>Data augmentation</h2>
+<h3><br></h3>
+<h3>Brightness</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BrightDistortion</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">brightness_delta</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="p">.</span><span class="mi">1</span><span class="p">,.</span><span class="mi">8</span><span class="p">)):</span>
+        <span class="nf">super</span><span class="p">().</span><span class="nf">__init__</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">brightness_delta</span> <span class="o">=</span> <span class="n">brightness_delta</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">img</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">training</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">img</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tf</span><span class="p">.</span><span class="nf">clip_by_value</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">image</span><span class="p">.</span><span class="nf">random_brightness</span><span class="p">(</span><span class="n">img</span><span class="p">,</span><span class="n">self</span><span class="p">.</span><span class="n">brightness_delta</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</code></pre></div></div>
+<details>
+    <summary>Click to expand hidden code.</summary>
+    <pre>
+    # plot brightness deltas
+    plt.figure(figsize=(10,3))
+    plt.suptitle('Brightness delta:',size=16)
+    brightness_trial = np.round(np.arange(0,21,1)/10-1,1)
+    for n,brightness in enumerate(brightness_trial):
+        img = tf.clip_by_value(tf.image.adjust_brightness(X[1],brightness),0,1)
+        ax = plt.subplot(2,11,n+1)
+        plt.title(brightness)
+        plt.imshow(img)
+        ax.set_xticks([])
+        ax.set_yticks([])
+    </pre>
+</details>
+
+<p><img src="/assets/img/nucleus_seg/output_15_0.png" alt="png"></p>
+
+<h3><br></h3>
+<h3>Contrast</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="n">contrast_aug</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Sequential</span><span class="p">([</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">RandomContrast</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="p">])</span>
+</code></pre></div></div>
+
+<details>
+    <summary>Click to expand hidden code.</summary>
+    <pre>
+    # plot random contrast deltas
+    plt.figure(figsize=(10,3))
+    plt.suptitle('Random sampling at select contrast factors:',size=16)
+    for n in range(30):
+        aug_img = tf.clip_by_value(contrast_aug(X[0]),0,1)
+        plt.subplot(3,10,n+1)
+        plt.imshow(aug_img)
+        plt.axis('off')
+    </pre>
+</details>
+
+<p><img src="/assets/img/nucleus_seg/output_18_0.png" alt="png"></p>
+
+<h3><br></h3>
+<h3>Shift</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">shift_aug</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Sequential</span><span class="p">([</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">RandomTranslation</span>
+    <span class="p">(</span><span class="n">height_factor</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,.</span><span class="mi">5</span><span class="p">),</span>
+    <span class="n">width_factor</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,.</span><span class="mi">5</span><span class="p">),</span>
+    <span class="n">fill_mode</span><span class="o">=</span><span class="sh">'</span><span class="s">constant</span><span class="sh">'</span><span class="p">)])</span>
+</code></pre></div></div>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    #plot shift
+    plt.figure(figsize=(10,3))
+    plt.suptitle('Random sapling at selected shift parameters:',size=16)
+    for n in range(30):
+        aug_img = shift_aug(X[0])
+        plt.subplot(3,10,n+1)
+        plt.imshow(aug_img)
+        plt.axis('off')
+    </pre>
+</details>
+
+<p><img src="/assets/img/nucleus_seg/output_21_0.png" alt="png"></p>
+
+<h3><br></h3>
+<h3>Blur</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BlurDistortion</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="nf">super</span><span class="p">().</span><span class="nf">__init__</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">radius</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">radius</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">imgs</span><span class="p">,</span><span class="n">training</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">training</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">imgs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">Image</span><span class="p">.</span><span class="nf">fromarray</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">uint8</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">255</span><span class="p">)).</span><span class="nf">filter</span><span class="p">(</span><span class="n">ImageFilter</span><span class="p">.</span><span class="nc">GaussianBlur</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">radius</span><span class="p">)))</span><span class="o">/</span><span class="mi">255</span>
+</code></pre></div></div>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    #plot blur radius
+    plt.figure(figsize=(10,1.75))
+    plt.suptitle('Blur radius:',size=16)
+    for num in range(1,11):
+        img= Image.fromarray(np.uint8(X[0]*255)).filter(ImageFilter.GaussianBlur(radius=num))
+        plt.subplot(1,10,num)
+        plt.imshow(np.array(img)/255)
+        plt.title(str(num))
+        plt.axis('off')
+    </pre>
+</details>
+
+<p><img src="/assets/img/nucleus_seg/output_24_0.png" alt="png"></p>
+
+<h3><br></h3>
+<h3>Otsu thresholding</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#ImageClean imports files, cleans and performs Otsu thresholding
+</span><span class="k">class</span> <span class="nc">ImageClean</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">img_size</span><span class="p">,</span> <span class="n">path_name</span><span class="p">,</span><span class="n">show</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">img_size</span> <span class="o">=</span> <span class="n">img_size</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">path_name</span> <span class="o">=</span> <span class="n">path_name</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">show</span> <span class="o">=</span> <span class="n">show</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">X</span> <span class="o">=</span> <span class="nc">ImageImport</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">img_size</span><span class="p">,</span><span class="n">self</span><span class="p">.</span><span class="n">path_name</span><span class="p">)()</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="nf">threshold_imgs</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="nf">invert_imgs</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">X_inverted</span>
+
+    <span class="k">def</span> <span class="nf">threshold_imgs</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">X_adjusted</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">img</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">X</span><span class="p">):</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="nf">threshold_otsu</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="p">(</span><span class="n">img</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">).</span><span class="nf">astype</span><span class="p">(</span><span class="sh">'</span><span class="s">uint8</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">X_adjusted</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">X_adjusted</span> <span class="o">=</span> <span class="n">X_adjusted</span>
+
+    <span class="k">def</span> <span class="nf">invert_imgs</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">X_inverted</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">X_adjusted</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">img</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">X_adjusted</span><span class="p">):</span>
+            <span class="n">mean_intensity</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">mean</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mean_intensity</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                <span class="n">img</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">img</span>
+            <span class="n">X_inverted</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">X_inverted</span> <span class="o">=</span> <span class="n">X_inverted</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#cleaning images
+</span><span class="n">X_clean</span> <span class="o">=</span> <span class="nc">ImageClean</span><span class="p">(</span><span class="n">img_size</span><span class="p">,</span> <span class="n">train_path</span><span class="p">,</span><span class="n">show</span><span class="o">=</span><span class="bp">False</span><span class="p">)()</span>
+<span class="n">X_real_clean</span> <span class="o">=</span> <span class="nc">ImageClean</span><span class="p">(</span><span class="n">img_size</span><span class="p">,</span> <span class="n">real_path</span><span class="p">,</span><span class="n">show</span><span class="o">=</span><span class="bp">False</span><span class="p">)()</span>
+<span class="n">X_test_clean</span> <span class="o">=</span> <span class="n">X_clean</span><span class="p">[</span><span class="n">train_size</span><span class="o">+</span><span class="n">valid_size</span><span class="p">:]</span>
+</code></pre></div></div>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    #plot real images + manual thresholds
+    plt.figure(figsize=(10,4))
+    plt.suptitle('Real Images',size=16)
+    for num in range(1,row_max+1):
+        ax = plt.subplot(2,row_max,num)
+        plt.imshow(X_real[num])
+        plt.title(str(num))
+        ax.set_xticks([])
+        ax.set_yticks([])
+        if num == 1:
+            plt.ylabel('Image',rotation=90)
+        ax = plt.subplot(2,row_max,num+row_max)
+        plt.imshow(X_real_clean[num])
+        ax.set_xticks([])
+        ax.set_yticks([])
+        if num == 1:
+            plt.ylabel('Manul mask',rotation=90)
+    plt.tight_layout()
+    </pre>
+</details>
+
+<p><img src="/assets/img/nucleus_seg/output_28_0.png" alt="png"></p>
+
+<h2><br></h2>
+<h2>Building segmentation model</h2>
+
+<h3>Model architecture</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#load encoding netowrk
+</span><span class="n">base_model</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">applications</span><span class="p">.</span><span class="nc">MobileNetV2</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">shape</span><span class="p">,</span><span class="n">include_top</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#select outputs for encoding netowrk 
+</span><span class="n">layer_names</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sh">'</span><span class="s">block_1_expand_relu</span><span class="sh">'</span><span class="p">,</span>   <span class="c1"># 64x64
+</span>    <span class="sh">'</span><span class="s">block_3_expand_relu</span><span class="sh">'</span><span class="p">,</span>   <span class="c1"># 32x32
+</span>    <span class="sh">'</span><span class="s">block_6_expand_relu</span><span class="sh">'</span><span class="p">,</span>   <span class="c1"># 16x16
+</span>    <span class="sh">'</span><span class="s">block_13_expand_relu</span><span class="sh">'</span><span class="p">,</span>  <span class="c1"># 8x8
+</span>    <span class="sh">'</span><span class="s">block_16_project</span><span class="sh">'</span><span class="p">,</span>      <span class="c1"># 4x4
+</span><span class="p">]</span>
+<span class="n">base_model_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_model</span><span class="p">.</span><span class="nf">get_layer</span><span class="p">(</span><span class="n">name</span><span class="p">).</span><span class="n">output</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">layer_names</span><span class="p">]</span>
+
+<span class="c1"># Create the feature extraction model
+</span><span class="n">down_stack</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">base_model</span><span class="p">.</span><span class="nb">input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">base_model_outputs</span><span class="p">)</span>
+
+<span class="n">down_stack</span><span class="p">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#load decoder network 
+#!pip install git+https://github.com/tensorflow/examples.git
+</span>
+<span class="n">up_stack</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">pix2pix</span><span class="p">.</span><span class="nf">upsample</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># 4x4 -&gt; 8x8
+</span>    <span class="n">pix2pix</span><span class="p">.</span><span class="nf">upsample</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># 8x8 -&gt; 16x16
+</span>    <span class="n">pix2pix</span><span class="p">.</span><span class="nf">upsample</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># 16x16 -&gt; 32x32
+</span>    <span class="n">pix2pix</span><span class="p">.</span><span class="nf">upsample</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>   <span class="c1"># 32x32 -&gt; 64x64
+</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#ubuilding unet model
+</span><span class="k">def</span> <span class="nf">unet_model</span><span class="p">(</span><span class="n">output_channels</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">blur</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">bright</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">brightness_delta</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="p">.</span><span class="mi">1</span><span class="p">,.</span><span class="mi">8</span><span class="p">),</span><span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">contrast_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">shift_factor</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">):</span>
+  <span class="n">inputs</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Identity</span><span class="p">()(</span><span class="n">inputs</span><span class="p">)</span> <span class="c1">#identity layer 
+</span>  
+  <span class="c1"># Data augmentation
+</span>  <span class="k">if</span> <span class="n">blur</span><span class="p">:</span> 
+    <span class="n">x</span> <span class="o">=</span> <span class="nc">BlurDistortion</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">contrast</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">RandomContrast</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="n">contrast_level</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">bright</span><span class="p">:</span> 
+    <span class="n">x</span> <span class="o">=</span> <span class="nc">BrightDistortion</span><span class="p">(</span><span class="n">brightness_delta</span><span class="o">=</span><span class="n">brightness_delta</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">shift</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">RandomTranslation</span><span class="p">(</span><span class="n">height_factor</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">shift_factor</span><span class="p">,</span><span class="n">shift_factor</span><span class="p">),</span>
+                                          <span class="n">width_factor</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">shift_factor</span><span class="p">,</span><span class="n">shift_factor</span><span class="p">),</span>
+                                          <span class="n">fill_mode</span><span class="o">=</span><span class="sh">'</span><span class="s">constant</span><span class="sh">'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+  
+  <span class="c1">#clips values 
+</span>  <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Lambda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">tf</span><span class="p">.</span><span class="nf">clip_by_value</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+
+  <span class="c1"># Downsampling through the model
+</span>  <span class="n">skips</span> <span class="o">=</span> <span class="nf">down_stack</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">skips</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
+  <span class="n">skips</span> <span class="o">=</span> <span class="nf">reversed</span><span class="p">(</span><span class="n">skips</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+  <span class="c1"># Upsampling and establishing the skip connections
+</span>  <span class="k">for</span> <span class="n">up</span><span class="p">,</span> <span class="n">skip</span> <span class="ow">in</span> <span class="nf">zip</span><span class="p">(</span><span class="n">up_stack</span><span class="p">,</span> <span class="n">skips</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nf">up</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">concat</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Concatenate</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nf">concat</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">skip</span><span class="p">])</span>
+
+  <span class="c1"># This is the last layer of the model
+</span>  <span class="n">last</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">Conv2DTranspose</span><span class="p">(</span>
+      <span class="n">filters</span><span class="o">=</span><span class="n">output_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+      <span class="n">padding</span><span class="o">=</span><span class="sh">'</span><span class="s">same</span><span class="sh">'</span><span class="p">)</span>  <span class="c1">#64x64 -&gt; 128x128
+</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="nf">last</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Selecting loss function</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#function for visualizing predicted mask
+</span>
+<span class="c1">#defining activation function
+</span><span class="k">def</span> <span class="nf">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">x</span><span class="p">))</span>
+
+<span class="c1">#thresholding image
+</span><span class="k">def</span> <span class="nf">make_mask</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="sh">'</span><span class="s">Predicted Mask</span><span class="sh">'</span><span class="p">,</span><span class="n">threshold</span><span class="o">=</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="n">pic</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> 
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">[</span><span class="n">pic</span><span class="p">:</span><span class="mi">1</span><span class="o">+</span><span class="n">pic</span><span class="p">,:,:,:],</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="nf">sigmoid</span><span class="p">(</span><span class="n">y_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">&gt;</span><span class="n">threshold</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">imshow</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">axis</span><span class="p">(</span><span class="sh">'</span><span class="s">off</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#functions for monitoring training, scoring test and scoring train sets
+</span>
+<span class="k">class</span> <span class="nc">training_losses</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">history</span><span class="p">,</span><span class="n">description</span><span class="p">,</span><span class="n">show</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">history</span> <span class="o">=</span> <span class="n">history</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">min_train_loss</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">min_val_loss</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">show</span> <span class="o">=</span> <span class="n">show</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">description</span><span class="o">=</span><span class="n">description</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>   
+        <span class="n">plt</span><span class="p">.</span><span class="n">style</span><span class="p">.</span><span class="nf">use</span><span class="p">(</span><span class="sh">'</span><span class="s">ggplot</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">history</span><span class="p">)):</span>
+            <span class="n">train_loss</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="n">n</span><span class="p">].</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">loss</span><span class="sh">'</span><span class="p">]</span>
+            <span class="n">val_loss</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">history</span><span class="p">[</span><span class="n">n</span><span class="p">].</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">val_loss</span><span class="sh">'</span><span class="p">]</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">min_train_loss</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">train_loss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">min_val_loss</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">val_loss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">train_epochs</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span>
+            <span class="n">val_epochs</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">val_loss</span><span class="p">)</span>
+
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="nf">range</span><span class="p">(</span><span class="n">train_epochs</span><span class="p">),</span><span class="n">train_loss</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">description</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Training loss</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Epoch</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="nf">range</span><span class="p">(</span><span class="n">val_epochs</span><span class="p">),</span><span class="n">val_loss</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">description</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Validation loss</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Epoch</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+            <span class="n">plt</span><span class="p">.</span><span class="n">show</span>
+
+        <span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="n">show</span><span class="p">:</span>
+            <span class="n">losses</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="nf">zip</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">min_train_loss</span><span class="p">,</span><span class="n">self</span><span class="p">.</span><span class="n">min_val_loss</span><span class="p">)),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Train loss</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Validation loss</span><span class="sh">'</span><span class="p">],</span><span class="n">index</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">description</span><span class="p">)</span>
+            <span class="n">losses</span><span class="p">.</span><span class="n">T</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Loss at last training epoch</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+
+
+<span class="k">class</span> <span class="nc">train_metrics</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">history</span><span class="p">,</span><span class="n">description</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">history</span> <span class="o">=</span> <span class="n">history</span>
+        <span class="c1">#self.accuracy = [history[n].history['val_accuracy'][-1] for n in range(len(history))]
+</span>        <span class="n">self</span><span class="p">.</span><span class="n">precision</span> <span class="o">=</span> <span class="p">[</span><span class="n">history</span><span class="p">[</span><span class="n">n</span><span class="p">].</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">val_precision</span><span class="sh">'</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">history</span><span class="p">))]</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">recall</span> <span class="o">=</span> <span class="p">[</span><span class="n">history</span><span class="p">[</span><span class="n">n</span><span class="p">].</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">val_recall</span><span class="sh">'</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">history</span><span class="p">))]</span>
+        <span class="c1">#self.iou = [history[n].history['val_iou_metric'][-1] for n in range(len(history))]
+</span>        <span class="n">self</span><span class="p">.</span><span class="n">dice</span> <span class="o">=</span> <span class="p">[</span><span class="n">history</span><span class="p">[</span><span class="n">n</span><span class="p">].</span><span class="n">history</span><span class="p">[</span><span class="sh">'</span><span class="s">val_dice_coeff</span><span class="sh">'</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">history</span><span class="p">))]</span>      
+        <span class="n">self</span><span class="p">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">style</span><span class="p">.</span><span class="nf">use</span><span class="p">(</span><span class="sh">'</span><span class="s">ggplot</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="nf">zip</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">precision</span><span class="p">,</span><span class="n">self</span><span class="p">.</span><span class="n">recall</span><span class="p">,</span><span class="n">self</span><span class="p">.</span><span class="n">dice</span><span class="p">)),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">precision</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">dice coeff</span><span class="sh">'</span><span class="p">],</span><span class="n">index</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">description</span><span class="p">)</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">.</span><span class="n">T</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Train metrics</span><span class="sh">'</span><span class="p">)</span>
+
+<span class="c1">#function for scoring test performance
+</span><span class="k">def</span> <span class="nf">score_test</span><span class="p">(</span><span class="n">models</span><span class="p">,</span><span class="n">description</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">):</span>
+    <span class="n">dice_score</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">iou_score</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">precision_score</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">accuracy_score</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">recall_score</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nf">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="nf">sigmoid</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">))</span>
+
+        <span class="n">precision</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Precision</span><span class="p">()</span>
+        <span class="n">precision</span><span class="p">.</span><span class="nf">update_state</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">precision_score</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">precision</span><span class="p">.</span><span class="nf">result</span><span class="p">().</span><span class="nf">numpy</span><span class="p">())</span>
+    
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Accuracy</span><span class="p">()</span>
+        <span class="n">accuracy</span><span class="p">.</span><span class="nf">update_state</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">accuracy_score</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">accuracy</span><span class="p">.</span><span class="nf">result</span><span class="p">().</span><span class="nf">numpy</span><span class="p">())</span>
+    
+        <span class="n">recall</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Recall</span><span class="p">()</span>
+        <span class="n">recall</span><span class="p">.</span><span class="nf">update_state</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">recall_score</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">recall</span><span class="p">.</span><span class="nf">result</span><span class="p">().</span><span class="nf">numpy</span><span class="p">())</span>
+
+        <span class="n">dice_</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1">#iou_ = 0
+</span>        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)):</span>
+            <span class="n">dice_</span> <span class="o">+=</span> <span class="nf">dice_coeff</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">n</span><span class="p">],</span><span class="n">y_pred</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+            <span class="c1">#iou_ += iou_metric(y_test[n],y_pred[n])
+</span>        <span class="n">dice_score</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">dice_</span><span class="p">.</span><span class="nf">numpy</span><span class="p">()</span><span class="o">/</span><span class="nf">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">))</span>
+        <span class="c1">#iou_score.append(iou_.numpy()/len(y_test))
+</span>
+    <span class="c1">#adding manual segmentation score
+</span>    <span class="n">new_description</span> <span class="o">=</span> <span class="n">description</span><span class="o">+</span><span class="p">[</span><span class="sh">'</span><span class="s">Manual Segmentation</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">X_test_clean</span> <span class="o">=</span> <span class="n">X_test_clean</span><span class="p">[:,:,:,:</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">precision</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Precision</span><span class="p">()</span>
+    <span class="n">precision</span><span class="p">.</span><span class="nf">update_state</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">)</span>
+    <span class="n">precision_score</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">precision</span><span class="p">.</span><span class="nf">result</span><span class="p">().</span><span class="nf">numpy</span><span class="p">())</span>
+
+    <span class="n">accuracy</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Accuracy</span><span class="p">()</span>
+    <span class="n">accuracy</span><span class="p">.</span><span class="nf">update_state</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">)</span>
+    <span class="n">accuracy_score</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">accuracy</span><span class="p">.</span><span class="nf">result</span><span class="p">().</span><span class="nf">numpy</span><span class="p">())</span>
+
+    <span class="n">recall</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Recall</span><span class="p">()</span>
+    <span class="n">recall</span><span class="p">.</span><span class="nf">update_state</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">)</span>
+    <span class="n">recall_score</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">recall</span><span class="p">.</span><span class="nf">result</span><span class="p">().</span><span class="nf">numpy</span><span class="p">())</span>
+
+    <span class="n">dice_</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#iou_ = 0
+</span>    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">X_test_clean</span><span class="p">)):</span>
+        <span class="n">dice_</span> <span class="o">+=</span> <span class="nf">dice_coeff</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">n</span><span class="p">],</span><span class="n">X_test_clean</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+        <span class="c1">#iou_ += iou_metric(y_test[n],X_test_clean[n])
+</span>    <span class="n">dice_score</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">dice_</span><span class="p">.</span><span class="nf">numpy</span><span class="p">()</span><span class="o">/</span><span class="nf">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">))</span>
+    <span class="c1">#iou_score.append(iou_.numpy()/len(y_test))
+</span>    
+    <span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">metrics</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="nf">zip</span><span class="p">(</span><span class="n">precision_score</span><span class="p">,</span><span class="n">recall_score</span><span class="p">,</span><span class="n">dice_score</span><span class="p">)),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">precision</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">dice coeff</span><span class="sh">'</span><span class="p">],</span><span class="n">index</span><span class="o">=</span><span class="n">new_description</span><span class="p">)</span>
+    <span class="n">losses</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="nf">zip</span><span class="p">(</span><span class="n">precision_score</span><span class="p">,</span><span class="n">recall_score</span><span class="p">,</span><span class="n">dice_score</span><span class="p">)),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">precision</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">dice coeff</span><span class="sh">'</span><span class="p">],</span><span class="n">index</span><span class="o">=</span><span class="n">new_description</span><span class="p">)</span>
+    <span class="n">metrics</span><span class="p">.</span><span class="n">T</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Test metrics</span><span class="sh">'</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+    
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#model metrics
+</span><span class="k">def</span> <span class="nf">dice_coeff</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span><span class="n">smooth</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">y_pred_f</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="nf">cast</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span><span class="sh">'</span><span class="s">float32</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">y_pred_f</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">math</span><span class="p">.</span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">y_pred_f</span><span class="p">)</span>
+    <span class="n">y_true_f</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="nf">cast</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span><span class="sh">'</span><span class="s">float32</span><span class="sh">'</span><span class="p">)</span>
+
+    <span class="n">intersection</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="nf">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">math</span><span class="p">.</span><span class="nf">multiply</span><span class="p">(</span><span class="n">y_true_f</span><span class="p">,</span><span class="n">y_pred_f</span><span class="p">))</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">math</span><span class="p">.</span><span class="nf">divide</span><span class="p">((</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">intersection</span> <span class="o">+</span> <span class="n">smooth</span><span class="p">),(</span><span class="n">tf</span><span class="p">.</span><span class="nf">reduce_sum</span><span class="p">(</span><span class="n">y_true_f</span><span class="p">)</span> <span class="o">+</span> <span class="n">tf</span><span class="p">.</span><span class="nf">reduce_sum</span><span class="p">(</span><span class="n">y_pred_f</span><span class="p">)</span> <span class="o">+</span> <span class="n">smooth</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">score</span>
+
+<span class="k">class</span> <span class="nc">dice_loss</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="n">Loss</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">smooth</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="nf">super</span><span class="p">().</span><span class="nf">__init__</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">smooth</span> <span class="o">=</span> <span class="n">smooth</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span><span class="n">y_pred</span><span class="p">):</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="nf">dice_coeff</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span><span class="n">smooth</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">smooth</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+<span class="k">class</span> <span class="nc">bce_dice_loss</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="n">Loss</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">smooth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nf">super</span><span class="p">().</span><span class="nf">__init__</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span><span class="n">y_pred</span><span class="p">):</span>
+        <span class="n">bce</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="nf">binary_crossentropy</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="nf">cast</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span><span class="sh">'</span><span class="s">float32</span><span class="sh">'</span><span class="p">),</span> <span class="n">tf</span><span class="p">.</span><span class="nf">cast</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span><span class="sh">'</span><span class="s">float32</span><span class="sh">'</span><span class="p">),</span><span class="n">from_logits</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">dice</span> <span class="o">=</span> <span class="nf">dice_loss</span><span class="p">(</span><span class="n">smooth</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">smooth</span><span class="p">)(</span><span class="n">y_true</span><span class="p">,</span><span class="n">y_pred</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bce</span><span class="o">+</span><span class="n">dice</span>
+<span class="sh">'''</span><span class="s">
+def iou_metric(y_true, y_pred):
+    y_true = tf.cast(y_true, </span><span class="sh">'</span><span class="s">float32</span><span class="sh">'</span><span class="s">)
+    y_pred = tf.cast(y_pred, </span><span class="sh">'</span><span class="s">float32</span><span class="sh">'</span><span class="s">)
+
+    intersection = tf.reduce_sum(tf.math.multiply(y_true,y_pred))
+    union = tf.math.subtract(tf.math.add(tf.reduce_sum(y_true),tf.reduce_sum(y_pred)),intersection)
+    tol = 1e-15
+    return tf.math.divide(tf.math.add(intersection,tol),(tf.math.add(union,tol)))
+</span><span class="sh">'''</span>
+
+<span class="sb">``</span><span class="err">`</span><span class="n">python</span>
+<span class="n">train_epochs</span> <span class="o">=</span> <span class="mi">30</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">loss_history</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">loss_models</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">loss_description</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">bce</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">dice</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">bce + dice</span><span class="sh">'</span><span class="p">]</span>
+<span class="n">losses</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="nc">BinaryCrossentropy</span><span class="p">(</span><span class="n">from_logits</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span><span class="nf">dice_loss</span><span class="p">(</span><span class="n">smooth</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span><span class="nf">bce_dice_loss</span><span class="p">(</span><span class="n">smooth</span><span class="o">=</span><span class="mi">100</span><span class="p">)]</span>
+<span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">losses</span><span class="p">)):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="nf">unet_model</span><span class="p">()</span>
+    <span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+                                            <span class="n">loss</span><span class="o">=</span><span class="n">losses</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> 
+                                            <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">dice_coeff</span><span class="p">,</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Precision</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">precision</span><span class="sh">'</span><span class="p">),</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Recall</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">),</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Accuracy</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">)])</span>
+    <span class="n">_loss_history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">train_epochs</span><span class="p">,</span><span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span><span class="n">y_valid</span><span class="p">),</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">loss_history</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">_loss_history</span><span class="p">)</span>
+    <span class="n">loss_models</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">count</span><span class="p">)</span>
+    <span class="nf">make_mask</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">loss_description</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+    <span class="n">count</span> <span class="o">+=</span><span class="mi">1</span>
+    <span class="n">loss_models</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_39_0.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">training_losses</span><span class="p">(</span><span class="n">loss_history</span><span class="p">,</span><span class="n">loss_description</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_40_0.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">train_metrics</span><span class="p">(</span><span class="n">loss_history</span><span class="p">,</span><span class="n">loss_description</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_41_1.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">score_test</span><span class="p">(</span><span class="n">loss_models</span><span class="p">,</span><span class="n">loss_description</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3/3 [==============================] - 1s 293ms/step
+3/3 [==============================] - 1s 292ms/step
+3/3 [==============================] - 1s 295ms/step
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_42_2.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">del</span> <span class="n">loss_models</span> 
+</code></pre></div></div>
+
+<p>We see a combination loss function of binary cross entropy and dice loss outperforms on the test set. This loss function will be used going forward.</p>
+
+<h3><br></h3>
+<h3>Selecting weights</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining class weights
+</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="p">[{</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">},{</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">},{</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">10000</span><span class="p">},{</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">1000000</span><span class="p">}]</span>
+<span class="n">weight_description</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">10000:1</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">1:1</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">1:1e4</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">1:1e6</span><span class="sh">'</span><span class="p">]</span>
+
+<span class="n">weight_history</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">weight_models</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    plt.suptitle('Class Ratios (0:1)',fontsize=16)
+    for n in range(len(weights)):
+        model = unet_model()
+        model.compile(tf.keras.optimizers.Adam(learning_rate=0.001),
+                                            loss=bce_dice_loss(smooth=100), 
+                                            metrics=[dice_coeff,tf.keras.metrics.Precision(name='precision'),tf.keras.metrics.Recall(name='recall')])
+
+        _weight_history = model.fit(X_train,y_train, epochs=train_epochs,validation_data=(X_valid,y_valid),class_weight = weights[n],verbose=0)
+        weight_history.append(_weight_history)
+        weight_models.append(model)
+        plt.subplot(2,3,count)
+        make_mask(model,weight_description[n],pic=8)
+        count += 1
+        weight_models[n] = model
+    </pre>
+</details>
+
+<p><img src="/assets/img/nucleus_seg/output_46_1.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">training_losses</span><span class="p">(</span><span class="n">weight_history</span><span class="p">,</span><span class="n">weight_description</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_47_0.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">train_metrics</span><span class="p">(</span><span class="n">weight_history</span><span class="p">,</span><span class="n">weight_description</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_48_1.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">score_test</span><span class="p">(</span><span class="n">weight_models</span><span class="p">,</span><span class="n">weight_description</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3/3 [==============================] - 1s 307ms/step
+3/3 [==============================] - 1s 300ms/step
+3/3 [==============================] - 1s 288ms/step
+3/3 [==============================] - 1s 282ms/step
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_49_2.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">weight_for_0</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">weight_for_1</span> <span class="o">=</span> <span class="mi">1000000</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">del</span> <span class="n">weight_models</span> 
+</code></pre></div></div>
+
+<p>We see that class weights of 1 and 1e6 for 0 and 1 respectively outperform on the test set and are used going forward.</p>
+
+<h3><br></h3>
+<h3>Selecting optimal image augmentation strategy</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#building models with different image segmentation strategies
+</span><span class="n">aug_models</span> <span class="o">=</span> <span class="p">[</span><span class="nf">unet_model</span><span class="p">(),</span>
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">bright</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">bright</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">brightness_delta</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="p">.</span><span class="mi">1</span><span class="p">,.</span><span class="mi">5</span><span class="p">)),</span>
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">bright</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">brightness_delta</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="p">.</span><span class="mi">1</span><span class="p">,.</span><span class="mi">2</span><span class="p">)),</span>
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">contrast</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> 
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">contrast</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">contrast_level</span> <span class="o">=</span> <span class="p">.</span><span class="mi">6</span><span class="p">),</span> 
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">contrast</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">contrast_level</span> <span class="o">=</span> <span class="p">.</span><span class="mi">2</span><span class="p">),</span> 
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">blur</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> 
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">blur</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">blur</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">6</span><span class="p">),</span>
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">shift_factor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">shift</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">shift_factor</span><span class="o">=</span><span class="mf">0.005</span><span class="p">),</span>
+     <span class="nf">unet_model</span><span class="p">(</span><span class="n">bright</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">brightness_delta</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="p">.</span><span class="mi">1</span><span class="p">,.</span><span class="mi">5</span><span class="p">),</span><span class="n">contrast</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">contrast_level</span><span class="o">=</span><span class="p">.</span><span class="mi">2</span><span class="p">,</span><span class="n">blur</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">shift</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">shift_factor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)]</span>
+
+<span class="n">aug_description</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">No augmentation</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Brightness - High</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Brightness - Medium</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Brightness - Low</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Contrast - High</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Contrast - Medium</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Contrast - Low</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Blur - Low</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Blur - Medium</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Blur - High</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Shift - Low</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Shift - High</span><span class="sh">'</span><span class="p">,</span>
+     <span class="sh">'</span><span class="s">Select augmentations</span><span class="sh">'</span><span class="p">]</span>
+
+<span class="k">assert</span> <span class="nf">len</span><span class="p">(</span><span class="n">aug_description</span><span class="p">)</span> <span class="o">==</span> <span class="nf">len</span><span class="p">(</span><span class="n">aug_models</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#training models
+</span><span class="n">aug_history</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">aug_models</span><span class="p">)):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">aug_models</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+    <span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+                                            <span class="n">loss</span><span class="o">=</span><span class="nf">bce_dice_loss</span><span class="p">(</span><span class="n">smooth</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+                                            <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">dice_coeff</span><span class="p">,</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Precision</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">precision</span><span class="sh">'</span><span class="p">),</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Recall</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">),</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Accuracy</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">)])</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Training </span><span class="sh">"</span><span class="o">+</span><span class="n">aug_description</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">+</span><span class="sh">'</span><span class="s">...</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">_history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">train_epochs</span><span class="p">,</span><span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span><span class="n">y_valid</span><span class="p">),</span><span class="n">class_weight</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="n">weight_for_0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="n">weight_for_1</span><span class="p">},</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">aug_history</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">_history</span><span class="p">)</span>
+    <span class="n">aug_models</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Training No augmentation...
+Training Brightness - High...
+Training Brightness - Medium...
+Training Brightness - Low...
+Training Contrast - High...
+Training Contrast - Medium...
+Training Contrast - Low...
+Training Blur - Low...
+Training Blur - Medium...
+Training Blur - High...
+Training Shift - Low...
+Training Shift - High...
+Training Select augmentations...
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">model</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">aug_models</span><span class="p">):</span>
+    <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="nf">int</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">ceil</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">aug_models</span><span class="p">)</span><span class="o">/</span><span class="mi">4</span><span class="p">)),</span><span class="n">count</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">+=</span><span class="mi">1</span>
+    <span class="nf">make_mask</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">aug_description</span><span class="p">[</span><span class="n">n</span><span class="p">],</span><span class="n">pic</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_56_1.png" alt="png"></p>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    #function for visualizing prediction results
+    def show_predictions(models,description,X_test,X_clean,img_num):
+        try:
+            row_num = len(models)
+        except:
+            row_num = 1
+        col_num = img_num 
+        count = 1
+
+        plt.figure(figsize=(10,4))
+        for n in range(img_num):
+            ax = plt.subplot(row_num+2,col_num,count)
+            plt.imshow(X_test[n])
+            count += 1
+            ax.set_xticks([])
+            ax.set_yticks([])
+            if n == 4:
+                plt.title('Image')
+
+        for n in range(row_num):
+            try:
+                y_pred = sigmoid(models[n].predict(X_test[:img_num+1]))&gt;0.5
+            except:
+                y_pred = sigmoid(models.predict(X_test[:img_num+1]))&gt;0.5
+            for m in range(img_num):
+                ax = plt.subplot(row_num+2,col_num,count)
+                count += 1
+                plt.imshow(y_pred[m])
+                ax.set_xticks([])
+                ax.set_yticks([])
+                if m == 4:
+                    plt.title(description[n])
+
+        for n in range(img_num):
+            ax = plt.subplot(row_num+2,col_num,count)
+            plt.imshow(X_clean[n])
+            count += 1
+            ax.set_xticks([])
+            ax.set_yticks([])
+            if n == 4:
+                plt.title('Manual segmentation')
+
+        plt.tight_layout()
+    </pre>
+</details>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#show segmentation with selected augmentations and Otsu thresholding
+</span><span class="nf">show_predictions</span><span class="p">(</span><span class="n">aug_models</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span><span class="n">aug_description</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span><span class="n">X_test</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1/1 [==============================] - 0s 184ms/step
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_64_1.png" alt="png"></p>
+<h3><br></h3>
+<h3> Augmentation model metrics</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">training_losses</span><span class="p">(</span><span class="n">aug_history</span><span class="p">,</span><span class="n">aug_description</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_58_0.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">train_metrics</span><span class="p">(</span><span class="n">aug_history</span><span class="p">,</span><span class="n">aug_description</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_59_1.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">score_test</span><span class="p">(</span><span class="n">aug_models</span><span class="p">,</span><span class="n">aug_description</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3/3 [==============================] - 1s 298ms/step
+3/3 [==============================] - 1s 271ms/step
+3/3 [==============================] - 1s 299ms/step
+3/3 [==============================] - 1s 270ms/step
+3/3 [==============================] - 1s 269ms/step
+3/3 [==============================] - 1s 269ms/step
+3/3 [==============================] - 1s 267ms/step
+3/3 [==============================] - 1s 272ms/step
+3/3 [==============================] - 1s 286ms/step
+3/3 [==============================] - 1s 267ms/step
+3/3 [==============================] - 1s 264ms/step
+3/3 [==============================] - 1s 265ms/step
+3/3 [==============================] - 1s 269ms/step
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_60_2.png" alt="png"></p>
+
+<p>We see that a comination of select augmentations performs offers a significant performance boost. This model is selected as our final model and will be fine tuned to optimize performance.</p>
+
+<h2><br></h2>
+<h2>Fine-tuning selected model</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining learning rate decay schedule
+</span><span class="k">def</span> <span class="nf">scheduler</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">lr</span><span class="p">):</span>
+  <span class="k">if</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">lr</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">tf</span><span class="p">.</span><span class="n">math</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">)</span>
+  
+<span class="n">rate_decay</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="nc">LearningRateScheduler</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
+
+<span class="c1">#defining callback to save weights
+</span><span class="n">save_weights</span> <span class="o">=</span> <span class="nc">ModelCheckpoint</span><span class="p">(</span><span class="sh">'</span><span class="s">loss</span><span class="sh">'</span><span class="p">,</span> 
+                    <span class="n">save_freq</span><span class="o">=</span><span class="sh">'</span><span class="s">epoch</span><span class="sh">'</span><span class="p">,</span>
+                    <span class="n">monitor</span><span class="o">=</span><span class="sh">'</span><span class="s">val_loss</span><span class="sh">'</span><span class="p">,</span> 
+                    <span class="n">save_best_only</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> 
+                    <span class="n">save_weights_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1">#defining callback for early stopping
+</span><span class="n">early_stopping</span> <span class="o">=</span> <span class="nc">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="sh">'</span><span class="s">val_loss</span><span class="sh">'</span><span class="p">,</span>
+                                <span class="n">patience</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> 
+                                <span class="n">restore_best_weights</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining model 
+</span><span class="n">model</span> <span class="o">=</span> <span class="n">aug_models</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.00</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                                        <span class="n">loss</span><span class="o">=</span><span class="nf">bce_dice_loss</span><span class="p">(</span><span class="n">smooth</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="n">m</span>
+                                        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">dice_coeff</span><span class="p">,</span><span class="n">iou_metric</span><span class="p">,</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Precision</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">precision</span><span class="sh">'</span><span class="p">),</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Recall</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">),</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="nc">Accuracy</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">)])</span>
+<span class="sh">'''</span><span class="s">
+</span></code></pre></div></div>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#training model
+</span><span class="n">final_history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span> 
+                        <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_valid</span><span class="p">,</span><span class="n">y_valid</span><span class="p">),</span>
+                        <span class="n">epochs</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+                        <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">save_weights</span><span class="p">,</span><span class="n">early_stopping</span><span class="p">,</span><span class="n">rate_decay</span><span class="p">],</span>
+                        <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Epoch 1/1000
+17/17 [==============================] - 20s 1s/step - loss: 0.1387 - dice_coeff: 0.9161 - precision: 0.9998 - recall: 0.7143 - accuracy: 0.0000e+00 - val_loss: 0.4186 - val_dice_coeff: 0.8162 - val_precision: 0.9666 - val_recall: 0.5814 - val_accuracy: 0.0000e+00 - lr: 0.0010
+Epoch 2/1000
+17/17 [==============================] - 16s 935ms/step - loss: 0.1746 - dice_coeff: 0.8989 - precision: 0.9990 - recall: 0.6928 - accuracy: 0.0000e+00 - val_loss: 0.4340 - val_dice_coeff: 0.8108 - val_precision: 0.9640 - val_recall: 0.5763 - val_accuracy: 0.0000e+00 - lr: 9.0484e-04
+Epoch 3/1000
+17/17 [==============================] - 15s 916ms/step - loss: 0.1828 - dice_coeff: 0.8946 - precision: 0.9987 - recall: 0.6880 - accuracy: 0.0000e+00 - val_loss: 0.4336 - val_dice_coeff: 0.8111 - val_precision: 0.9632 - val_recall: 0.5787 - val_accuracy: 0.0000e+00 - lr: 8.1873e-04
+Epoch 4/1000
+17/17 [==============================] - 15s 914ms/step - loss: 0.1831 - dice_coeff: 0.8945 - precision: 0.9987 - recall: 0.6878 - accuracy: 0.0000e+00 - val_loss: 0.4311 - val_dice_coeff: 0.8122 - val_precision: 0.9629 - val_recall: 0.5821 - val_accuracy: 0.0000e+00 - lr: 7.4082e-04
+Epoch 5/1000
+17/17 [==============================] - 15s 908ms/step - loss: 0.1845 - dice_coeff: 0.8939 - precision: 0.9986 - recall: 0.6883 - accuracy: 0.0000e+00 - val_loss: 0.4288 - val_dice_coeff: 0.8131 - val_precision: 0.9626 - val_recall: 0.5848 - val_accuracy: 0.0000e+00 - lr: 6.7032e-04
+Epoch 6/1000
+17/17 [==============================] - 16s 920ms/step - loss: 0.1837 - dice_coeff: 0.8943 - precision: 0.9986 - recall: 0.6881 - accuracy: 0.0000e+00 - val_loss: 0.4268 - val_dice_coeff: 0.8139 - val_precision: 0.9623 - val_recall: 0.5872 - val_accuracy: 0.0000e+00 - lr: 6.0653e-04
+Epoch 7/1000
+17/17 [==============================] - 16s 931ms/step - loss: 0.1829 - dice_coeff: 0.8948 - precision: 0.9986 - recall: 0.6890 - accuracy: 0.0000e+00 - val_loss: 0.4252 - val_dice_coeff: 0.8145 - val_precision: 0.9621 - val_recall: 0.5892 - val_accuracy: 0.0000e+00 - lr: 5.4881e-04
+Epoch 8/1000
+17/17 [==============================] - 16s 922ms/step - loss: 0.1835 - dice_coeff: 0.8940 - precision: 0.9986 - recall: 0.6878 - accuracy: 0.0000e+00 - val_loss: 0.4241 - val_dice_coeff: 0.8150 - val_precision: 0.9618 - val_recall: 0.5910 - val_accuracy: 0.0000e+00 - lr: 4.9659e-04
+Epoch 9/1000
+17/17 [==============================] - 16s 921ms/step - loss: 0.1835 - dice_coeff: 0.8942 - precision: 0.9986 - recall: 0.6884 - accuracy: 0.0000e+00 - val_loss: 0.4231 - val_dice_coeff: 0.8154 - val_precision: 0.9616 - val_recall: 0.5922 - val_accuracy: 0.0000e+00 - lr: 4.4933e-04
+Epoch 10/1000
+17/17 [==============================] - 16s 915ms/step - loss: 0.1851 - dice_coeff: 0.8932 - precision: 0.9986 - recall: 0.6868 - accuracy: 0.0000e+00 - val_loss: 0.4223 - val_dice_coeff: 0.8157 - val_precision: 0.9614 - val_recall: 0.5935 - val_accuracy: 0.0000e+00 - lr: 4.0657e-04
+Epoch 11/1000
+17/17 [==============================] - 16s 920ms/step - loss: 0.1846 - dice_coeff: 0.8935 - precision: 0.9987 - recall: 0.6870 - accuracy: 0.0000e+00 - val_loss: 0.4215 - val_dice_coeff: 0.8160 - val_precision: 0.9613 - val_recall: 0.5945 - val_accuracy: 0.0000e+00 - lr: 3.6788e-04
+Epoch 12/1000
+17/17 [==============================] - 16s 925ms/step - loss: 0.1836 - dice_coeff: 0.8941 - precision: 0.9986 - recall: 0.6882 - accuracy: 0.0000e+00 - val_loss: 0.4207 - val_dice_coeff: 0.8163 - val_precision: 0.9612 - val_recall: 0.5955 - val_accuracy: 0.0000e+00 - lr: 3.3287e-04
+Epoch 13/1000
+17/17 [==============================] - 16s 941ms/step - loss: 0.1826 - dice_coeff: 0.8943 - precision: 0.9987 - recall: 0.6889 - accuracy: 0.0000e+00 - val_loss: 0.4200 - val_dice_coeff: 0.8166 - val_precision: 0.9610 - val_recall: 0.5962 - val_accuracy: 0.0000e+00 - lr: 3.0119e-04
+Epoch 14/1000
+17/17 [==============================] - 16s 919ms/step - loss: 0.1832 - dice_coeff: 0.8943 - precision: 0.9987 - recall: 0.6885 - accuracy: 0.0000e+00 - val_loss: 0.4197 - val_dice_coeff: 0.8168 - val_precision: 0.9609 - val_recall: 0.5966 - val_accuracy: 0.0000e+00 - lr: 2.7253e-04
+Epoch 15/1000
+17/17 [==============================] - 16s 920ms/step - loss: 0.1847 - dice_coeff: 0.8931 - precision: 0.9986 - recall: 0.6871 - accuracy: 0.0000e+00 - val_loss: 0.4193 - val_dice_coeff: 0.8169 - val_precision: 0.9609 - val_recall: 0.5970 - val_accuracy: 0.0000e+00 - lr: 2.4660e-04
+Epoch 16/1000
+17/17 [==============================] - 16s 922ms/step - loss: 0.1805 - dice_coeff: 0.8960 - precision: 0.9988 - recall: 0.6899 - accuracy: 0.0000e+00 - val_loss: 0.4188 - val_dice_coeff: 0.8170 - val_precision: 0.9609 - val_recall: 0.5975 - val_accuracy: 0.0000e+00 - lr: 2.2313e-04
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">train_metrics</span><span class="p">([</span><span class="n">final_history</span><span class="p">],[</span><span class="sh">'</span><span class="s">Loss</span><span class="sh">'</span><span class="p">])()</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_69_1.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">score_test</span><span class="p">([</span><span class="n">model</span><span class="p">],[</span><span class="sh">'</span><span class="s">Final</span><span class="sh">'</span><span class="p">],</span><span class="n">X_test_clean</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3/3 [==============================] - 1s 268ms/step
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_70_2.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">show_predictions</span><span class="p">(</span><span class="n">model</span><span class="p">,[</span><span class="sh">'</span><span class="s">Predicted mask</span><span class="sh">'</span><span class="p">],</span><span class="n">X_test</span><span class="p">,</span><span class="n">X_test_clean</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1/1 [==============================] - 0s 185ms/step
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_71_1.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">show_predictions</span><span class="p">(</span><span class="n">model</span><span class="p">,[</span><span class="sh">'</span><span class="s">Predicted Mask</span><span class="sh">'</span><span class="p">],</span><span class="n">X_real</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">30</span><span class="p">],</span><span class="n">X_real_clean</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">30</span>
+<span class="p">],</span><span class="mi">9</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1/1 [==============================] - 0s 179ms/step
+</code></pre></div></div>
+
+<p><img src="/assets/img/nucleus_seg/output_72_1.png" alt="png"></p>
+
+<p>We see that our model performs similarily to Otsu thresholding in terms of precision, recall and dice loss. On the set of real images, however, we see our semantic segmentation outperforming Otsu thresholding on images with high pixel intesnity from optical abberations as expected for a semantic segmentation model.</p>
+
+
+          </article>
+
+        </div>
+      
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Nina  Cilliers. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank" rel="external nofollow noopener">Unsplash</a>.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js"></script>
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js"></script>
+  <script defer src="/assets/js/common.js"></script>
+  <script defer src="/assets/js/copy_code.js" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>
