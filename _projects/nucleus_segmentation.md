@@ -813,7 +813,7 @@ del loss_models
 We see a combination loss function of binary cross entropy and dice loss outperforms on the test set. This loss function will be used going forward.
 
 <h3><br></h3>
-<h3>Selecting weights</h3>
+<h3>Selecting class weights</h3>
 
 
 ```python
@@ -825,7 +825,6 @@ weight_description = ['10000:1','1:1','1:1e4','1:1e6']
 weight_history = []
 weight_models = []
 count = 1
-```
 
 <details>
     <summary>Click to show hidden code.</summary>
@@ -1178,7 +1177,7 @@ show_predictions(model,['Predicted mask'],X_test,X_test_clean,9)
 
     1/1 [==============================] - 0s 185ms/step
     
-    
+
 ![png](/assets/img/nucleus_seg/output_71_1.png)
     
 
