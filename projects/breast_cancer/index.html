@@ -10,9 +10,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Extracting genetic drivers of breast cancer mortality | Nina  Cilliers</title>
+    <title>Predicting breast cancer mortality | Nina  Cilliers</title>
     <meta name="author" content="Nina  Cilliers">
-    <meta name="description" content="Binary classifiers are combined to extract key genetic drivers of breast cancer patient mortality.">
+    <meta name="description" content="Binary classifiers are optimized to predict breast cancer mortality from clinical and genetic features. Key features are identified by permutation.">
     <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
 
 
@@ -121,7 +121,10 @@
         <div class="post">
 
           <article>
-            <h1>Extracting genetic drivers of breast cancer mortality from binary classifiers </h1>
+            <h1>Predicting breast cancer mortality</h1>
+<h4><i>Binary classifiers are optimized to predict breast cancer mortality from clinical and genetic features.</i></h4>
+<h4><br></h4>
+<h2>Introduction</h2>
 
 <p>Genetic variation is a key factor in breast cancer, as cancer type, response to treatment, and disease progression are genetically controlled. For example, BRCA1 and BRCA2 genetic mutations diminish the ability of proteins to repair damaged DNA, which causes abnormal cell growth and cancer. A full understanding of the genetic underpinnings of cancer would enable scientists to develop effective treatments for each target and clinicians to select optimal treatment strategies.</p>
 
@@ -131,39 +134,244 @@
 
 <h2><br></h2>
 <h2>Data cleaning</h2>
-<h3>Importing data </h3>
+<h3>Importing data</h3>
 <p>The Molecular Taxonomy of Breast Cancer International Consortium (METABRIC) database is imported from <a href="https://www.kaggle.com/datasets/raghadalharbi/breast-cancer-gene-expression-profiles-metabric" rel="external nofollow noopener" target="_blank">Kaggle</a>. The METABRIC database is a Canada-UK Project which contains targeted sequencing data of 1,980 primary breast cancer samples originally downloaded from <a href="https://www.cbioportal.org/" rel="external nofollow noopener" target="_blank">cBioPortal</a>.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
-<span class="kn">import</span> <span class="n">os</span>
-<span class="kn">import</span> <span class="n">missingno</span> <span class="k">as</span> <span class="n">msno</span>
-<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">import</span> <span class="n">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
-<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
-<span class="kn">import</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="n">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<details>
+  <summary>Click to view hidden code.</summary>
+  <pre>
+  import pandas as pd
+  import os
+  import missingno as msno
+  import matplotlib.pyplot as plt
+  import seaborn as sns
+  import numpy as np
+  import copy
+  from scipy import stats
+  import pickle 
 
-<span class="kn">from</span> <span class="n">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
-<span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span><span class="n">cross_val_score</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">roc_curve</span>
-<span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_predict</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">precision_recall_curve</span>
-<span class="kn">from</span> <span class="n">sklearn.calibration</span> <span class="kn">import</span> <span class="n">CalibratedClassifierCV</span> 
-<span class="kn">from</span> <span class="n">sklearn.inspection</span> <span class="kn">import</span> <span class="n">permutation_importance</span>
-<span class="kn">from</span> <span class="n">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
-<span class="kn">from</span> <span class="n">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span><span class="p">,</span> <span class="n">LinearSVC</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span><span class="p">,</span> <span class="n">ExtraTreesClassifier</span>
-<span class="kn">from</span> <span class="n">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">StackingClassifier</span><span class="p">,</span> <span class="n">VotingClassifier</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">PrecisionRecallDisplay</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span><span class="n">f1_score</span><span class="p">,</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">mean_squared_error</span>
+  from sklearn.preprocessing import StandardScaler
+  from sklearn.model_selection import train_test_split,cross_val_score
+  from sklearn.metrics import roc_curve
+  from sklearn.model_selection import cross_val_predict
+  from sklearn.metrics import precision_recall_curve
+  from sklearn.calibration import CalibratedClassifierCV 
+  from sklearn.inspection import permutation_importance
+  from sklearn.linear_model import LogisticRegression
+  from sklearn.svm import SVC, LinearSVC
+  from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
+  from operator import itemgetter
+  from sklearn.ensemble import StackingClassifier, VotingClassifier
+  from sklearn.metrics import PrecisionRecallDisplay
+  from sklearn.metrics import accuracy_score, precision_score,f1_score, roc_auc_score, recall_score, mean_squared_error
+  </pre>
+  <pre>
+  os.chdir('C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\breast_cancer')
+  </pre>
+  <pre>
+  pd.options.display.max_columns = 100
+  </pre>
+</details>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">import_csv</span><span class="p">(</span><span class="n">csv_loc</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_csv</span><span class="p">(</span><span class="n">csv_loc</span><span class="p">,</span><span class="n">low_memory</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="n">options</span><span class="p">.</span><span class="n">display</span><span class="p">.</span><span class="n">max_columns</span> <span class="o">=</span> <span class="mi">100</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">csv_loc</span> <span class="o">=</span> <span class="sh">'</span><span class="s">METABRIC_RNA_Mutation.csv</span><span class="sh">'</span>
+</code></pre></div></div>
+<h3><br></h3>
+<h3>Dropping nan values</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#findind nan values
+</span><span class="n">df</span><span class="p">.</span><span class="nf">isna</span><span class="p">().</span><span class="nf">sum</span><span class="p">().</span><span class="nf">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_csv</span><span class="p">(</span><span class="sh">'</span><span class="s">METABRIC_RNA_Mutation.csv</span><span class="sh">'</span><span class="p">,</span><span class="n">low_memory</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">df</span><span class="p">.</span><span class="nf">head</span><span class="p">()</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>age_at_diagnosis    0
+ptpn22              0
+rasgef1b            0
+rpgr                0
+ryr2                0
+sbno1               0
+setd1a              0
+setd2               0
+setdb1              0
+sf3b1               0
+dtype: int64
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#deleting columns that aren't of particular interest and have many nan entries
+</span><span class="k">def</span> <span class="nf">drop_nan</span><span class="p">(</span><span class="n">df</span><span class="p">):</span> 
+
+    <span class="c1">#deleting rows with low interest information and high NaN counts
+</span>    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">df shape before NaN drop: </span><span class="si">{</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">cellularity</span><span class="sh">'</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">neoplasm_histologic_grade</span><span class="sh">'</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">primary_tumor_laterality</span><span class="sh">'</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">er_status_measured_by_ihc</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">dropna</span><span class="p">()</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">df shape after NaN drop: </span><span class="si">{</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+
+    <span class="c1"># in cancer_type feature, one instance of Breast Sarcoma was deleted
+</span>    <span class="c1"># feature now only contains one value and is therefore removed 
+</span>    <span class="n">df</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="sh">'</span><span class="s">cancer_type</span><span class="sh">'</span><span class="p">)</span>
+
+    <span class="c1">#we also don't need patient id 
+</span>    <span class="n">df</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="sh">'</span><span class="s">patient_id</span><span class="sh">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+</code></pre></div></div>
+<h3><br></h3>
+<h3>Encoding data</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding data
+</span><span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Shape before encoding: </span><span class="si">{</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+    <span class="c1">#encoding features with 2 values
+</span>    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">get_dummies</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">type_of_breast_surgery</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">er_status</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">inferred_menopausal_state</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">pr_status</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">her2_status</span><span class="sh">'</span><span class="p">],</span> <span class="n">drop_first</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1">#encoding other features with &gt;2 values
+</span>    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">get_dummies</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">3-gene_classifier_subtype</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">death_from_cancer</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">cancer_type_detailed</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">pam50_+_claudin-low_subtype</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">cohort</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">integrative_cluster</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">oncotree_code</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">her2_status_measured_by_snp6</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">tumor_other_histologic_subtype</span><span class="sh">'</span><span class="p">])</span>
+    
+    <span class="c1">#encode wild type (0) or general mutant type (1)
+</span>    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="sh">'</span><span class="s">mut</span><span class="sh">'</span> <span class="ow">in</span> <span class="n">col</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span><span class="o">!=</span><span class="sh">'</span><span class="s">0</span><span class="sh">'</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="c1">#removing mutant features with less than 30 positive instances 
+</span>    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="sh">'</span><span class="s">mut</span><span class="sh">'</span> <span class="ow">in</span> <span class="n">col</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nf">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+    
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Shape after encoding: </span><span class="si">{</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">df</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#switching 0 and 1 so that 1 predicts death and 0 predicts survival
+</span><span class="k">def</span> <span class="nf">kill_switch</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Removing outliers</h3>
+
+<p>We calculate the z-score for each feature and examine the features with high z-score instances. Some categorical columns indeed contain outliers from data entry. In reviewing the gene expression data, the samples identified as outliers are not clear outliers and may represent high or low levels of expression from distinct, cancer-causing phenotypes. Thus, only the categorical outliers are removed.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#finding outliers
+#we look through non-binary data to find outliers 
+#looking through this list it does indeed appear that the categorical columns identified contain outliers 
+#The gene expression values are more ambigous 
+</span><span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Features with the highes member zscores:</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">stats</span><span class="p">.</span><span class="nf">zscore</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="nf">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="nf">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Features with the highes member zscores:
+
+her2_status_measured_by_snp6_UNDEF    19.824228
+nrg3                                  16.173489
+gh1                                   15.158937
+ush2a                                 15.147913
+slco1b3                               14.974030
+itgb3                                 14.872653
+inha                                  14.551166
+bmp3                                  13.893939
+magea8                                13.232305
+myo1a                                 12.818764
+dtype: float64
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#outliers with a z score above 20 are removed 
+#this conservative approach is taken in order to only remove outliers from categorical data
+#high gene expression levels could be a result of cancer causing phenotypes that are indeed different from the mean distribution and not outliers
+</span>
+<span class="k">def</span> <span class="nf">zscore_drop</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">zscore</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="nf">zscore</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Shape before outlier removal:</span><span class="si">{</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">zscore</span><span class="o">&gt;</span><span class="mi">20</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">nan</span>
+    <span class="n">df</span><span class="p">.</span><span class="nf">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Shape after outlier removal:</span><span class="si">{</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+</code></pre></div></div>
+<h3><br></h3>
+<h3>Scaling data</h3>
+
+<p>Non-binary data is scalled using the StandardScaler transformer.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="c1">#selecting features that will be scaled 
+</span>    <span class="n">to_scale</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span> <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">].</span><span class="nf">unique</span><span class="p">().</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">not_scaled</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span> <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">].</span><span class="nf">unique</span><span class="p">().</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="c1">#copying selected unscaled data for EDA
+</span>    <span class="n">df_unscaled</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">()</span>
+    <span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">survival_months</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival_months</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+    <span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">age_at_diagnosis</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+    <span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">tumor_stage</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">tumor_stage</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+    <span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+    <span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">nott</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">nottingham_prognostic_index</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+    <span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">tumor_size</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">tumor_size</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+
+    <span class="c1">#normalizing features 
+</span>    <span class="c1">#I believe I have found a glitch with column transformer using dataframes and passthrough
+</span>    <span class="c1">#passthrough is not honored and all columns are transformed 
+</span>    <span class="c1">#thus, column transformer is not used and columns are manually transformed
+</span>
+    <span class="c1">#transforming to_scale columns
+</span>    <span class="n">scaler</span> <span class="o">=</span> <span class="nc">StandardScaler</span><span class="p">()</span>
+    <span class="n">df_transformed</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">to_scale</span><span class="p">]</span>
+    <span class="n">col_names</span> <span class="o">=</span> <span class="n">df_transformed</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="n">values</span>
+    <span class="n">df_transformed</span> <span class="o">=</span> <span class="n">scaler</span><span class="p">.</span><span class="nf">fit_transform</span><span class="p">(</span><span class="n">df_transformed</span><span class="p">)</span>
+    <span class="n">df_transformed</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">df_transformed</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">col_names</span><span class="p">)</span>
+
+    <span class="c1">#isolating passthrough columns
+</span>    <span class="n">df_pass</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">not_scaled</span><span class="p">]</span>
+
+    <span class="c1">#concatenating df
+</span>    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">concat</span><span class="p">([</span><span class="n">df_transformed</span><span class="p">.</span><span class="nf">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">df_pass</span><span class="p">.</span><span class="nf">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_unscaled</span>
+
+</code></pre></div></div>
+<h3><br></h3>
+<h3>Cleaning data</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">clean</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">csv_location</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">csv</span> <span class="o">=</span> <span class="n">csv_loc</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Importing data...</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="nf">import_csv</span><span class="p">(</span><span class="n">csv_loc</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Droping NaNs...</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="nf">drop_nan</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Encoding data...</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="nf">encode</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="nf">kill_switch</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Removing outliers...</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="nf">zscore_drop</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Rescaling data...</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">,</span> <span class="n">df_unscaled</span> <span class="o">=</span> <span class="nf">scale</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_unscaled</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">,</span> <span class="n">df_unscaled</span> <span class="o">=</span> <span class="nf">clean</span><span class="p">(</span><span class="n">csv_loc</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Importing data...
+Droping NaNs...
+df shape before NaN drop: (1904, 693)
+df shape after NaN drop: (1185, 689)
+Encoding data...
+Shape before encoding: (1185, 687)
+Removing outliers...
+Shape before outlier removal:(1185, 610)
+Shape after outlier removal:(1182, 610)
+Rescaling data...
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="nf">head</span><span class="p">()</span>
 </code></pre></div></div>
 
 <div>
@@ -184,37 +392,12 @@
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>patient_id</th>
       <th>age_at_diagnosis</th>
-      <th>type_of_breast_surgery</th>
-      <th>cancer_type</th>
-      <th>cancer_type_detailed</th>
-      <th>cellularity</th>
-      <th>chemotherapy</th>
-      <th>pam50_+_claudin-low_subtype</th>
-      <th>cohort</th>
-      <th>er_status_measured_by_ihc</th>
-      <th>er_status</th>
-      <th>neoplasm_histologic_grade</th>
-      <th>her2_status_measured_by_snp6</th>
-      <th>her2_status</th>
-      <th>tumor_other_histologic_subtype</th>
-      <th>hormone_therapy</th>
-      <th>inferred_menopausal_state</th>
-      <th>integrative_cluster</th>
-      <th>primary_tumor_laterality</th>
       <th>lymph_nodes_examined_positive</th>
-      <th>mutation_count</th>
       <th>nottingham_prognostic_index</th>
-      <th>oncotree_code</th>
       <th>overall_survival_months</th>
-      <th>overall_survival</th>
-      <th>pr_status</th>
-      <th>radio_therapy</th>
-      <th>3-gene_classifier_subtype</th>
       <th>tumor_size</th>
       <th>tumor_stage</th>
-      <th>death_from_cancer</th>
       <th>brca1</th>
       <th>brca2</th>
       <th>palb2</th>
@@ -234,113 +417,158 @@
       <th>epcam</th>
       <th>rad51c</th>
       <th>rad51d</th>
+      <th>rad50</th>
+      <th>rb1</th>
+      <th>rbl1</th>
+      <th>rbl2</th>
+      <th>ccna1</th>
+      <th>ccnb1</th>
+      <th>cdk1</th>
+      <th>ccne1</th>
+      <th>cdk2</th>
+      <th>cdc25a</th>
+      <th>ccnd1</th>
+      <th>cdk4</th>
+      <th>cdk6</th>
+      <th>ccnd2</th>
+      <th>cdkn2a</th>
+      <th>cdkn2b</th>
+      <th>myc</th>
+      <th>cdkn1a</th>
+      <th>cdkn1b</th>
+      <th>e2f1</th>
+      <th>e2f2</th>
+      <th>e2f3</th>
+      <th>e2f4</th>
+      <th>e2f5</th>
+      <th>e2f6</th>
       <th>...</th>
-      <th>prkacg_mut</th>
-      <th>rpgr_mut</th>
-      <th>large1_mut</th>
-      <th>foxp1_mut</th>
-      <th>clk3_mut</th>
-      <th>prkcz_mut</th>
-      <th>lipi_mut</th>
-      <th>ppp2r2a_mut</th>
-      <th>prkce_mut</th>
-      <th>gh1_mut</th>
-      <th>gpr32_mut</th>
-      <th>kras_mut</th>
-      <th>nf2_mut</th>
-      <th>chek2_mut</th>
-      <th>ldlrap1_mut</th>
-      <th>clrn2_mut</th>
-      <th>acvrl1_mut</th>
-      <th>agtr2_mut</th>
-      <th>cdkn2a_mut</th>
-      <th>ctnna1_mut</th>
-      <th>magea8_mut</th>
-      <th>prr16_mut</th>
-      <th>dtwd2_mut</th>
-      <th>akt2_mut</th>
-      <th>braf_mut</th>
-      <th>foxo1_mut</th>
-      <th>nt5e_mut</th>
-      <th>ccnd3_mut</th>
-      <th>nr3c1_mut</th>
-      <th>prkg1_mut</th>
-      <th>tbl1xr1_mut</th>
-      <th>frmd3_mut</th>
-      <th>smad2_mut</th>
-      <th>sgcd_mut</th>
-      <th>spaca1_mut</th>
-      <th>rasgef1b_mut</th>
-      <th>hist1h2bc_mut</th>
-      <th>nr2f1_mut</th>
-      <th>klrg1_mut</th>
-      <th>mbl2_mut</th>
-      <th>mtap_mut</th>
-      <th>ppp2cb_mut</th>
-      <th>smarcd1_mut</th>
-      <th>nras_mut</th>
-      <th>ndfip1_mut</th>
-      <th>hras_mut</th>
-      <th>prps2_mut</th>
-      <th>smarcb1_mut</th>
-      <th>stmn2_mut</th>
-      <th>siah1_mut</th>
+      <th>3-gene_classifier_subtype_ER+/HER2- High Prolif</th>
+      <th>3-gene_classifier_subtype_ER+/HER2- Low Prolif</th>
+      <th>3-gene_classifier_subtype_ER-/HER2-</th>
+      <th>3-gene_classifier_subtype_HER2+</th>
+      <th>death_from_cancer_Died of Disease</th>
+      <th>death_from_cancer_Died of Other Causes</th>
+      <th>death_from_cancer_Living</th>
+      <th>cancer_type_detailed_Breast</th>
+      <th>cancer_type_detailed_Breast Invasive Ductal Carcinoma</th>
+      <th>cancer_type_detailed_Breast Invasive Lobular Carcinoma</th>
+      <th>cancer_type_detailed_Breast Invasive Mixed Mucinous Carcinoma</th>
+      <th>cancer_type_detailed_Breast Mixed Ductal and Lobular Carcinoma</th>
+      <th>pam50_+_claudin-low_subtype_Basal</th>
+      <th>pam50_+_claudin-low_subtype_Her2</th>
+      <th>pam50_+_claudin-low_subtype_LumA</th>
+      <th>pam50_+_claudin-low_subtype_LumB</th>
+      <th>pam50_+_claudin-low_subtype_NC</th>
+      <th>pam50_+_claudin-low_subtype_Normal</th>
+      <th>pam50_+_claudin-low_subtype_claudin-low</th>
+      <th>cohort_1.0</th>
+      <th>cohort_2.0</th>
+      <th>cohort_3.0</th>
+      <th>cohort_5.0</th>
+      <th>integrative_cluster_1</th>
+      <th>integrative_cluster_10</th>
+      <th>integrative_cluster_2</th>
+      <th>integrative_cluster_3</th>
+      <th>integrative_cluster_4ER+</th>
+      <th>integrative_cluster_4ER-</th>
+      <th>integrative_cluster_5</th>
+      <th>integrative_cluster_6</th>
+      <th>integrative_cluster_7</th>
+      <th>integrative_cluster_8</th>
+      <th>integrative_cluster_9</th>
+      <th>oncotree_code_BREAST</th>
+      <th>oncotree_code_IDC</th>
+      <th>oncotree_code_ILC</th>
+      <th>oncotree_code_IMMC</th>
+      <th>oncotree_code_MDLC</th>
+      <th>her2_status_measured_by_snp6_GAIN</th>
+      <th>her2_status_measured_by_snp6_LOSS</th>
+      <th>her2_status_measured_by_snp6_NEUTRAL</th>
+      <th>her2_status_measured_by_snp6_UNDEF</th>
+      <th>tumor_other_histologic_subtype_Ductal/NST</th>
+      <th>tumor_other_histologic_subtype_Lobular</th>
+      <th>tumor_other_histologic_subtype_Medullary</th>
+      <th>tumor_other_histologic_subtype_Mixed</th>
+      <th>tumor_other_histologic_subtype_Mucinous</th>
+      <th>tumor_other_histologic_subtype_Other</th>
+      <th>tumor_other_histologic_subtype_Tubular/ cribriform</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>0</td>
-      <td>75.65</td>
-      <td>MASTECTOMY</td>
-      <td>Breast Cancer</td>
-      <td>Breast Invasive Ductal Carcinoma</td>
-      <td>NaN</td>
-      <td>0</td>
-      <td>claudin-low</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>3.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Ductal/NST</td>
-      <td>1</td>
-      <td>Post</td>
-      <td>4ER+</td>
-      <td>Right</td>
-      <td>10.0</td>
-      <td>NaN</td>
-      <td>6.044</td>
-      <td>IDC</td>
-      <td>140.500000</td>
-      <td>1</td>
-      <td>Negative</td>
-      <td>1</td>
-      <td>ER-/HER2-</td>
-      <td>22.0</td>
-      <td>2.0</td>
-      <td>Living</td>
-      <td>-1.3990</td>
-      <td>-0.5738</td>
-      <td>-1.6217</td>
-      <td>1.4524</td>
-      <td>0.3504</td>
-      <td>1.1517</td>
-      <td>0.0348</td>
-      <td>0.1266</td>
-      <td>-0.8361</td>
-      <td>-0.8578</td>
-      <td>-0.4294</td>
-      <td>-1.1201</td>
-      <td>-0.4844</td>
-      <td>-0.7483</td>
-      <td>-1.6660</td>
-      <td>-0.1250</td>
-      <td>-0.3721</td>
-      <td>-0.6508</td>
-      <td>-0.1278</td>
+      <td>-1.342325</td>
+      <td>-0.483607</td>
+      <td>-0.016111</td>
+      <td>-0.562389</td>
+      <td>-1.070008</td>
+      <td>-1.181296</td>
+      <td>-1.420635</td>
+      <td>0.261688</td>
+      <td>-1.286366</td>
+      <td>0.529531</td>
+      <td>0.003926</td>
+      <td>-0.277149</td>
+      <td>1.414253</td>
+      <td>0.866319</td>
+      <td>0.502742</td>
+      <td>-2.692766</td>
+      <td>0.650787</td>
+      <td>0.541399</td>
+      <td>1.249116</td>
+      <td>1.033877</td>
+      <td>0.218385</td>
+      <td>1.066392</td>
+      <td>0.637096</td>
+      <td>-0.425958</td>
+      <td>-0.287715</td>
+      <td>0.735041</td>
+      <td>-1.922830</td>
+      <td>0.468105</td>
+      <td>0.786211</td>
+      <td>-0.248453</td>
+      <td>-0.241267</td>
+      <td>0.369208</td>
+      <td>-0.605274</td>
+      <td>0.163754</td>
+      <td>-1.279581</td>
+      <td>1.150741</td>
+      <td>0.381371</td>
+      <td>-0.665490</td>
+      <td>-0.015788</td>
+      <td>0.250519</td>
+      <td>-0.178695</td>
+      <td>0.712840</td>
+      <td>0.381182</td>
+      <td>1.930123</td>
+      <td>-1.921726</td>
+      <td>-0.314525</td>
+      <td>-1.420813</td>
+      <td>0.999927</td>
+      <td>0.016633</td>
+      <td>-0.410280</td>
       <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -348,6 +576,7 @@
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -355,36 +584,15 @@
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -394,57 +602,77 @@
     </tr>
     <tr>
       <th>1</th>
-      <td>2</td>
-      <td>43.19</td>
-      <td>BREAST CONSERVING</td>
-      <td>Breast Cancer</td>
-      <td>Breast Invasive Ductal Carcinoma</td>
-      <td>High</td>
-      <td>0</td>
-      <td>LumA</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>3.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Ductal/NST</td>
-      <td>1</td>
-      <td>Pre</td>
-      <td>4ER+</td>
-      <td>Right</td>
-      <td>0.0</td>
-      <td>2.0</td>
-      <td>4.020</td>
-      <td>IDC</td>
-      <td>84.633333</td>
-      <td>1</td>
-      <td>Positive</td>
-      <td>1</td>
-      <td>ER+/HER2- High Prolif</td>
-      <td>10.0</td>
-      <td>1.0</td>
-      <td>Living</td>
-      <td>-1.3800</td>
-      <td>0.2777</td>
-      <td>-1.2154</td>
-      <td>0.5296</td>
-      <td>-0.0136</td>
-      <td>-0.2659</td>
-      <td>1.3594</td>
-      <td>0.7961</td>
-      <td>0.5419</td>
-      <td>-2.6059</td>
-      <td>0.5120</td>
-      <td>0.4390</td>
-      <td>1.2266</td>
-      <td>0.7612</td>
-      <td>0.1821</td>
-      <td>1.0104</td>
-      <td>0.5600</td>
-      <td>-0.4018</td>
-      <td>-0.2909</td>
+      <td>1.265873</td>
+      <td>1.614094</td>
+      <td>1.819679</td>
+      <td>-1.122515</td>
+      <td>0.960685</td>
+      <td>0.410827</td>
+      <td>1.377891</td>
+      <td>-0.948881</td>
+      <td>-0.764178</td>
+      <td>0.200938</td>
+      <td>0.378820</td>
+      <td>0.388637</td>
+      <td>0.959554</td>
+      <td>1.010218</td>
+      <td>0.734317</td>
+      <td>-0.257673</td>
+      <td>-0.235792</td>
+      <td>0.738851</td>
+      <td>-0.451506</td>
+      <td>0.465114</td>
+      <td>0.943676</td>
+      <td>0.659453</td>
+      <td>0.385514</td>
+      <td>-0.286003</td>
+      <td>-0.137891</td>
+      <td>-0.759012</td>
+      <td>0.999824</td>
+      <td>1.924723</td>
+      <td>0.655957</td>
+      <td>-0.728263</td>
+      <td>0.341507</td>
+      <td>1.101355</td>
+      <td>-1.026667</td>
+      <td>1.593454</td>
+      <td>1.302279</td>
+      <td>0.140514</td>
+      <td>1.775517</td>
+      <td>0.935219</td>
+      <td>-1.137206</td>
+      <td>0.341580</td>
+      <td>0.629239</td>
+      <td>0.501566</td>
+      <td>1.492742</td>
+      <td>0.115922</td>
+      <td>-0.270413</td>
+      <td>0.477337</td>
+      <td>-0.403244</td>
+      <td>-0.351127</td>
+      <td>2.302328</td>
+      <td>1.140580</td>
       <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -458,97 +686,97 @@
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>5</td>
-      <td>48.87</td>
-      <td>MASTECTOMY</td>
-      <td>Breast Cancer</td>
-      <td>Breast Invasive Ductal Carcinoma</td>
-      <td>High</td>
-      <td>1</td>
-      <td>LumB</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>2.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Ductal/NST</td>
-      <td>1</td>
-      <td>Pre</td>
-      <td>3</td>
-      <td>Right</td>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>4.030</td>
-      <td>IDC</td>
-      <td>163.700000</td>
-      <td>0</td>
-      <td>Positive</td>
-      <td>0</td>
-      <td>NaN</td>
-      <td>15.0</td>
-      <td>2.0</td>
-      <td>Died of Disease</td>
-      <td>0.0670</td>
-      <td>-0.8426</td>
-      <td>0.2114</td>
-      <td>-0.3326</td>
-      <td>0.5141</td>
-      <td>-0.0803</td>
-      <td>1.1398</td>
-      <td>0.4187</td>
-      <td>-0.4030</td>
-      <td>-1.1305</td>
-      <td>0.2362</td>
-      <td>-0.1721</td>
-      <td>-1.7910</td>
-      <td>3.0955</td>
-      <td>0.6608</td>
-      <td>2.6127</td>
-      <td>2.5553</td>
-      <td>-0.0391</td>
-      <td>-0.4421</td>
+      <td>1.404853</td>
+      <td>-0.483607</td>
+      <td>0.021318</td>
+      <td>-1.557066</td>
+      <td>0.351477</td>
+      <td>3.595073</td>
+      <td>-0.430389</td>
+      <td>0.687272</td>
+      <td>0.730749</td>
+      <td>1.111922</td>
+      <td>-1.988087</td>
+      <td>0.932457</td>
+      <td>1.202950</td>
+      <td>0.865288</td>
+      <td>-1.046839</td>
+      <td>-0.764303</td>
+      <td>-0.298437</td>
+      <td>1.176623</td>
+      <td>-0.362654</td>
+      <td>0.771103</td>
+      <td>1.213226</td>
+      <td>-0.536181</td>
+      <td>0.371096</td>
+      <td>0.276789</td>
+      <td>-0.329990</td>
+      <td>-0.063089</td>
+      <td>0.848543</td>
+      <td>0.868741</td>
+      <td>0.525169</td>
+      <td>-0.019022</td>
+      <td>1.686683</td>
+      <td>1.598886</td>
+      <td>-0.381611</td>
+      <td>0.938061</td>
+      <td>0.533818</td>
+      <td>-0.832830</td>
+      <td>1.155668</td>
+      <td>-0.261239</td>
+      <td>-0.854267</td>
+      <td>-0.494676</td>
+      <td>-0.194860</td>
+      <td>-0.911417</td>
+      <td>-0.935615</td>
+      <td>0.347801</td>
+      <td>1.490798</td>
+      <td>1.062442</td>
+      <td>0.285635</td>
+      <td>-1.140846</td>
+      <td>-0.749567</td>
+      <td>0.130475</td>
       <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -560,39 +788,19 @@
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -602,57 +810,77 @@
     </tr>
     <tr>
       <th>3</th>
-      <td>6</td>
-      <td>47.68</td>
-      <td>MASTECTOMY</td>
-      <td>Breast Cancer</td>
-      <td>Breast Mixed Ductal and Lobular Carcinoma</td>
-      <td>Moderate</td>
-      <td>1</td>
-      <td>LumB</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>2.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Mixed</td>
-      <td>1</td>
-      <td>Pre</td>
-      <td>9</td>
-      <td>Right</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>4.050</td>
-      <td>MDLC</td>
-      <td>164.933333</td>
-      <td>1</td>
-      <td>Positive</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>25.0</td>
-      <td>2.0</td>
-      <td>Living</td>
-      <td>0.6744</td>
-      <td>-0.5428</td>
-      <td>-1.6592</td>
-      <td>0.6369</td>
-      <td>1.6708</td>
-      <td>-0.8880</td>
-      <td>1.2491</td>
-      <td>-1.1889</td>
-      <td>-0.4174</td>
-      <td>-0.6165</td>
-      <td>1.0078</td>
-      <td>-0.4010</td>
-      <td>-1.3905</td>
-      <td>4.8798</td>
-      <td>0.0615</td>
-      <td>2.9414</td>
-      <td>4.1161</td>
-      <td>-0.3098</td>
-      <td>-1.3470</td>
+      <td>1.994747</td>
+      <td>-0.221394</td>
+      <td>0.885743</td>
+      <td>-1.184655</td>
+      <td>-0.663869</td>
+      <td>0.410827</td>
+      <td>0.897895</td>
+      <td>-1.563488</td>
+      <td>0.363260</td>
+      <td>-0.609830</td>
+      <td>0.075798</td>
+      <td>-0.936842</td>
+      <td>-0.843959</td>
+      <td>-0.085578</td>
+      <td>-0.228525</td>
+      <td>0.730521</td>
+      <td>-0.977661</td>
+      <td>-0.502543</td>
+      <td>-0.115631</td>
+      <td>0.330623</td>
+      <td>-0.456746</td>
+      <td>2.262133</td>
+      <td>0.225020</td>
+      <td>1.077178</td>
+      <td>-1.917275</td>
+      <td>-1.045907</td>
+      <td>-0.654543</td>
+      <td>-0.712551</td>
+      <td>-0.968839</td>
+      <td>-0.174024</td>
+      <td>1.704029</td>
+      <td>0.967333</td>
+      <td>-0.550228</td>
+      <td>0.762946</td>
+      <td>0.027269</td>
+      <td>0.080440</td>
+      <td>-0.162799</td>
+      <td>-1.176191</td>
+      <td>-0.603799</td>
+      <td>-0.607351</td>
+      <td>-1.225207</td>
+      <td>1.952943</td>
+      <td>1.021004</td>
+      <td>0.950495</td>
+      <td>1.732960</td>
+      <td>0.221063</td>
+      <td>1.106151</td>
+      <td>-2.163353</td>
+      <td>2.636668</td>
+      <td>-1.109921</td>
       <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -666,37 +894,17 @@
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -706,57 +914,84 @@
     </tr>
     <tr>
       <th>4</th>
-      <td>8</td>
-      <td>76.97</td>
-      <td>MASTECTOMY</td>
-      <td>Breast Cancer</td>
-      <td>Breast Mixed Ductal and Lobular Carcinoma</td>
-      <td>High</td>
-      <td>1</td>
-      <td>LumB</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>3.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Mixed</td>
-      <td>1</td>
-      <td>Post</td>
-      <td>9</td>
-      <td>Right</td>
-      <td>8.0</td>
-      <td>2.0</td>
-      <td>6.080</td>
-      <td>MDLC</td>
-      <td>41.366667</td>
-      <td>0</td>
-      <td>Positive</td>
-      <td>1</td>
-      <td>ER+/HER2- High Prolif</td>
-      <td>40.0</td>
-      <td>2.0</td>
-      <td>Died of Disease</td>
-      <td>1.2932</td>
-      <td>-0.9039</td>
-      <td>-0.7219</td>
-      <td>0.2168</td>
-      <td>0.3484</td>
-      <td>0.3897</td>
-      <td>0.9131</td>
-      <td>0.9356</td>
-      <td>0.7675</td>
-      <td>-0.2940</td>
-      <td>-0.2961</td>
-      <td>0.6320</td>
-      <td>-0.3582</td>
-      <td>0.3032</td>
-      <td>0.8747</td>
-      <td>0.6323</td>
-      <td>0.3349</td>
-      <td>-0.2652</td>
-      <td>-0.1541</td>
+      <td>1.825655</td>
+      <td>-0.483607</td>
+      <td>-0.875189</td>
+      <td>-1.188539</td>
+      <td>0.148408</td>
+      <td>0.410827</td>
+      <td>-1.031928</td>
+      <td>-0.645112</td>
+      <td>0.032806</td>
+      <td>1.126103</td>
+      <td>0.568338</td>
+      <td>0.917528</td>
+      <td>-1.505885</td>
+      <td>0.024899</td>
+      <td>0.328958</td>
+      <td>0.567261</td>
+      <td>0.568064</td>
+      <td>0.751640</td>
+      <td>-0.154047</td>
+      <td>2.046225</td>
+      <td>1.322344</td>
+      <td>1.347623</td>
+      <td>-0.865245</td>
+      <td>-2.040259</td>
+      <td>-1.556295</td>
+      <td>-0.490061</td>
+      <td>0.082411</td>
+      <td>-1.092644</td>
+      <td>-1.730560</td>
+      <td>-0.686265</td>
+      <td>-0.047845</td>
+      <td>-0.209741</td>
+      <td>-0.048551</td>
+      <td>-1.399357</td>
+      <td>0.048393</td>
+      <td>-1.237104</td>
+      <td>-1.214483</td>
+      <td>-0.222862</td>
+      <td>-2.158812</td>
+      <td>-1.006716</td>
+      <td>-0.806822</td>
+      <td>-3.002146</td>
+      <td>-0.894904</td>
+      <td>0.416795</td>
+      <td>-0.390532</td>
+      <td>-0.536339</td>
+      <td>0.248599</td>
+      <td>-2.163865</td>
+      <td>-0.197552</td>
+      <td>-1.438967</td>
       <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -766,42 +1001,15 @@
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -810,285 +1018,34 @@
     </tr>
   </tbody>
 </table>
-<p>5 rows × 693 columns</p>
+<p>5 rows × 610 columns</p>
 </div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">[:</span><span class="mi">31</span><span class="p">]</span> <span class="c1">#columns without genes and mutations
-</span></code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Index(['patient_id', 'age_at_diagnosis', 'type_of_breast_surgery',
-       'cancer_type', 'cancer_type_detailed', 'cellularity', 'chemotherapy',
-       'pam50_+_claudin-low_subtype', 'cohort', 'er_status_measured_by_ihc',
-       'er_status', 'neoplasm_histologic_grade',
-       'her2_status_measured_by_snp6', 'her2_status',
-       'tumor_other_histologic_subtype', 'hormone_therapy',
-       'inferred_menopausal_state', 'integrative_cluster',
-       'primary_tumor_laterality', 'lymph_nodes_examined_positive',
-       'mutation_count', 'nottingham_prognostic_index', 'oncotree_code',
-       'overall_survival_months', 'overall_survival', 'pr_status',
-       'radio_therapy', '3-gene_classifier_subtype', 'tumor_size',
-       'tumor_stage', 'death_from_cancer'],
-      dtype='object')
-</code></pre></div></div>
-
-<h3><br></h3>
-<h3>Dropping nan values</h3>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#findind nan values
-</span><span class="n">df</span><span class="p">.</span><span class="nf">isna</span><span class="p">().</span><span class="nf">sum</span><span class="p">().</span><span class="nf">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tumor_stage                  501
-3-gene_classifier_subtype    204
-primary_tumor_laterality     106
-neoplasm_histologic_grade     72
-cellularity                   54
-mutation_count                45
-er_status_measured_by_ihc     30
-type_of_breast_surgery        22
-tumor_size                    20
-cancer_type_detailed          15
-dtype: int64
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#deleting columns that aren't of particular interest and have many nan entries
-#del df['3-gene_classifier_subtype']
-</span><span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">cellularity</span><span class="sh">'</span><span class="p">]</span>
-<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">neoplasm_histologic_grade</span><span class="sh">'</span><span class="p">]</span>
-<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">primary_tumor_laterality</span><span class="sh">'</span><span class="p">]</span>
-<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">er_status_measured_by_ihc</span><span class="sh">'</span><span class="p">]</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#findind nan values
-</span><span class="n">df</span><span class="p">.</span><span class="nf">isna</span><span class="p">().</span><span class="nf">sum</span><span class="p">().</span><span class="nf">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tumor_stage                       501
-3-gene_classifier_subtype         204
-mutation_count                     45
-type_of_breast_surgery             22
-tumor_size                         20
-cancer_type_detailed               15
-tumor_other_histologic_subtype     15
-oncotree_code                      15
-death_from_cancer                   1
-akr1c2                              0
-dtype: int64
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#dropping nan values 
-</span><span class="nf">print</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">dropna</span><span class="p">()</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(1904, 689)
-(1185, 689)
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># in cancer_type feature, one instance of Breast Sarcoma was deleted
-# feature now only contains one value and is therefore removed 
-</span>
-<span class="n">df</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="sh">'</span><span class="s">cancer_type</span><span class="sh">'</span><span class="p">);</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#we also don't need patient id 
-</span><span class="n">df</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="sh">'</span><span class="s">patient_id</span><span class="sh">'</span><span class="p">);</span>
-</code></pre></div></div>
-<h3><br></h3>
-<h3>Encoding data</h3>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding binary features 
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">get_dummies</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">type_of_breast_surgery</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">er_status</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">inferred_menopausal_state</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">pr_status</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">her2_status</span><span class="sh">'</span><span class="p">],</span> <span class="n">drop_first</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#replace mutant subtypes with wild type (0) or general mutant type (1)
-</span><span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">:</span>
-    <span class="k">if</span> <span class="sh">'</span><span class="s">mut</span><span class="sh">'</span> <span class="ow">in</span> <span class="n">col</span><span class="p">:</span>
-        <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span><span class="o">!=</span><span class="sh">'</span><span class="s">0</span><span class="sh">'</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#removing mutant features with less than 30 positive instances 
-</span><span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">:</span>
-    <span class="k">if</span> <span class="sh">'</span><span class="s">mut</span><span class="sh">'</span> <span class="ow">in</span> <span class="n">col</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nf">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#switching 0 and 1 so that 1 predicts death and 0 predicts survival
-</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="c1">#checking
-</span><span class="n">df</span><span class="p">[[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">death_from_cancer</span><span class="sh">'</span><span class="p">]].</span><span class="nf">head</span><span class="p">()</span>
-</code></pre></div></div>
-
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>overall_survival</th>
-      <th>death_from_cancer</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>0</td>
-      <td>Living</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>1</td>
-      <td>Died of Disease</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>1</td>
-      <td>Died of Disease</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>1</td>
-      <td>Died of Other Causes</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>1</td>
-      <td>Died of Disease</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#encoding other features
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">get_dummies</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">3-gene_classifier_subtype</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">death_from_cancer</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">cancer_type_detailed</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">pam50_+_claudin-low_subtype</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">cohort</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">integrative_cluster</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">oncotree_code</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">her2_status_measured_by_snp6</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">tumor_other_histologic_subtype</span><span class="sh">'</span><span class="p">])</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Shape of data:</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">df</span><span class="p">.</span><span class="n">shape</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Shape of data:
-(1185, 610)
-</code></pre></div></div>
-
-<h3><br></h3>
-<h3>Removing outliers</h3>
-
-<p>We calculate the z-score for each feature and examine the features with high z-score instances. Some categorical columns indeed contain outliers from data entry. In reviewing the gene expression data, the samples identified as outliers are not clear outliers and may represent high or low levels of expression from distinct, cancer-causing phenotypes. Thus, only the categorical outliers are removed.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#finding outliers
-#we look through non-binary data to find outliers 
-#looking through this list it does indeed appear that the categorical columns identified contain outliers 
-#The gene expression values are more ambigous 
-</span><span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Features with the highes member zscores:</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">stats</span><span class="p">.</span><span class="nf">zscore</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="nf">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="nf">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Features with the highes member zscores:
-
-pam50_+_claudin-low_subtype_NC        24.320773
-lipi                                  20.703269
-her2_status_measured_by_snp6_UNDEF    19.849433
-nrg3                                  16.191813
-ush2a                                 15.161436
-gh1                                   15.156411
-slco1b3                               14.980536
-itgb3                                 14.888723
-inha                                  14.568444
-bmp3                                  13.883653
-dtype: float64
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#outliers with a z score above 20 are removed 
-#this conservative approach is taken in order to only remove outliers from categorical data
-#high gene expression levels could be a result of cancer causing phenotypes that are indeed different from the mean distribution and not outliers
-</span>
-<span class="n">zscore</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="nf">zscore</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Shape before outlier removal:</span><span class="sh">'</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="n">zscore</span><span class="o">&gt;</span><span class="mi">20</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">nan</span>
-<span class="n">df</span><span class="p">.</span><span class="nf">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Shape after outlier removal:</span><span class="sh">"</span><span class="p">)</span>
-<span class="n">df</span><span class="p">.</span><span class="n">shape</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Shape before outlier removal:
-(1185, 610)
-Shape after outlier removal:
-(1182, 610)
-</code></pre></div></div>
-
-<h3><br></h3>
-<h3>Scaling data</h3>
-
-<p>Non-binary data is scalled using the StandardScaler transformer.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#selecting features that will be scaled 
-</span><span class="n">to_scale</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span> <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">].</span><span class="nf">unique</span><span class="p">().</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">]</span>
-<span class="n">not_scaled</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span> <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">].</span><span class="nf">unique</span><span class="p">().</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">]</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#copying selected unscaled data for EDA
-</span><span class="n">df_unscaled</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">()</span>
-<span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">survival_months</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival_months</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
-<span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">age_at_diagnosis</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
-<span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">tumor_stage</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">tumor_stage</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
-<span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
-<span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">nott</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">nottingham_prognostic_index</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
-<span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">tumor_size</span><span class="sh">'</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">tumor_size</span><span class="sh">'</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#normalizing features 
-#I believe I have found a glitch with column transformer using dataframes and passthrough
-#passthrough is not honored and all columns are transformed 
-#thus, column transformer is not used and columns are manually transformed
-</span>
-<span class="c1">#transforming to_scale columns
-</span><span class="n">scaler</span> <span class="o">=</span> <span class="nc">StandardScaler</span><span class="p">()</span>
-<span class="n">df_transformed</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">to_scale</span><span class="p">]</span>
-<span class="n">col_names</span> <span class="o">=</span> <span class="n">df_transformed</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="n">values</span>
-<span class="n">df_transformed</span> <span class="o">=</span> <span class="n">scaler</span><span class="p">.</span><span class="nf">fit_transform</span><span class="p">(</span><span class="n">df_transformed</span><span class="p">)</span>
-<span class="n">df_transformed</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">df_transformed</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">col_names</span><span class="p">)</span>
-
-<span class="c1">#isolating passthrough columns
-</span><span class="n">df_pass</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">not_scaled</span><span class="p">]</span>
-
-<span class="c1">#concatenating df
-</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">concat</span><span class="p">([</span><span class="n">df_transformed</span><span class="p">.</span><span class="nf">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">df_pass</span><span class="p">.</span><span class="nf">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-</code></pre></div></div>
 <h2><br></h2>
 <h2>EDA</h2>
 <h3>Mortality</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#constructs death classification column from encoded data
-</span><span class="n">df_death</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">from_dummies</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">[</span><span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="nb">str</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="sh">'</span><span class="s">death_from_cancer</span><span class="sh">'</span><span class="p">)]])</span>
-<span class="n">df_death</span> <span class="o">=</span> <span class="n">df_death</span><span class="p">.</span><span class="nf">replace</span><span class="p">({</span><span class="sh">'</span><span class="s">death_from_cancer_Living</span><span class="sh">'</span><span class="p">:</span><span class="sh">'</span><span class="s">Living</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">death_from_cancer_Died of Disease</span><span class="sh">'</span><span class="p">:</span><span class="sh">'</span><span class="s">Cancer death</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">death_from_cancer_Died of Other Causes</span><span class="sh">'</span><span class="p">:</span><span class="sh">'</span><span class="s">Other death</span><span class="sh">'</span><span class="p">})</span>
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #constructs death classification column from encoded data
+  df_death = pd.from_dummies(df[df.columns[df.columns.str.contains('death_from_cancer')]])
+  df_death = df_death.replace({'death_from_cancer_Living':'Living','death_from_cancer_Died of Disease':'Cancer death','death_from_cancer_Died of Other Causes':'Other death'})
+  </pre>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,1)
+  sns.histplot(data=df, x=df_unscaled['survival_months'],hue=df_death.iloc[:,0], multiple='stack',kde=True)
+  plt.xlabel('Months')
+  </pre>
+  <pre>
+  plt.subplot(1,2,2)
+  #plt.bar(x = ['Cancer death','Other Death','Living'], height=df[['death_from_cancer_Died of Disease','death_from_cancer_Died of Other Causes', 'death_from_cancer_Living']].sum())
+  sns.histplot(data=df_death, x=df_death.iloc[:,0], hue=df['overall_survival']);
+  </pre>
+</details>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">survival_months</span><span class="sh">'</span><span class="p">],</span><span class="n">hue</span><span class="o">=</span><span class="n">df_death</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">,</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Months</span><span class="sh">'</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="c1">#plt.bar(x = ['Cancer death','Other Death','Living'], height=df[['death_from_cancer_Died of Disease','death_from_cancer_Died of Other Causes', 'death_from_cancer_Living']].sum())
-</span><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_death</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">df_death</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">hue</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]);</span>
-</code></pre></div></div>
-
-<p><img src="/assets/img/breast_cancer/output_30_0.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_25_0.png" alt="png"></p>
 
 <p>The overall count of living, cancer-related and other deaths shows a bimodal distribution, with most deaths occurring at 50 and 250 months.</p>
 
@@ -1099,110 +1056,124 @@ Shape after outlier removal:
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival_months</span><span class="sh">'</span><span class="p">]</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">pie</span><span class="p">(((</span><span class="nf">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]),</span><span class="n">df</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="nf">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]))),</span><span class="n">autopct</span><span class="o">=</span><span class="sh">'</span><span class="s">%1.1f%%</span><span class="sh">'</span><span class="p">,</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Died</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Survived</span><span class="sh">'</span><span class="p">]);</span>
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.pie(((sum(df['overall_survival']),df.shape[0]-sum(df['overall_survival']))),autopct='%1.1f%%',labels=['Died','Survived']);
+  </pre>
+</details>
 
-<p><img src="/assets/img/breast_cancer/output_33_0.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_28_0.png" alt="png"></p>
 
 <p>The distribution of outcomes is skewed towards patient mortality. The imbalance is not of sufficient scale to warrant the implementation of naive random over-sampling or SMOTE.</p>
 
 <h3><br></h3>
 <h3>Age</h3>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,2)
+  sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='fill', legend=False)
+  plt.ylabel('Fraction')
+  df_unscaled['death_by_age_percent'] = df_death
+  plt.subplot(1,2,1)
+  #sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='stack')
+  sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='stack', legend=False)
+  </pre>
+</details>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">],</span><span class="n">hue</span><span class="o">=</span><span class="n">df_death</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">fill</span><span class="sh">'</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Fraction</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">death_by_age_percent</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_death</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1">#sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='stack')
-</span><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">age</span><span class="sh">'</span><span class="p">],</span><span class="n">hue</span><span class="o">=</span><span class="n">df_death</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Axes: xlabel='age', ylabel='Count'&gt;
-</code></pre></div></div>
-
-<p><img src="/assets/img/breast_cancer/output_36_1.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_31_1.png" alt="png"></p>
 
 <p>Cancer is more common in older populations and steadily increases from 20 to 60 years of age. The decrease observed in older populations is likely due to the underrepresentation of these subsets in the general population. Interestingly, the fraction of deaths in diagnosed cancers does not appear to be sensitive  to age after 30 years of age.</p>
 
 <h3><br></h3>
 <h3>Cancer sub-type</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">her2_status_Positive</span><span class="sh">'</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">her2_status_Positive</span><span class="sh">'</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">((</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">er_status_Positive</span><span class="sh">'</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">er_status_Positive</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">((</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">pr_status_Positive</span><span class="sh">'</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">pr_status_Positive</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">((</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">her2_status_Positive</span><span class="sh">'</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">her2_status_Positive</span><span class="sh">'</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">fill</span><span class="sh">'</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">((</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Fraction</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">axhline</span><span class="p">(.</span><span class="mi">56</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">er_status_Positive</span><span class="sh">'</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">er_status_Positive</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">fill</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Fraction</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">axhline</span><span class="p">(.</span><span class="mi">56</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">((</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">pr_status_Positive</span><span class="sh">'</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">pr_status_Positive</span><span class="sh">'</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">fill</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">((</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">axhline</span><span class="p">(.</span><span class="mi">56</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Fraction</span><span class="sh">'</span><span class="p">);</span>
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,8))
+  plt.subplot(2,3,1)
+  sns.histplot(data=df.sort_values('her2_status_Positive'), x='her2_status_Positive',hue='overall_survival',multiple='stack')
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.subplot(2,3,2)
+  sns.histplot(data=df.sort_values('er_status_Positive'), x='er_status_Positive', hue='overall_survival',multiple='stack',legend=False)
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.tight_layout()
+  plt.subplot(2,3,3)
+  sns.histplot(data=df.sort_values('pr_status_Positive'), x='pr_status_Positive', hue='overall_survival',multiple='stack',legend=False)
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.subplot(2,3,4)
+  sns.histplot(data=df.sort_values('her2_status_Positive'), x='her2_status_Positive',hue='overall_survival',multiple='fill', legend=False)
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.ylabel('Fraction')
+  plt.axhline(.56,color='k')
+  plt.subplot(2,3,5)
+  sns.histplot(data=df.sort_values('er_status_Positive'), x='er_status_Positive', hue='overall_survival',multiple='fill',legend=False)
+  plt.xticks((0,1))
+  plt.ylabel('Fraction')
+  plt.axhline(.56,color='k')
+  plt.xlim((-.5,1.5))
+  plt.subplot(2,3,6)
+  sns.histplot(data=df.sort_values('pr_status_Positive'), x='pr_status_Positive', hue='overall_survival',multiple='fill',legend=False)
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.axhline(.56,color='k')
+  plt.ylabel('Fraction');
+  </pre>
+</details>
 
-<p><img src="/assets/img/breast_cancer/output_39_0.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_34_0.png" alt="png"></p>
 
 <p>We observe that HER2+ cancers have a higher than average mortality rate and are the most rare cancer subtype.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span><span class="sh">'</span><span class="s">3-gene_classifier_subtype_ER+/HER2- High Prolif</span><span class="sh">'</span><span class="p">,</span>  <span class="n">bins</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">ER+/HER2- High Prolif</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span><span class="sh">'</span><span class="s">3-gene_classifier_subtype_ER+/HER2- Low Prolif</span><span class="sh">'</span><span class="p">,</span>  <span class="n">bins</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">ER+/HER2- Low Prolif</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span><span class="sh">'</span><span class="s">3-gene_classifier_subtype_HER2+</span><span class="sh">'</span><span class="p">,</span>  <span class="n">bins</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">HER2+</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,3,1)
+  sns.histplot(df,x ='3-gene_classifier_subtype_ER+/HER2- High Prolif',  bins=2, hue='overall_survival', multiple='stack')
+  plt.xticks((0,1))
+  plt.xlabel('ER+/HER2- High Prolif')
+  plt.subplot(1,3,2)
+  sns.histplot(df,x ='3-gene_classifier_subtype_ER+/HER2- Low Prolif',  bins=2,  hue='overall_survival',legend=False, multiple='stack')
+  plt.xticks((0,1))
+  plt.xlabel('ER+/HER2- Low Prolif')
+  plt.subplot(1,3,3)
+  sns.histplot(df,x ='3-gene_classifier_subtype_HER2+',  bins=2,  hue='overall_survival', multiple='stack', legend=False)
+  plt.xticks((0,1))
+  plt.xlabel('HER2+')
+  plt.tight_layout()
+  </pre>
+</details>
 
-</code></pre></div></div>
-
-<p><img src="/assets/img/breast_cancer/output_41_0.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_36_0.png" alt="png"></p>
 
 <h3><br></h3>
 <h3>Cancer severity</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#histplot
-</span><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">tumor_stage</span><span class="sh">'</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">,</span><span class="n">shrink</span><span class="o">=</span><span class="p">.</span><span class="mi">9</span><span class="p">)</span>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #histplot
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,1)
+  sns.histplot(data=df_unscaled, x='tumor_stage', bins=5, hue='overall_survival',multiple='stack',shrink=.9)
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Tumor stage</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">tumor_stage</span><span class="sh">'</span> <span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">fill</span><span class="sh">'</span><span class="p">,</span><span class="n">shrink</span><span class="o">=</span><span class="p">.</span><span class="mi">9</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Fraction</span><span class="sh">'</span><span class="p">);</span>
-</code></pre></div></div>
+  plt.xlabel('Tumor stage')
+  plt.subplot(1,2,2)
+  sns.histplot(data=df_unscaled, x='tumor_stage' , bins=5, hue='overall_survival', multiple='fill',shrink=.9)
+  plt.xticks(np.arange(0,5))
+  plt.ylabel('Fraction');
+  </pre>
+</details>
 
-<p><img src="/assets/img/breast_cancer/output_43_0.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_38_0.png" alt="png"></p>
 
 <p>Most tumors are diagnosed at stage 2, and the fraction of cancer-related mortalities increases with diagnosis stage, as expected. Clinical definition of cancer stage is given in the table below:</p>
 
@@ -1233,36 +1204,44 @@ Shape after outlier removal:
   </tbody>
 </table>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">tumor_size</span><span class="sh">'</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Tumor size</span><span class="sh">'</span><span class="p">)</span>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,1)
+  sns.histplot(data=df_unscaled, x='tumor_size', binwidth=10, hue='overall_survival', legend=True, kde=True)
+  plt.xlabel('Tumor size')
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">tumor_size</span><span class="sh">'</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">fill</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Tumor size</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Fraction</span><span class="sh">'</span><span class="p">)</span>
-</code></pre></div></div>
+  plt.subplot(1,2,2)
+  sns.histplot(data=df_unscaled, x='tumor_size', binwidth=20, hue='overall_survival', legend=False, kde=False,multiple='fill')
+  plt.xlabel('Tumor size')
+  plt.ylabel('Fraction')
+  </pre>
+</details>
 
-<p><img src="/assets/img/breast_cancer/output_45_1.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_40_1.png" alt="png"></p>
 
 <p>We see the size distribution of fatal cancers shifts towards larger tumor sizes. Also, we see the percentage of fatal cancers increase with tumor size.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">nott</span><span class="sh">'</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">stack</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Nottingham index</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,1)
+  sns.histplot(data=df_unscaled, x='nott',hue='overall_survival',binwidth=1,legend=True, multiple='stack')
+  plt.xlabel('Nottingham index')
+  plt.xticks(np.arange(1,7))
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">nott</span><span class="sh">'</span><span class="p">,</span><span class="n">hue</span><span class="o">=</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">,</span><span class="n">binwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="sh">'</span><span class="s">fill</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Nottingham index</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Fraction</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
+  plt.subplot(1,2,2)
+  sns.histplot(data=df_unscaled, x='nott',hue='overall_survival',binwidth=1,legend=False, multiple='fill')
+  plt.xlabel('Nottingham index')
+  plt.ylabel('Fraction')
+  plt.xticks(np.arange(1,7))
+  plt.tight_layout()
+  </pre>
+</details>
 
-<p><img src="/assets/img/breast_cancer/output_47_0.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_42_0.png" alt="png"></p>
 
 <p>The Nottingham Prognostic index is used to determine the prognosis following surgery for breast cancer and is based on three pathological criteria: size of the tumor, number of involved lymph nodes, and the grade of the tumor. We see that most breast cancers are a level 4 and that patient mortality increases with Nottingham index.</p>
 
@@ -1299,7 +1278,7 @@ Name: overall_survival, dtype: float64
 <span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">(</span><span class="n">numeric_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">].</span><span class="nf">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span>
 </code></pre></div></div>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Top 15 features correlated with death:
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Top 10 features correlated with death:
 
 age_at_diagnosis                     0.309256
 cohort_3.0                           0.210642
@@ -1319,6 +1298,8 @@ nf1                                  0.130849
 Name: overall_survival, dtype: float64
 </code></pre></div></div>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">clean_cancer_data.pickle</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">))</span>
+</code></pre></div></div>
 <h2><br></h2>
 <h2>Predicting patient mortality</h2>
 <h3>Test and train sets</h3>
@@ -1328,42 +1309,51 @@ Name: overall_survival, dtype: float64
 <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">train_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]),</span> <span class="n">train_set</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]</span>
 <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">test_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]),</span> <span class="n">test_set</span><span class="p">[</span><span class="sh">'</span><span class="s">overall_survival</span><span class="sh">'</span><span class="p">]</span>
 </code></pre></div></div>
-<h3><br></h3>
-<h3>Building classification models</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">([</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">],</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">test_train_cancer_data.pickle</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">))</span>
+</code></pre></div></div>
+
+<h3 id="building-classification-models">Building classification models</h3>
 
 <p>Several models are optimized manually, including three logistic regression models using ridge, lasso, and elastic net regularization techniques; two support vector machines classification models using linear and sigmoid kerels (the sigmoid kernel was the best performing non-linear model); a random forest model; and an extra trees model. The best performing model of each type was selected for further performance analysis.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">model_score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">):</span>
 
-<span class="c1">#selecting models 
-</span><span class="n">log_mod</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">0.01</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> 
-<span class="n">lasso_mod</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">penalty</span><span class="o">=</span><span class="sh">'</span><span class="s">l1</span><span class="sh">'</span><span class="p">,</span><span class="n">C</span><span class="o">=</span><span class="p">.</span><span class="mi">15</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="sh">'</span><span class="s">saga</span><span class="sh">'</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-<span class="n">elastic_mod</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span><span class="n">C</span><span class="o">=</span><span class="p">.</span><span class="mi">2</span><span class="p">,</span><span class="n">penalty</span><span class="o">=</span><span class="sh">'</span><span class="s">elasticnet</span><span class="sh">'</span><span class="p">,</span><span class="n">l1_ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="sh">'</span><span class="s">saga</span><span class="sh">'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-<span class="n">svm_mod</span> <span class="o">=</span> <span class="nc">LinearSVC</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="p">.</span><span class="mi">001</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-<span class="n">svm_kernel</span> <span class="o">=</span> <span class="nc">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="sh">'</span><span class="s">sigmoid</span><span class="sh">'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="sh">'</span><span class="s">scale</span><span class="sh">'</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-<span class="n">rf</span> <span class="o">=</span> <span class="nc">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
-<span class="n">et</span> <span class="o">=</span> <span class="nc">ExtraTreesClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="c1">#selecting models 
+</span>    <span class="n">log_mod</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">0.01</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> 
+    <span class="n">lasso_mod</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">penalty</span><span class="o">=</span><span class="sh">'</span><span class="s">l1</span><span class="sh">'</span><span class="p">,</span><span class="n">C</span><span class="o">=</span><span class="p">.</span><span class="mi">15</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="sh">'</span><span class="s">saga</span><span class="sh">'</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">elastic_mod</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span><span class="n">C</span><span class="o">=</span><span class="p">.</span><span class="mi">2</span><span class="p">,</span><span class="n">penalty</span><span class="o">=</span><span class="sh">'</span><span class="s">elasticnet</span><span class="sh">'</span><span class="p">,</span><span class="n">l1_ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="sh">'</span><span class="s">saga</span><span class="sh">'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">svm_mod</span> <span class="o">=</span> <span class="nc">LinearSVC</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="p">.</span><span class="mi">001</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">svm_kernel</span> <span class="o">=</span> <span class="nc">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="sh">'</span><span class="s">sigmoid</span><span class="sh">'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="sh">'</span><span class="s">scale</span><span class="sh">'</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">rf</span> <span class="o">=</span> <span class="nc">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+    <span class="n">et</span> <span class="o">=</span> <span class="nc">ExtraTreesClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 
-<span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_mod</span><span class="p">,</span><span class="n">lasso_mod</span><span class="p">,</span><span class="n">elastic_mod</span><span class="p">,</span><span class="n">svm_mod</span><span class="p">,</span><span class="n">svm_kernel</span><span class="p">,</span> <span class="n">rf</span><span class="p">,</span> <span class="n">et</span><span class="p">]</span>
-<span class="c1">#models = [elastic_mod, svm_kernel, rf, et]
-</span><span class="n">model_names</span> <span class="o">=</span> <span class="p">[</span><span class="nf">type</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="n">__name__</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">]</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_mod</span><span class="p">,</span><span class="n">lasso_mod</span><span class="p">,</span><span class="n">elastic_mod</span><span class="p">,</span><span class="n">svm_mod</span><span class="p">,</span><span class="n">svm_kernel</span><span class="p">,</span> <span class="n">rf</span><span class="p">,</span> <span class="n">et</span><span class="p">]</span>
+    <span class="c1">#models = [elastic_mod, svm_kernel, rf, et]
+</span>    <span class="n">model_names</span> <span class="o">=</span> <span class="p">[</span><span class="nf">type</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="n">__name__</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">]</span>
+    <span class="c1">#scoring models
+</span>    <span class="n">accuracy</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">f1</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">roc_auc</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="c1">#scoring models
-</span><span class="n">accuracy</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">precision</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">recall</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">f1</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">roc_auc</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="n">y_predict</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+        <span class="n">accuracy</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
+        <span class="n">precision</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
+        <span class="n">f1</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
+        <span class="n">roc_auc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
+        <span class="n">recall</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
 
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">y_predict</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="n">accuracy</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
-    <span class="n">precision</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
-    <span class="n">f1</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
-    <span class="n">roc_auc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
-    <span class="n">recall</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">))</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">([</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">roc_auc</span><span class="p">],</span><span class="n">columns</span><span class="o">=</span><span class="n">model_names</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">precision</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">f1</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">roc_auc</span><span class="sh">'</span><span class="p">]).</span><span class="n">T</span>
 
-<span class="n">scores</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">([</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">roc_auc</span><span class="p">],</span><span class="n">columns</span><span class="o">=</span><span class="n">model_names</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">precision</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">f1</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">roc_auc</span><span class="sh">'</span><span class="p">]).</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">models</span><span class="p">,</span><span class="n">model_names</span><span class="p">,</span><span class="n">scores</span>
+
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">models</span><span class="p">,</span> <span class="n">model_names</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="nf">model_score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">)</span>
 </code></pre></div></div>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scores</span>
@@ -1542,13 +1532,16 @@ Name: overall_survival, dtype: float64
  ExtraTreesClassifier(n_estimators=700, random_state=10))
 </code></pre></div></div>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="n">selected_models</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">svc_cancer_model.pickle</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">))</span>
+</code></pre></div></div>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ax</span> <span class="o">=</span> <span class="n">select_scores</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">recall</span><span class="sh">'</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">).</span><span class="n">T</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">ylim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.1</span><span class="p">))</span>
 <span class="n">ax</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="sh">'</span><span class="s">center left</span><span class="sh">'</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">))</span>
 <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Selected model scores</span><span class="sh">'</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p><img src="/assets/img/breast_cancer/output_59_0.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_58_0.png" alt="png"></p>
 
 <p>Accuracy, precision, recall, f1 score, and ROC AUC are evaluated for the selected models, and are defined below as functions of true positive (TP), true negative (TN), false positive (FP) and false negative (FN) predictions:</p>
 
@@ -1558,58 +1551,63 @@ Name: overall_survival, dtype: float64
 
 <p>We see the effect of threshold on model performance in the below figures, which show precession and recall with threshold directly and recall (or true positive rate) against false positive rate (FP/(FP+FN)) at different thresholds.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">selected_models</span><span class="p">:</span>
-    <span class="c1">#getting scores
-</span>    <span class="k">try</span><span class="p">:</span>
-      <span class="n">y_scores</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">decision_function</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="k">except</span><span class="p">:</span>
-      <span class="n">y_scores</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span>
-       
-    <span class="c1">#cal_mod = CalibratedClassifierCV(model,cv='prefit')
-</span>    <span class="c1">#cal_mod.fit(X_train, y_train)
-</span>    <span class="c1">#y_scores = cal_mod.predict_proba(X_test)[:,1] #https://scikit-learn.org/stable/modules/calibration.html
-</span>
-    <span class="c1">#calculating precision, recall, false positive rate, true positive rate, and normalizing thresholds
-</span>    <span class="n">fpr</span><span class="p">,</span><span class="n">tpr</span><span class="p">,</span><span class="n">thresholds</span><span class="o">=</span><span class="nf">roc_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_scores</span><span class="p">)</span>
-    <span class="n">precisions</span><span class="p">,</span> <span class="n">recalls</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="nf">precision_recall_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_scores</span><span class="p">)</span>
-    <span class="n">thresholds</span> <span class="o">=</span> <span class="p">(</span><span class="n">thresholds</span><span class="o">-</span><span class="nf">min</span><span class="p">(</span><span class="n">thresholds</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="nf">max</span><span class="p">(</span><span class="n">thresholds</span><span class="p">)</span><span class="o">-</span><span class="nf">min</span><span class="p">(</span><span class="n">thresholds</span><span class="p">))</span> <span class="c1">#rescale all thresholds
-</span>
-    <span class="c1">#plotitng precision
-</span>    <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">precisions</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="nf">type</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="n">__name__</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Precision</span><span class="sh">'</span><span class="p">)</span>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig = plt.figure(figsize=(12,6))
+  for model in selected_models:
+      #getting scores
+      try:
+        y_scores = model.decision_function(X_test)
+      except:
+        y_scores = model.predict_proba(X_test)[:,1]
+        
+      #cal_mod = CalibratedClassifierCV(model,cv='prefit')
+      #cal_mod.fit(X_train, y_train)
+      #y_scores = cal_mod.predict_proba(X_test)[:,1] #https://scikit-learn.org/stable/modules/calibration.html
 
-    <span class="c1">#plotting recall
-</span>    <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">recalls</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="nf">type</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="n">__name__</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">"</span><span class="s">Recall</span><span class="sh">"</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">"</span><span class="s">Threshold</span><span class="sh">"</span><span class="p">)</span>
-    <span class="c1">#plt.legend()
-</span>
-    <span class="c1">#plotting ROC#
-</span>    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span><span class="n">tpr</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="nf">type</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="n">__name__</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">False Positive Rate (Fall Out)</span><span class="sh">'</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">True Positive Rate (Recall)</span><span class="sh">'</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-    
-</code></pre></div></div>
+      #calculating precision, recall, false positive rate, true positive rate, and normalizing thresholds
+      fpr,tpr,thresholds=roc_curve(y_test, y_scores)
+      precisions, recalls, thresholds = precision_recall_curve(y_test, y_scores)
+      thresholds = (thresholds-min(thresholds))/(max(thresholds)-min(thresholds)) #rescale all thresholds
 
-<p><img src="/assets/img/breast_cancer/output_62_0.png" alt="png"></p>
+      #plotitng precision
+      plt.subplot(2,2,1)
+      plt.plot(thresholds, precisions[:-1],label=type(model).__name__)
+      plt.ylabel('Precision')
+
+      #plotting recall
+      plt.subplot(2,2,3)
+      plt.plot(thresholds, recalls[:-1],label=type(model).__name__)
+      plt.ylabel("Recall")
+      plt.xlabel("Threshold")
+      #plt.legend()
+
+      #plotting ROC#
+      ax = plt.subplot(1,2,2)
+      plt.plot(fpr,tpr,label=type(model).__name__)
+      plt.xlabel('False Positive Rate (Fall Out)')
+      plt.ylabel('True Positive Rate (Recall)')
+      ax.legend(loc=4)
+  plt.tight_layout()
+  </pre>
+</details>
+
+<p><img src="/assets/img/breast_cancer/output_61_0.png" alt="png"></p>
 
 <p>We see that the logistic regression and SVC models have superior precision up to a threshold of 0.6. Past this point, the tree-based classifiers outperform the other models. The AUC ROC is a measure of a classifier’s ability to separate classes. The logistic regression and SVC classifiers have the highest ROC AOC. The advantage of the tree-based classifiers is apparent in the recall curve, where extra trees has a much better recall at all thresholds.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig, ax = plt.subplots(1)
+  for model in selected_models:
+      PrecisionRecallDisplay.from_estimator(model, X_test, y_test, ax = ax)
+      plt.title(type(model).__name__)
+  </pre>
+</details>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">selected_models</span><span class="p">:</span>
-    <span class="n">PrecisionRecallDisplay</span><span class="p">.</span><span class="nf">from_estimator</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">type</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="n">__name__</span><span class="p">)</span>
-</code></pre></div></div>
-
-<p><img src="/assets/img/breast_cancer/output_64_0.png" alt="png"></p>
+<p><img src="/assets/img/breast_cancer/output_63_0.png" alt="png"></p>
 
 <p>Precision vs. recall is plotted at different thresholds. At high thresholds, the tree-based models are much more precise than the other models. Thus, if high precision is needed, it may be advantages to use a tree-based model with a higher threshold. Were this model to be used by clinicians to make predictions directly to patients, high precision may be desirable when telling a patient that they are likely to die from cancer, where as low recall is less important.</p>
 
@@ -1657,8 +1655,7 @@ Name: overall_survival, dtype: float64
 
 <p>The voting classifier outperformed the linear SVC classifier with an accuracy of 0.734 on the test set. Interestingly, performance is degraded with the inclusion of the SVC classifier. Thus, the voting classifier is used for feature importance selection.</p>
 
-<h2><br></h2>
-<h2>Feature importance</h2>
+<h2 id="feature-importance">Feature importance</h2>
 <p>Feature importances are determined by feature permutation using a permutation importance algorithm from sklearn. In this algorithm, the performance of the model on the test set is used as a baseline. The performance is then measured when each feature is shuffled. The difference in performance with each feature permuted against the baseline is a measure of how important a feature is to the model. The n_repeats parameter sets the number of times a feature is randomly shuffled and in this case we use 30.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">f_imp</span> <span class="o">=</span> <span class="nf">permutation_importance</span><span class="p">(</span><span class="n">voting_clf</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
@@ -1685,44 +1682,47 @@ Name: overall_survival, dtype: float64
 <span class="n">f_importance</span> <span class="o">=</span> <span class="n">f_importance</span><span class="p">.</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">f_imp</span><span class="sh">'</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </code></pre></div></div>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  f_clinical = f_importance[:gene_start].append(f_importance[mutant_stop:]).append(f_importance[gene_stop:mutant_start]).sort_values('f_imp', ascending=False)
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,8))
+  plt.bar(x=f_importance.index.values[:50], height=f_importance['f_imp'][:50], yerr=f_importance['std_error'][:50])
+  plt.xticks(rotation=90)
+  plt.title('Feature importance -- All Features')
+  plt.tight_layout();
+  </pre>
+</details>
 
-  f_clinical = f_importance[:gene_start].append(f_importance[mutant_stop:]).append(f_importance[gene_stop:mutant_start]).sort_values('f_imp', ascending=False)
-</code></pre></div></div>
+<p><img src="/assets/img/breast_cancer/output_76_0.png" alt="png"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">f_importance</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">values</span><span class="p">[:</span><span class="mi">50</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">f_importance</span><span class="p">[</span><span class="sh">'</span><span class="s">f_imp</span><span class="sh">'</span><span class="p">][:</span><span class="mi">50</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="n">f_importance</span><span class="p">[</span><span class="sh">'</span><span class="s">std_error</span><span class="sh">'</span><span class="p">][:</span><span class="mi">50</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Feature importance -- All Features</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">();</span>
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,6))
+  plt.subplot(1,3,1)
+  plt.title('Genes')
+  plt.bar(x=f_genes.index[:10], height=f_genes[:10]['f_imp'],yerr=f_genes[:10]['std_error'])
+  plt.ylabel = 'Decrease in accuracy'
+  plt.legend=False
+  plt.xticks(rotation=90)
+  plt.subplot(1,3,2)
+  plt.title('Mutations')
+  plt.bar(x=f_mutants.index[:10],height=f_mutants[:10]['f_imp'],yerr=f_mutants['std_error'][:10])
+  plt.ylabel = 'Decrease in accuracy'
+  plt.legend= legend=False
+  plt.xticks(rotation=90)
+  plt.ylim(0,.01)
+  plt.subplot(1,3,3)
+  plt.title('Clinical')
+  plt.bar(x=f_clinical.index[:10],height=f_clinical[:10]['f_imp'],yerr=f_clinical['std_error'][:10])
+  plt.ylabel = 'Decrease in accuracy'
+  plt.legend=False
+  plt.xticks(rotation=90)
+  plt.tight_layout()
+  </pre>
+</details>
 
 <p><img src="/assets/img/breast_cancer/output_77_0.png" alt="png"></p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Genes</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">f_genes</span><span class="p">.</span><span class="n">index</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">f_genes</span><span class="p">[:</span><span class="mi">10</span><span class="p">][</span><span class="sh">'</span><span class="s">f_imp</span><span class="sh">'</span><span class="p">],</span><span class="n">yerr</span><span class="o">=</span><span class="n">f_genes</span><span class="p">[:</span><span class="mi">10</span><span class="p">][</span><span class="sh">'</span><span class="s">std_error</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Decrease in accuracy</span><span class="sh">'</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Mutations</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">f_mutants</span><span class="p">.</span><span class="n">index</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span><span class="n">height</span><span class="o">=</span><span class="n">f_mutants</span><span class="p">[:</span><span class="mi">10</span><span class="p">][</span><span class="sh">'</span><span class="s">f_imp</span><span class="sh">'</span><span class="p">],</span><span class="n">yerr</span><span class="o">=</span><span class="n">f_mutants</span><span class="p">[</span><span class="sh">'</span><span class="s">std_error</span><span class="sh">'</span><span class="p">][:</span><span class="mi">10</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Decrease in accuracy</span><span class="sh">'</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">legend</span><span class="o">=</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,.</span><span class="mi">01</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Clinical</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">f_clinical</span><span class="p">.</span><span class="n">index</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span><span class="n">height</span><span class="o">=</span><span class="n">f_clinical</span><span class="p">[:</span><span class="mi">10</span><span class="p">][</span><span class="sh">'</span><span class="s">f_imp</span><span class="sh">'</span><span class="p">],</span><span class="n">yerr</span><span class="o">=</span><span class="n">f_clinical</span><span class="p">[</span><span class="sh">'</span><span class="s">std_error</span><span class="sh">'</span><span class="p">][:</span><span class="mi">10</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Decrease in accuracy</span><span class="sh">'</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">legend</span><span class="o">=</span><span class="bp">False</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p><img src="/assets/img/breast_cancer/output_78_0.png" alt="png"></p>
 
 <p>The METABRIC dataset contains m-RNA level z-scores for 331 genes and mutation information for 175 genes. Information on mutations has been condensed to either 0 or 1 for wild or mutant types. We briefly summarize the role of the top 10 genes and mutations that contribute significantly to our model’s predictive power. All of the identified genes and mutations are known to contribute to human cancer, which supports the validity of our model.</p>
 

@@ -10,9 +10,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Predicting CrossFit performance | Nina  Cilliers</title>
+    <title>Predicting CrossFit performance with XGBoost | Nina  Cilliers</title>
     <meta name="author" content="Nina  Cilliers">
-    <meta name="description" content="Models are built and optimized to predict the total weight lifted by athletes in the CrossFit games.">
+    <meta name="description" content="Optimizing random forest, XGBoost and neural network models">
     <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
 
 
@@ -121,9 +121,9 @@
         <div class="post">
 
           <article>
-            <h1 id="predicting-crossfit-performance">Predicting CrossFit performance</h1>
-
-<h2><br></h2>
+            <h1>Predicting CrossFit performance with XGBoost</h1>
+<h4><i> Optimizing random forest, XGBoost and neural network models </i></h4>
+<h4><br></h4>
 <h2>Introduction </h2>
 
 <p>CrossFit is a high-intensity fitness program that combines elements of weightlifting, cardio, and gymnastics. It aims to improve overall physical fitness by incorporating constantly varied functional movements performed at a high intensity. At the pinnacle of CrossFit is the CrossFit Games, an annual competition that showcases the world’s fittest athletes. The CrossFit Games serve as a platform for elite athletes to test their skills and compete in a wide range of demanding workouts, challenging their strength, speed, power, and mental resilience. In this analysis, we will delve into the performance of CrossFit athletes, examining key factors that contribute to their success in this highly demanding and competitive sport.</p>
@@ -168,19 +168,25 @@
 
 <p>Cleaned data is imported from <i>A data-based approach to CrossFit</i>.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
-<span class="kn">import</span> <span class="n">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
-<span class="kn">import</span> <span class="n">matplotlib</span> <span class="k">as</span> <span class="n">mpl</span>
-<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">import</span> <span class="n">os</span>
-<span class="kn">import</span> <span class="n">pickle</span>
-</code></pre></div></div>
+<details>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="sh">'</span><span class="s">C:</span><span class="se">\\</span><span class="s">Users</span><span class="se">\\</span><span class="s">corne</span><span class="se">\\</span><span class="s">OneDrive</span><span class="se">\\</span><span class="s">Documents</span><span class="se">\\</span><span class="s">DS_Portfolio</span><span class="se">\\</span><span class="s">crossfit_project</span><span class="se">\\</span><span class="s">crossfit_project</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_pickle</span><span class="p">(</span><span class="sh">'</span><span class="s">cleaned_cf_data.pkl</span><span class="sh">'</span><span class="p">)</span>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  import pandas as pd
+  import seaborn as sns
+  import matplotlib as mpl
+  import matplotlib.pyplot as plt
+  import os
+  import pickle
+  </pre>
+  <pre>
+  os.chdir('C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\crossfit_project\\crossfit_project')
+  </pre>
+</details>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_pickle</span><span class="p">(</span><span class="sh">'</span><span class="s">cleaned_cf_data.pkl</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">df</span><span class="p">.</span><span class="nf">info</span><span class="p">()</span>
 </code></pre></div></div>
-
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
 Int64Index: 28995 entries, 21 to 422961
 Data columns (total 54 columns):
@@ -246,7 +252,6 @@ memory usage: 8.5+ MB
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="nf">head</span><span class="p">()</span>
 </code></pre></div></div>
-
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -743,11 +748,16 @@ memory usage: 8.5+ MB
 
 <p><img src="https://miro.medium.com/max/327/1*9hQVcasuwx5ddq_s3MFCyw.gif"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span><span class="n">cross_val_score</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestRegressor</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
-<span class="kn">import</span> <span class="n">xgboost</span> <span class="k">as</span> <span class="n">xgb</span>
-</code></pre></div></div>
+<details>
+
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  from sklearn.model_selection import train_test_split,cross_val_score
+  from sklearn.ensemble import RandomForestRegressor
+  from sklearn.metrics import mean_squared_error
+  import xgboost as xgb
+  </pre>
+</details>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Assigning test and train sets
 </span><span class="n">train_set</span><span class="p">,</span> <span class="n">test_set</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="n">df_select</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
@@ -756,7 +766,7 @@ memory usage: 8.5+ MB
 <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">test_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]),</span> <span class="n">test_set</span><span class="p">[</span><span class="sh">'</span><span class="s">total_lift</span><span class="sh">'</span><span class="p">]</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#fit score
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#evaluating manually optimized random forest regressor
 </span><span class="n">rnd_clf</span> <span class="o">=</span> <span class="nc">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_depth</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span><span class="n">oob_score</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
 <span class="n">rnd_pred</span> <span class="o">=</span> <span class="n">rnd_clf</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
 <span class="n">rnd_score</span> <span class="o">=</span> <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">rnd_pred</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
@@ -769,8 +779,7 @@ memory usage: 8.5+ MB
 
 <h2><br></h2>
 <h2>XGBoost</h2>
-
-<h3 id="model-optimization">Model optimization</h3>
+<h3>Building and optimizing model</h3>
 
 <p>XGBoost stands for eXtreme gradient boosting and is a gradient boosted trees algorithm. In boosting, trees are sequentially built such that each subsequent tree aims to reduce the errors of the previous tree. Custom XGBoost callbacks were created during model optimization to control learning rate decay, implement early stopping, and plot training results. A schematic of this iterative process is shown in the figure below.
 <br>
@@ -828,7 +837,7 @@ Image from <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowI
 </span><span class="n">es</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="n">callback</span><span class="p">.</span><span class="nc">EarlyStopping</span><span class="p">(</span><span class="n">rounds</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">save_best</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#XGBoost 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#building model
 </span><span class="n">dtrain</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
 <span class="n">dtest</span> <span class="o">=</span> <span class="n">xgb</span><span class="p">.</span><span class="nc">DMatrix</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
 <span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="sh">'</span><span class="s">max_depth</span><span class="sh">'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span><span class="sh">'</span><span class="s">subsample</span><span class="sh">'</span><span class="p">:.</span><span class="mi">6</span><span class="p">,</span><span class="sh">'</span><span class="s">reg_alpha</span><span class="sh">'</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
@@ -869,11 +878,6 @@ Image from <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowI
 </code></pre></div></div>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Best iteration and RMSE:
-
-
-
-
-
 (1024, 0.839)
 </code></pre></div></div>
 
@@ -924,10 +928,14 @@ Image from <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost-HowI
 
 <p>A dense neural network was created to predict CrossFit athlete performance.  Neural networks are useful in situations where identifying complex patterns aids in predictive performance. Neural networks have been outperformed by XGBoost when working with smaller amounts of data and tabular data.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
-<span class="kn">from</span> <span class="n">keras.layers</span> <span class="kn">import</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span>
-<span class="kn">from</span> <span class="n">functools</span> <span class="kn">import</span> <span class="n">partial</span> 
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  import tensorflow as tf
+  from keras.layers import Dropout, BatchNormalization
+  from functools import partial 
+  </pre>
+</details>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#splitting test data to make a validation dataset
 </span><span class="n">valid_set_nn</span><span class="p">,</span> <span class="n">test_set_nn</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="n">test_set</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
@@ -1009,11 +1017,6 @@ _________________________________________________________________
 </code></pre></div></div>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Neural network RMSE:
-
-
-
-
-
 0.863
 </code></pre></div></div>
 
@@ -1482,11 +1485,6 @@ _________________________________________________________________
 </code></pre></div></div>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>My RMSE:
-
-
-
-
-
 1.782
 </code></pre></div></div>
 
