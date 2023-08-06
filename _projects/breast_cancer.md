@@ -1,13 +1,16 @@
 ---
 layout: page
-title: Extracting genetic drivers of breast cancer mortality 
-description: Binary classifiers are combined to extract key genetic drivers of breast cancer patient mortality.
+title: Predicting breast cancer mortality
+description: Binary classifiers are optimized to predict breast cancer mortality from clinical and genetic features. Key features are identified by permutation.
 img: assets/img/breast_cancer/output_59_0.png
 importance: 2
 category: Scikit-learn
 ---
 
-<h1>Extracting genetic drivers of breast cancer mortality from binary classifiers </h1>
+<h1>Predicting breast cancer mortality</h1>
+<h4><i>Binary classifiers are optimized to predict breast cancer mortality from clinical and genetic features.</i></h4>
+<h4><br></h4>
+<h2>Introduction</h2>
 
 Genetic variation is a key factor in breast cancer, as cancer type, response to treatment, and disease progression are genetically controlled. For example, BRCA1 and BRCA2 genetic mutations diminish the ability of proteins to repair damaged DNA, which causes abnormal cell growth and cancer. A full understanding of the genetic underpinnings of cancer would enable scientists to develop effective treatments for each target and clinicians to select optimal treatment strategies. 
 
@@ -17,724 +20,56 @@ Permutation importance is used to extract the importance of each feature. The mo
 
 <h2><br></h2>
 <h2>Data cleaning</h2>
-<h3>Importing data </h3>
+<h3>Importing data</h3>
 The Molecular Taxonomy of Breast Cancer International Consortium (METABRIC) database is imported from [Kaggle](https://www.kaggle.com/datasets/raghadalharbi/breast-cancer-gene-expression-profiles-metabric). The METABRIC database is a Canada-UK Project which contains targeted sequencing data of 1,980 primary breast cancer samples originally downloaded from [cBioPortal](https://www.cbioportal.org/). 
 
+<details>
+  <summary>Click to view hidden code.</summary>
+  <pre>
+  import pandas as pd
+  import os
+  import missingno as msno
+  import matplotlib.pyplot as plt
+  import seaborn as sns
+  import numpy as np
+  import copy
+  from scipy import stats
+  import pickle 
+
+  from sklearn.preprocessing import StandardScaler
+  from sklearn.model_selection import train_test_split,cross_val_score
+  from sklearn.metrics import roc_curve
+  from sklearn.model_selection import cross_val_predict
+  from sklearn.metrics import precision_recall_curve
+  from sklearn.calibration import CalibratedClassifierCV 
+  from sklearn.inspection import permutation_importance
+  from sklearn.linear_model import LogisticRegression
+  from sklearn.svm import SVC, LinearSVC
+  from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
+  from operator import itemgetter
+  from sklearn.ensemble import StackingClassifier, VotingClassifier
+  from sklearn.metrics import PrecisionRecallDisplay
+  from sklearn.metrics import accuracy_score, precision_score,f1_score, roc_auc_score, recall_score, mean_squared_error
+  </pre>
+  <pre>
+  os.chdir('C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\breast_cancer')
+  </pre>
+  <pre>
+  pd.options.display.max_columns = 100
+  </pre>
+</detaIls>
 
 ```python
-import pandas as pd
-import os
-import missingno as msno
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-import copy
-from scipy import stats
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split,cross_val_score
-from sklearn.metrics import roc_curve
-from sklearn.model_selection import cross_val_predict
-from sklearn.metrics import precision_recall_curve
-from sklearn.calibration import CalibratedClassifierCV 
-from sklearn.inspection import permutation_importance
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC, LinearSVC
-from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
-from operator import itemgetter
-from sklearn.ensemble import StackingClassifier, VotingClassifier
-from sklearn.metrics import PrecisionRecallDisplay
-from sklearn.metrics import accuracy_score, precision_score,f1_score, roc_auc_score, recall_score, mean_squared_error
+def import_csv(csv_loc):
+    df = pd.read_csv(csv_loc,low_memory=False)
+    return df
 ```
 
 ```python
-pd.options.display.max_columns = 100
+csv_loc = 'METABRIC_RNA_Mutation.csv'
 ```
-
-
-```python
-df = pd.read_csv('METABRIC_RNA_Mutation.csv',low_memory=False)
-df.head()
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>patient_id</th>
-      <th>age_at_diagnosis</th>
-      <th>type_of_breast_surgery</th>
-      <th>cancer_type</th>
-      <th>cancer_type_detailed</th>
-      <th>cellularity</th>
-      <th>chemotherapy</th>
-      <th>pam50_+_claudin-low_subtype</th>
-      <th>cohort</th>
-      <th>er_status_measured_by_ihc</th>
-      <th>er_status</th>
-      <th>neoplasm_histologic_grade</th>
-      <th>her2_status_measured_by_snp6</th>
-      <th>her2_status</th>
-      <th>tumor_other_histologic_subtype</th>
-      <th>hormone_therapy</th>
-      <th>inferred_menopausal_state</th>
-      <th>integrative_cluster</th>
-      <th>primary_tumor_laterality</th>
-      <th>lymph_nodes_examined_positive</th>
-      <th>mutation_count</th>
-      <th>nottingham_prognostic_index</th>
-      <th>oncotree_code</th>
-      <th>overall_survival_months</th>
-      <th>overall_survival</th>
-      <th>pr_status</th>
-      <th>radio_therapy</th>
-      <th>3-gene_classifier_subtype</th>
-      <th>tumor_size</th>
-      <th>tumor_stage</th>
-      <th>death_from_cancer</th>
-      <th>brca1</th>
-      <th>brca2</th>
-      <th>palb2</th>
-      <th>pten</th>
-      <th>tp53</th>
-      <th>atm</th>
-      <th>cdh1</th>
-      <th>chek2</th>
-      <th>nbn</th>
-      <th>nf1</th>
-      <th>stk11</th>
-      <th>bard1</th>
-      <th>mlh1</th>
-      <th>msh2</th>
-      <th>msh6</th>
-      <th>pms2</th>
-      <th>epcam</th>
-      <th>rad51c</th>
-      <th>rad51d</th>
-      <th>...</th>
-      <th>prkacg_mut</th>
-      <th>rpgr_mut</th>
-      <th>large1_mut</th>
-      <th>foxp1_mut</th>
-      <th>clk3_mut</th>
-      <th>prkcz_mut</th>
-      <th>lipi_mut</th>
-      <th>ppp2r2a_mut</th>
-      <th>prkce_mut</th>
-      <th>gh1_mut</th>
-      <th>gpr32_mut</th>
-      <th>kras_mut</th>
-      <th>nf2_mut</th>
-      <th>chek2_mut</th>
-      <th>ldlrap1_mut</th>
-      <th>clrn2_mut</th>
-      <th>acvrl1_mut</th>
-      <th>agtr2_mut</th>
-      <th>cdkn2a_mut</th>
-      <th>ctnna1_mut</th>
-      <th>magea8_mut</th>
-      <th>prr16_mut</th>
-      <th>dtwd2_mut</th>
-      <th>akt2_mut</th>
-      <th>braf_mut</th>
-      <th>foxo1_mut</th>
-      <th>nt5e_mut</th>
-      <th>ccnd3_mut</th>
-      <th>nr3c1_mut</th>
-      <th>prkg1_mut</th>
-      <th>tbl1xr1_mut</th>
-      <th>frmd3_mut</th>
-      <th>smad2_mut</th>
-      <th>sgcd_mut</th>
-      <th>spaca1_mut</th>
-      <th>rasgef1b_mut</th>
-      <th>hist1h2bc_mut</th>
-      <th>nr2f1_mut</th>
-      <th>klrg1_mut</th>
-      <th>mbl2_mut</th>
-      <th>mtap_mut</th>
-      <th>ppp2cb_mut</th>
-      <th>smarcd1_mut</th>
-      <th>nras_mut</th>
-      <th>ndfip1_mut</th>
-      <th>hras_mut</th>
-      <th>prps2_mut</th>
-      <th>smarcb1_mut</th>
-      <th>stmn2_mut</th>
-      <th>siah1_mut</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>75.65</td>
-      <td>MASTECTOMY</td>
-      <td>Breast Cancer</td>
-      <td>Breast Invasive Ductal Carcinoma</td>
-      <td>NaN</td>
-      <td>0</td>
-      <td>claudin-low</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>3.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Ductal/NST</td>
-      <td>1</td>
-      <td>Post</td>
-      <td>4ER+</td>
-      <td>Right</td>
-      <td>10.0</td>
-      <td>NaN</td>
-      <td>6.044</td>
-      <td>IDC</td>
-      <td>140.500000</td>
-      <td>1</td>
-      <td>Negative</td>
-      <td>1</td>
-      <td>ER-/HER2-</td>
-      <td>22.0</td>
-      <td>2.0</td>
-      <td>Living</td>
-      <td>-1.3990</td>
-      <td>-0.5738</td>
-      <td>-1.6217</td>
-      <td>1.4524</td>
-      <td>0.3504</td>
-      <td>1.1517</td>
-      <td>0.0348</td>
-      <td>0.1266</td>
-      <td>-0.8361</td>
-      <td>-0.8578</td>
-      <td>-0.4294</td>
-      <td>-1.1201</td>
-      <td>-0.4844</td>
-      <td>-0.7483</td>
-      <td>-1.6660</td>
-      <td>-0.1250</td>
-      <td>-0.3721</td>
-      <td>-0.6508</td>
-      <td>-0.1278</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>2</td>
-      <td>43.19</td>
-      <td>BREAST CONSERVING</td>
-      <td>Breast Cancer</td>
-      <td>Breast Invasive Ductal Carcinoma</td>
-      <td>High</td>
-      <td>0</td>
-      <td>LumA</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>3.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Ductal/NST</td>
-      <td>1</td>
-      <td>Pre</td>
-      <td>4ER+</td>
-      <td>Right</td>
-      <td>0.0</td>
-      <td>2.0</td>
-      <td>4.020</td>
-      <td>IDC</td>
-      <td>84.633333</td>
-      <td>1</td>
-      <td>Positive</td>
-      <td>1</td>
-      <td>ER+/HER2- High Prolif</td>
-      <td>10.0</td>
-      <td>1.0</td>
-      <td>Living</td>
-      <td>-1.3800</td>
-      <td>0.2777</td>
-      <td>-1.2154</td>
-      <td>0.5296</td>
-      <td>-0.0136</td>
-      <td>-0.2659</td>
-      <td>1.3594</td>
-      <td>0.7961</td>
-      <td>0.5419</td>
-      <td>-2.6059</td>
-      <td>0.5120</td>
-      <td>0.4390</td>
-      <td>1.2266</td>
-      <td>0.7612</td>
-      <td>0.1821</td>
-      <td>1.0104</td>
-      <td>0.5600</td>
-      <td>-0.4018</td>
-      <td>-0.2909</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>5</td>
-      <td>48.87</td>
-      <td>MASTECTOMY</td>
-      <td>Breast Cancer</td>
-      <td>Breast Invasive Ductal Carcinoma</td>
-      <td>High</td>
-      <td>1</td>
-      <td>LumB</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>2.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Ductal/NST</td>
-      <td>1</td>
-      <td>Pre</td>
-      <td>3</td>
-      <td>Right</td>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>4.030</td>
-      <td>IDC</td>
-      <td>163.700000</td>
-      <td>0</td>
-      <td>Positive</td>
-      <td>0</td>
-      <td>NaN</td>
-      <td>15.0</td>
-      <td>2.0</td>
-      <td>Died of Disease</td>
-      <td>0.0670</td>
-      <td>-0.8426</td>
-      <td>0.2114</td>
-      <td>-0.3326</td>
-      <td>0.5141</td>
-      <td>-0.0803</td>
-      <td>1.1398</td>
-      <td>0.4187</td>
-      <td>-0.4030</td>
-      <td>-1.1305</td>
-      <td>0.2362</td>
-      <td>-0.1721</td>
-      <td>-1.7910</td>
-      <td>3.0955</td>
-      <td>0.6608</td>
-      <td>2.6127</td>
-      <td>2.5553</td>
-      <td>-0.0391</td>
-      <td>-0.4421</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>6</td>
-      <td>47.68</td>
-      <td>MASTECTOMY</td>
-      <td>Breast Cancer</td>
-      <td>Breast Mixed Ductal and Lobular Carcinoma</td>
-      <td>Moderate</td>
-      <td>1</td>
-      <td>LumB</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>2.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Mixed</td>
-      <td>1</td>
-      <td>Pre</td>
-      <td>9</td>
-      <td>Right</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>4.050</td>
-      <td>MDLC</td>
-      <td>164.933333</td>
-      <td>1</td>
-      <td>Positive</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>25.0</td>
-      <td>2.0</td>
-      <td>Living</td>
-      <td>0.6744</td>
-      <td>-0.5428</td>
-      <td>-1.6592</td>
-      <td>0.6369</td>
-      <td>1.6708</td>
-      <td>-0.8880</td>
-      <td>1.2491</td>
-      <td>-1.1889</td>
-      <td>-0.4174</td>
-      <td>-0.6165</td>
-      <td>1.0078</td>
-      <td>-0.4010</td>
-      <td>-1.3905</td>
-      <td>4.8798</td>
-      <td>0.0615</td>
-      <td>2.9414</td>
-      <td>4.1161</td>
-      <td>-0.3098</td>
-      <td>-1.3470</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>8</td>
-      <td>76.97</td>
-      <td>MASTECTOMY</td>
-      <td>Breast Cancer</td>
-      <td>Breast Mixed Ductal and Lobular Carcinoma</td>
-      <td>High</td>
-      <td>1</td>
-      <td>LumB</td>
-      <td>1.0</td>
-      <td>Positve</td>
-      <td>Positive</td>
-      <td>3.0</td>
-      <td>NEUTRAL</td>
-      <td>Negative</td>
-      <td>Mixed</td>
-      <td>1</td>
-      <td>Post</td>
-      <td>9</td>
-      <td>Right</td>
-      <td>8.0</td>
-      <td>2.0</td>
-      <td>6.080</td>
-      <td>MDLC</td>
-      <td>41.366667</td>
-      <td>0</td>
-      <td>Positive</td>
-      <td>1</td>
-      <td>ER+/HER2- High Prolif</td>
-      <td>40.0</td>
-      <td>2.0</td>
-      <td>Died of Disease</td>
-      <td>1.2932</td>
-      <td>-0.9039</td>
-      <td>-0.7219</td>
-      <td>0.2168</td>
-      <td>0.3484</td>
-      <td>0.3897</td>
-      <td>0.9131</td>
-      <td>0.9356</td>
-      <td>0.7675</td>
-      <td>-0.2940</td>
-      <td>-0.2961</td>
-      <td>0.6320</td>
-      <td>-0.3582</td>
-      <td>0.3032</td>
-      <td>0.8747</td>
-      <td>0.6323</td>
-      <td>0.3349</td>
-      <td>-0.2652</td>
-      <td>-0.1541</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 693 columns</p>
-</div>
-
-
-
-
-```python
-df.columns[:31] #columns without genes and mutations
-```
-
-
-
-
-    Index(['patient_id', 'age_at_diagnosis', 'type_of_breast_surgery',
-           'cancer_type', 'cancer_type_detailed', 'cellularity', 'chemotherapy',
-           'pam50_+_claudin-low_subtype', 'cohort', 'er_status_measured_by_ihc',
-           'er_status', 'neoplasm_histologic_grade',
-           'her2_status_measured_by_snp6', 'her2_status',
-           'tumor_other_histologic_subtype', 'hormone_therapy',
-           'inferred_menopausal_state', 'integrative_cluster',
-           'primary_tumor_laterality', 'lymph_nodes_examined_positive',
-           'mutation_count', 'nottingham_prognostic_index', 'oncotree_code',
-           'overall_survival_months', 'overall_survival', 'pr_status',
-           'radio_therapy', '3-gene_classifier_subtype', 'tumor_size',
-           'tumor_stage', 'death_from_cancer'],
-          dtype='object')
-
-
 <h3><br></h3>
 <h3>Dropping nan values</h3>
-
 
 ```python
 #findind nan values
@@ -744,16 +79,16 @@ df.isna().sum().sort_values(ascending=False)[:10]
 
 
 
-    tumor_stage                  501
-    3-gene_classifier_subtype    204
-    primary_tumor_laterality     106
-    neoplasm_histologic_grade     72
-    cellularity                   54
-    mutation_count                45
-    er_status_measured_by_ihc     30
-    type_of_breast_surgery        22
-    tumor_size                    20
-    cancer_type_detailed          15
+    age_at_diagnosis    0
+    ptpn22              0
+    rasgef1b            0
+    rpgr                0
+    ryr2                0
+    sbno1               0
+    setd1a              0
+    setd2               0
+    setdb1              0
+    sf3b1               0
     dtype: int64
 
 
@@ -761,163 +96,61 @@ df.isna().sum().sort_values(ascending=False)[:10]
 
 ```python
 #deleting columns that aren't of particular interest and have many nan entries
-#del df['3-gene_classifier_subtype']
-del df['cellularity']
-del df['neoplasm_histologic_grade']
-del df['primary_tumor_laterality']
-del df['er_status_measured_by_ihc']
-```
+def drop_nan(df): 
 
+    #deleting rows with low interest information and high NaN counts
+    print(f'df shape before NaN drop: {df.shape}')
+    del df['cellularity']
+    del df['neoplasm_histologic_grade']
+    del df['primary_tumor_laterality']
+    del df['er_status_measured_by_ihc']
+    df = df.dropna()
+    print(f'df shape after NaN drop: {df.shape}')
 
-```python
-#findind nan values
-df.isna().sum().sort_values(ascending=False)[:10]
-```
+    # in cancer_type feature, one instance of Breast Sarcoma was deleted
+    # feature now only contains one value and is therefore removed 
+    df.pop('cancer_type')
 
-
-
-
-    tumor_stage                       501
-    3-gene_classifier_subtype         204
-    mutation_count                     45
-    type_of_breast_surgery             22
-    tumor_size                         20
-    cancer_type_detailed               15
-    tumor_other_histologic_subtype     15
-    oncotree_code                      15
-    death_from_cancer                   1
-    akr1c2                              0
-    dtype: int64
-
-
-
-
-```python
-#dropping nan values 
-print(df.shape)
-df = df.dropna()
-print(df.shape)
-```
-
-    (1904, 689)
-    (1185, 689)
-    
-
-
-```python
-# in cancer_type feature, one instance of Breast Sarcoma was deleted
-# feature now only contains one value and is therefore removed 
-
-df.pop('cancer_type');
-```
-
-
-```python
-#we also don't need patient id 
-df.pop('patient_id');
+    #we also don't need patient id 
+    df.pop('patient_id')
+    return df
 ```
 <h3><br></h3>
 <h3>Encoding data</h3>
 
-
 ```python
-#encoding binary features 
-df = pd.get_dummies(df, columns=['type_of_breast_surgery','er_status','inferred_menopausal_state','pr_status','her2_status'], drop_first=True)
-```
+#encoding data
+def encode(df):
+    print(f'Shape before encoding: {df.shape}')
+    #encoding features with 2 values
+    df = pd.get_dummies(df, columns=['type_of_breast_surgery','er_status','inferred_menopausal_state','pr_status','her2_status'], drop_first=True)
 
-
-```python
-#replace mutant subtypes with wild type (0) or general mutant type (1)
-for col in df.columns:
-    if 'mut' in col:
-        df[col]=np.where((df[col])!='0',1,0)
-```
-
-
-```python
-#removing mutant features with less than 30 positive instances 
-for col in df.columns:
-    if 'mut' in col:
-        if sum(df[col]) < 30:
-            del df[col]
+    #encoding other features with >2 values
+    df = pd.get_dummies(df, columns=['3-gene_classifier_subtype','death_from_cancer','cancer_type_detailed','pam50_+_claudin-low_subtype','cohort','integrative_cluster','oncotree_code','her2_status_measured_by_snp6','tumor_other_histologic_subtype'])
+    
+    #encode wild type (0) or general mutant type (1)
+    for col in df.columns:
+        if 'mut' in col:
+            df[col]=np.where((df[col])!='0',1,0)
+    
+    #removing mutant features with less than 30 positive instances 
+    for col in df.columns:
+        if 'mut' in col:
+            if sum(df[col]) < 30:
+                del df[col]
+    
+    print(f'Shape after encoding: {df.shape}')
+    
+    return df
 ```
 
 
 ```python
 #switching 0 and 1 so that 1 predicts death and 0 predicts survival
-df['overall_survival']=np.where(df['overall_survival']==0,1,0)
-#checking
-df[['overall_survival','death_from_cancer']].head()
+def kill_switch(df):
+    df['overall_survival']=np.where(df['overall_survival']==0,1,0)
+    return df
 ```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>overall_survival</th>
-      <th>death_from_cancer</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>0</td>
-      <td>Living</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>1</td>
-      <td>Died of Disease</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>1</td>
-      <td>Died of Disease</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>1</td>
-      <td>Died of Other Causes</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>1</td>
-      <td>Died of Disease</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-
-```python
-#encoding other features
-df = pd.get_dummies(df, columns=['3-gene_classifier_subtype','death_from_cancer','cancer_type_detailed','pam50_+_claudin-low_subtype','cohort','integrative_cluster','oncotree_code','her2_status_measured_by_snp6','tumor_other_histologic_subtype'])
-print('Shape of data:')
-df.shape
-```
-
-    Shape of data:
-    (1185, 610)
-
 
 <h3><br></h3>
 <h3>Removing outliers</h3>
@@ -937,16 +170,16 @@ stats.zscore(df, axis=0).max(axis=0).sort_values(ascending=False)[:10]
 
     Features with the highes member zscores:
 
-    pam50_+_claudin-low_subtype_NC        24.320773
-    lipi                                  20.703269
-    her2_status_measured_by_snp6_UNDEF    19.849433
-    nrg3                                  16.191813
-    ush2a                                 15.161436
-    gh1                                   15.156411
-    slco1b3                               14.980536
-    itgb3                                 14.888723
-    inha                                  14.568444
-    bmp3                                  13.883653
+    her2_status_measured_by_snp6_UNDEF    19.824228
+    nrg3                                  16.173489
+    gh1                                   15.158937
+    ush2a                                 15.147913
+    slco1b3                               14.974030
+    itgb3                                 14.872653
+    inha                                  14.551166
+    bmp3                                  13.893939
+    magea8                                13.232305
+    myo1a                                 12.818764
     dtype: float64
 
 
@@ -957,21 +190,14 @@ stats.zscore(df, axis=0).max(axis=0).sort_values(ascending=False)[:10]
 #this conservative approach is taken in order to only remove outliers from categorical data
 #high gene expression levels could be a result of cancer causing phenotypes that are indeed different from the mean distribution and not outliers
 
-zscore = stats.zscore(df, axis=0)
-print('Shape before outlier removal:')
-print(df.shape)
-df[zscore>20]=np.nan
-df.dropna(inplace=True)
-print("Shape after outlier removal:")
-df.shape
+def zscore_drop(df):
+    zscore = stats.zscore(df, axis=0)
+    print(f'Shape before outlier removal:{df.shape}')
+    df[zscore>20]=np.nan
+    df.dropna(inplace=True)
+    print(f'Shape after outlier removal:{df.shape}')
+    return df
 ```
-
-    Shape before outlier removal:
-    (1185, 610)
-    Shape after outlier removal:
-    (1182, 610)
-
-
 <h3><br></h3>
 <h3>Scaling data</h3>
 
@@ -979,72 +205,762 @@ Non-binary data is scalled using the StandardScaler transformer.
 
 
 ```python
-#selecting features that will be scaled 
-to_scale = [col for col in df if df[col].unique().shape[0] > 2]
-not_scaled = [col for col in df if df[col].unique().shape[0] <= 2]
+def scale(df):
+    #selecting features that will be scaled 
+    to_scale = [col for col in df if df[col].unique().shape[0] > 2]
+    not_scaled = [col for col in df if df[col].unique().shape[0] <= 2]
+
+    #copying selected unscaled data for EDA
+    df_unscaled = pd.DataFrame()
+    df_unscaled['survival_months'] = df['overall_survival_months'].copy()
+    df_unscaled['age'] = df['age_at_diagnosis'].copy()
+    df_unscaled['tumor_stage'] = df['tumor_stage'].copy()
+    df_unscaled['overall_survival']=df['overall_survival'].copy()
+    df_unscaled['nott']=df['nottingham_prognostic_index'].copy()
+    df_unscaled['tumor_size']=df['tumor_size'].copy()
+
+    #normalizing features 
+    #I believe I have found a glitch with column transformer using dataframes and passthrough
+    #passthrough is not honored and all columns are transformed 
+    #thus, column transformer is not used and columns are manually transformed
+
+    #transforming to_scale columns
+    scaler = StandardScaler()
+    df_transformed = df[to_scale]
+    col_names = df_transformed.columns.values
+    df_transformed = scaler.fit_transform(df_transformed)
+    df_transformed = pd.DataFrame(df_transformed,columns=col_names)
+
+    #isolating passthrough columns
+    df_pass = df[not_scaled]
+
+    #concatenating df
+    df = pd.concat([df_transformed.reset_index(drop=True), df_pass.reset_index(drop=True)],axis=1)
+
+    return df, df_unscaled
+
+```
+<h3><br></h3>
+<h3>Cleaning data</h3>
+
+
+```python
+class clean():
+    def __init__(self,csv_location):
+        self.csv = csv_loc
+
+    def __call__(self):
+        print('Importing data...')
+        df = import_csv(csv_loc)
+        print('Droping NaNs...')
+        df = drop_nan(df)
+        print('Encoding data...')
+        df = encode(df)
+        df = kill_switch(df)
+        print('Removing outliers...')
+        df = zscore_drop(df)
+        print('Rescaling data...')
+        df, df_unscaled = scale(df)
+        return df, df_unscaled
 ```
 
 
 ```python
-#copying selected unscaled data for EDA
-df_unscaled = pd.DataFrame()
-df_unscaled['survival_months'] = df['overall_survival_months'].copy()
-df_unscaled['age'] = df['age_at_diagnosis'].copy()
-df_unscaled['tumor_stage'] = df['tumor_stage'].copy()
-df_unscaled['overall_survival']=df['overall_survival'].copy()
-df_unscaled['nott']=df['nottingham_prognostic_index'].copy()
-df_unscaled['tumor_size']=df['tumor_size'].copy()
+df, df_unscaled = clean(csv_loc)()
 ```
+
+    Importing data...
+    Droping NaNs...
+    df shape before NaN drop: (1904, 693)
+    df shape after NaN drop: (1185, 689)
+    Encoding data...
+    Shape before encoding: (1185, 687)
+    Removing outliers...
+    Shape before outlier removal:(1185, 610)
+    Shape after outlier removal:(1182, 610)
+    Rescaling data...
+    
 
 
 ```python
-#normalizing features 
-#I believe I have found a glitch with column transformer using dataframes and passthrough
-#passthrough is not honored and all columns are transformed 
-#thus, column transformer is not used and columns are manually transformed
-
-#transforming to_scale columns
-scaler = StandardScaler()
-df_transformed = df[to_scale]
-col_names = df_transformed.columns.values
-df_transformed = scaler.fit_transform(df_transformed)
-df_transformed = pd.DataFrame(df_transformed,columns=col_names)
-
-#isolating passthrough columns
-df_pass = df[not_scaled]
-
-#concatenating df
-df = pd.concat([df_transformed.reset_index(drop=True), df_pass.reset_index(drop=True)],axis=1)
-
+df.head()
 ```
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>age_at_diagnosis</th>
+      <th>lymph_nodes_examined_positive</th>
+      <th>nottingham_prognostic_index</th>
+      <th>overall_survival_months</th>
+      <th>tumor_size</th>
+      <th>tumor_stage</th>
+      <th>brca1</th>
+      <th>brca2</th>
+      <th>palb2</th>
+      <th>pten</th>
+      <th>tp53</th>
+      <th>atm</th>
+      <th>cdh1</th>
+      <th>chek2</th>
+      <th>nbn</th>
+      <th>nf1</th>
+      <th>stk11</th>
+      <th>bard1</th>
+      <th>mlh1</th>
+      <th>msh2</th>
+      <th>msh6</th>
+      <th>pms2</th>
+      <th>epcam</th>
+      <th>rad51c</th>
+      <th>rad51d</th>
+      <th>rad50</th>
+      <th>rb1</th>
+      <th>rbl1</th>
+      <th>rbl2</th>
+      <th>ccna1</th>
+      <th>ccnb1</th>
+      <th>cdk1</th>
+      <th>ccne1</th>
+      <th>cdk2</th>
+      <th>cdc25a</th>
+      <th>ccnd1</th>
+      <th>cdk4</th>
+      <th>cdk6</th>
+      <th>ccnd2</th>
+      <th>cdkn2a</th>
+      <th>cdkn2b</th>
+      <th>myc</th>
+      <th>cdkn1a</th>
+      <th>cdkn1b</th>
+      <th>e2f1</th>
+      <th>e2f2</th>
+      <th>e2f3</th>
+      <th>e2f4</th>
+      <th>e2f5</th>
+      <th>e2f6</th>
+      <th>...</th>
+      <th>3-gene_classifier_subtype_ER+/HER2- High Prolif</th>
+      <th>3-gene_classifier_subtype_ER+/HER2- Low Prolif</th>
+      <th>3-gene_classifier_subtype_ER-/HER2-</th>
+      <th>3-gene_classifier_subtype_HER2+</th>
+      <th>death_from_cancer_Died of Disease</th>
+      <th>death_from_cancer_Died of Other Causes</th>
+      <th>death_from_cancer_Living</th>
+      <th>cancer_type_detailed_Breast</th>
+      <th>cancer_type_detailed_Breast Invasive Ductal Carcinoma</th>
+      <th>cancer_type_detailed_Breast Invasive Lobular Carcinoma</th>
+      <th>cancer_type_detailed_Breast Invasive Mixed Mucinous Carcinoma</th>
+      <th>cancer_type_detailed_Breast Mixed Ductal and Lobular Carcinoma</th>
+      <th>pam50_+_claudin-low_subtype_Basal</th>
+      <th>pam50_+_claudin-low_subtype_Her2</th>
+      <th>pam50_+_claudin-low_subtype_LumA</th>
+      <th>pam50_+_claudin-low_subtype_LumB</th>
+      <th>pam50_+_claudin-low_subtype_NC</th>
+      <th>pam50_+_claudin-low_subtype_Normal</th>
+      <th>pam50_+_claudin-low_subtype_claudin-low</th>
+      <th>cohort_1.0</th>
+      <th>cohort_2.0</th>
+      <th>cohort_3.0</th>
+      <th>cohort_5.0</th>
+      <th>integrative_cluster_1</th>
+      <th>integrative_cluster_10</th>
+      <th>integrative_cluster_2</th>
+      <th>integrative_cluster_3</th>
+      <th>integrative_cluster_4ER+</th>
+      <th>integrative_cluster_4ER-</th>
+      <th>integrative_cluster_5</th>
+      <th>integrative_cluster_6</th>
+      <th>integrative_cluster_7</th>
+      <th>integrative_cluster_8</th>
+      <th>integrative_cluster_9</th>
+      <th>oncotree_code_BREAST</th>
+      <th>oncotree_code_IDC</th>
+      <th>oncotree_code_ILC</th>
+      <th>oncotree_code_IMMC</th>
+      <th>oncotree_code_MDLC</th>
+      <th>her2_status_measured_by_snp6_GAIN</th>
+      <th>her2_status_measured_by_snp6_LOSS</th>
+      <th>her2_status_measured_by_snp6_NEUTRAL</th>
+      <th>her2_status_measured_by_snp6_UNDEF</th>
+      <th>tumor_other_histologic_subtype_Ductal/NST</th>
+      <th>tumor_other_histologic_subtype_Lobular</th>
+      <th>tumor_other_histologic_subtype_Medullary</th>
+      <th>tumor_other_histologic_subtype_Mixed</th>
+      <th>tumor_other_histologic_subtype_Mucinous</th>
+      <th>tumor_other_histologic_subtype_Other</th>
+      <th>tumor_other_histologic_subtype_Tubular/ cribriform</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-1.342325</td>
+      <td>-0.483607</td>
+      <td>-0.016111</td>
+      <td>-0.562389</td>
+      <td>-1.070008</td>
+      <td>-1.181296</td>
+      <td>-1.420635</td>
+      <td>0.261688</td>
+      <td>-1.286366</td>
+      <td>0.529531</td>
+      <td>0.003926</td>
+      <td>-0.277149</td>
+      <td>1.414253</td>
+      <td>0.866319</td>
+      <td>0.502742</td>
+      <td>-2.692766</td>
+      <td>0.650787</td>
+      <td>0.541399</td>
+      <td>1.249116</td>
+      <td>1.033877</td>
+      <td>0.218385</td>
+      <td>1.066392</td>
+      <td>0.637096</td>
+      <td>-0.425958</td>
+      <td>-0.287715</td>
+      <td>0.735041</td>
+      <td>-1.922830</td>
+      <td>0.468105</td>
+      <td>0.786211</td>
+      <td>-0.248453</td>
+      <td>-0.241267</td>
+      <td>0.369208</td>
+      <td>-0.605274</td>
+      <td>0.163754</td>
+      <td>-1.279581</td>
+      <td>1.150741</td>
+      <td>0.381371</td>
+      <td>-0.665490</td>
+      <td>-0.015788</td>
+      <td>0.250519</td>
+      <td>-0.178695</td>
+      <td>0.712840</td>
+      <td>0.381182</td>
+      <td>1.930123</td>
+      <td>-1.921726</td>
+      <td>-0.314525</td>
+      <td>-1.420813</td>
+      <td>0.999927</td>
+      <td>0.016633</td>
+      <td>-0.410280</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.265873</td>
+      <td>1.614094</td>
+      <td>1.819679</td>
+      <td>-1.122515</td>
+      <td>0.960685</td>
+      <td>0.410827</td>
+      <td>1.377891</td>
+      <td>-0.948881</td>
+      <td>-0.764178</td>
+      <td>0.200938</td>
+      <td>0.378820</td>
+      <td>0.388637</td>
+      <td>0.959554</td>
+      <td>1.010218</td>
+      <td>0.734317</td>
+      <td>-0.257673</td>
+      <td>-0.235792</td>
+      <td>0.738851</td>
+      <td>-0.451506</td>
+      <td>0.465114</td>
+      <td>0.943676</td>
+      <td>0.659453</td>
+      <td>0.385514</td>
+      <td>-0.286003</td>
+      <td>-0.137891</td>
+      <td>-0.759012</td>
+      <td>0.999824</td>
+      <td>1.924723</td>
+      <td>0.655957</td>
+      <td>-0.728263</td>
+      <td>0.341507</td>
+      <td>1.101355</td>
+      <td>-1.026667</td>
+      <td>1.593454</td>
+      <td>1.302279</td>
+      <td>0.140514</td>
+      <td>1.775517</td>
+      <td>0.935219</td>
+      <td>-1.137206</td>
+      <td>0.341580</td>
+      <td>0.629239</td>
+      <td>0.501566</td>
+      <td>1.492742</td>
+      <td>0.115922</td>
+      <td>-0.270413</td>
+      <td>0.477337</td>
+      <td>-0.403244</td>
+      <td>-0.351127</td>
+      <td>2.302328</td>
+      <td>1.140580</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1.404853</td>
+      <td>-0.483607</td>
+      <td>0.021318</td>
+      <td>-1.557066</td>
+      <td>0.351477</td>
+      <td>3.595073</td>
+      <td>-0.430389</td>
+      <td>0.687272</td>
+      <td>0.730749</td>
+      <td>1.111922</td>
+      <td>-1.988087</td>
+      <td>0.932457</td>
+      <td>1.202950</td>
+      <td>0.865288</td>
+      <td>-1.046839</td>
+      <td>-0.764303</td>
+      <td>-0.298437</td>
+      <td>1.176623</td>
+      <td>-0.362654</td>
+      <td>0.771103</td>
+      <td>1.213226</td>
+      <td>-0.536181</td>
+      <td>0.371096</td>
+      <td>0.276789</td>
+      <td>-0.329990</td>
+      <td>-0.063089</td>
+      <td>0.848543</td>
+      <td>0.868741</td>
+      <td>0.525169</td>
+      <td>-0.019022</td>
+      <td>1.686683</td>
+      <td>1.598886</td>
+      <td>-0.381611</td>
+      <td>0.938061</td>
+      <td>0.533818</td>
+      <td>-0.832830</td>
+      <td>1.155668</td>
+      <td>-0.261239</td>
+      <td>-0.854267</td>
+      <td>-0.494676</td>
+      <td>-0.194860</td>
+      <td>-0.911417</td>
+      <td>-0.935615</td>
+      <td>0.347801</td>
+      <td>1.490798</td>
+      <td>1.062442</td>
+      <td>0.285635</td>
+      <td>-1.140846</td>
+      <td>-0.749567</td>
+      <td>0.130475</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1.994747</td>
+      <td>-0.221394</td>
+      <td>0.885743</td>
+      <td>-1.184655</td>
+      <td>-0.663869</td>
+      <td>0.410827</td>
+      <td>0.897895</td>
+      <td>-1.563488</td>
+      <td>0.363260</td>
+      <td>-0.609830</td>
+      <td>0.075798</td>
+      <td>-0.936842</td>
+      <td>-0.843959</td>
+      <td>-0.085578</td>
+      <td>-0.228525</td>
+      <td>0.730521</td>
+      <td>-0.977661</td>
+      <td>-0.502543</td>
+      <td>-0.115631</td>
+      <td>0.330623</td>
+      <td>-0.456746</td>
+      <td>2.262133</td>
+      <td>0.225020</td>
+      <td>1.077178</td>
+      <td>-1.917275</td>
+      <td>-1.045907</td>
+      <td>-0.654543</td>
+      <td>-0.712551</td>
+      <td>-0.968839</td>
+      <td>-0.174024</td>
+      <td>1.704029</td>
+      <td>0.967333</td>
+      <td>-0.550228</td>
+      <td>0.762946</td>
+      <td>0.027269</td>
+      <td>0.080440</td>
+      <td>-0.162799</td>
+      <td>-1.176191</td>
+      <td>-0.603799</td>
+      <td>-0.607351</td>
+      <td>-1.225207</td>
+      <td>1.952943</td>
+      <td>1.021004</td>
+      <td>0.950495</td>
+      <td>1.732960</td>
+      <td>0.221063</td>
+      <td>1.106151</td>
+      <td>-2.163353</td>
+      <td>2.636668</td>
+      <td>-1.109921</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1.825655</td>
+      <td>-0.483607</td>
+      <td>-0.875189</td>
+      <td>-1.188539</td>
+      <td>0.148408</td>
+      <td>0.410827</td>
+      <td>-1.031928</td>
+      <td>-0.645112</td>
+      <td>0.032806</td>
+      <td>1.126103</td>
+      <td>0.568338</td>
+      <td>0.917528</td>
+      <td>-1.505885</td>
+      <td>0.024899</td>
+      <td>0.328958</td>
+      <td>0.567261</td>
+      <td>0.568064</td>
+      <td>0.751640</td>
+      <td>-0.154047</td>
+      <td>2.046225</td>
+      <td>1.322344</td>
+      <td>1.347623</td>
+      <td>-0.865245</td>
+      <td>-2.040259</td>
+      <td>-1.556295</td>
+      <td>-0.490061</td>
+      <td>0.082411</td>
+      <td>-1.092644</td>
+      <td>-1.730560</td>
+      <td>-0.686265</td>
+      <td>-0.047845</td>
+      <td>-0.209741</td>
+      <td>-0.048551</td>
+      <td>-1.399357</td>
+      <td>0.048393</td>
+      <td>-1.237104</td>
+      <td>-1.214483</td>
+      <td>-0.222862</td>
+      <td>-2.158812</td>
+      <td>-1.006716</td>
+      <td>-0.806822</td>
+      <td>-3.002146</td>
+      <td>-0.894904</td>
+      <td>0.416795</td>
+      <td>-0.390532</td>
+      <td>-0.536339</td>
+      <td>0.248599</td>
+      <td>-2.163865</td>
+      <td>-0.197552</td>
+      <td>-1.438967</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 610 columns</p>
+</div>
+
+
 <h2><br></h2>
 <h2>EDA</h2>
 <h3>Mortality</h3>
 
-
-```python
-#constructs death classification column from encoded data
-df_death = pd.from_dummies(df[df.columns[df.columns.str.contains('death_from_cancer')]])
-df_death = df_death.replace({'death_from_cancer_Living':'Living','death_from_cancer_Died of Disease':'Cancer death','death_from_cancer_Died of Other Causes':'Other death'})
-```
-
-
-```python
-plt.figure(figsize=(10,4))
-plt.subplot(1,2,1)
-sns.histplot(data=df, x=df_unscaled['survival_months'],hue=df_death.iloc[:,0], multiple='stack',kde=True)
-plt.xlabel('Months')
-
-plt.subplot(1,2,2)
-#plt.bar(x = ['Cancer death','Other Death','Living'], height=df[['death_from_cancer_Died of Disease','death_from_cancer_Died of Other Causes', 'death_from_cancer_Living']].sum())
-sns.histplot(data=df_death, x=df_death.iloc[:,0], hue=df['overall_survival']);
-```
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #constructs death classification column from encoded data
+  df_death = pd.from_dummies(df[df.columns[df.columns.str.contains('death_from_cancer')]])
+  df_death = df_death.replace({'death_from_cancer_Living':'Living','death_from_cancer_Died of Disease':'Cancer death','death_from_cancer_Died of Other Causes':'Other death'})
+  </pre>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,1)
+  sns.histplot(data=df, x=df_unscaled['survival_months'],hue=df_death.iloc[:,0], multiple='stack',kde=True)
+  plt.xlabel('Months')
+  </pre>
+  <pre>
+  plt.subplot(1,2,2)
+  #plt.bar(x = ['Cancer death','Other Death','Living'], height=df[['death_from_cancer_Died of Disease','death_from_cancer_Died of Other Causes', 'death_from_cancer_Living']].sum())
+  sns.histplot(data=df_death, x=df_death.iloc[:,0], hue=df['overall_survival']);
+  </pre>
+</details>
     
-![png](/assets/img/breast_cancer/output_30_0.png)
+![png](/assets/img/breast_cancer/output_25_0.png)
     
-
 
 The overall count of living, cancer-related and other deaths shows a bimodal distribution, with most deaths occurring at 50 and 250 months.  
 
@@ -1057,143 +973,127 @@ del df['death_from_cancer_Living']
 del df['overall_survival_months']
 ```
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.pie(((sum(df['overall_survival']),df.shape[0]-sum(df['overall_survival']))),autopct='%1.1f%%',labels=['Died','Survived']);
+  </pre>
+</details>
 
-```python
-plt.pie(((sum(df['overall_survival']),df.shape[0]-sum(df['overall_survival']))),autopct='%1.1f%%',labels=['Died','Survived']);
-```
-
-
+![png](/assets/img/breast_cancer/output_28_0.png)
     
-![png](/assets/img/breast_cancer/output_33_0.png)
-    
-
-
 The distribution of outcomes is skewed towards patient mortality. The imbalance is not of sufficient scale to warrant the implementation of naive random over-sampling or SMOTE.
 
 <h3><br></h3>
 <h3>Age</h3>
-
-
-```python
-plt.figure(figsize=(10,4))
-plt.subplot(1,2,2)
-sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='fill', legend=False)
-plt.ylabel('Fraction')
-df_unscaled['death_by_age_percent'] = df_death
-plt.subplot(1,2,1)
-#sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='stack')
-sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='stack', legend=False)
-
-```
-
-
-
-
-    <Axes: xlabel='age', ylabel='Count'>
-
-
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,2)
+  sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='fill', legend=False)
+  plt.ylabel('Fraction')
+  df_unscaled['death_by_age_percent'] = df_death
+  plt.subplot(1,2,1)
+  #sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='stack')
+  sns.histplot(data=df, x=df_unscaled['age'],hue=df_death.iloc[:,0],kde=True, bins=10, multiple='stack', legend=False)
+  </pre>
+</details>
+   
+![png](/assets/img/breast_cancer/output_31_1.png)
     
-![png](/assets/img/breast_cancer/output_36_1.png)
-    
-
 
 Cancer is more common in older populations and steadily increases from 20 to 60 years of age. The decrease observed in older populations is likely due to the underrepresentation of these subsets in the general population. Interestingly, the fraction of deaths in diagnosed cancers does not appear to be sensitive  to age after 30 years of age. 
 
 <h3><br></h3>
 <h3>Cancer sub-type</h3>
 
-
-```python
-plt.figure(figsize=(10,8))
-plt.subplot(2,3,1)
-sns.histplot(data=df.sort_values('her2_status_Positive'), x='her2_status_Positive',hue='overall_survival',multiple='stack')
-plt.xticks((0,1))
-plt.xlim((-.5,1.5))
-plt.subplot(2,3,2)
-sns.histplot(data=df.sort_values('er_status_Positive'), x='er_status_Positive', hue='overall_survival',multiple='stack',legend=False)
-plt.xticks((0,1))
-plt.xlim((-.5,1.5))
-plt.tight_layout()
-plt.subplot(2,3,3)
-sns.histplot(data=df.sort_values('pr_status_Positive'), x='pr_status_Positive', hue='overall_survival',multiple='stack',legend=False)
-plt.xticks((0,1))
-plt.xlim((-.5,1.5))
-plt.subplot(2,3,4)
-sns.histplot(data=df.sort_values('her2_status_Positive'), x='her2_status_Positive',hue='overall_survival',multiple='fill', legend=False)
-plt.xticks((0,1))
-plt.xlim((-.5,1.5))
-plt.ylabel('Fraction')
-plt.axhline(.56,color='k')
-plt.subplot(2,3,5)
-sns.histplot(data=df.sort_values('er_status_Positive'), x='er_status_Positive', hue='overall_survival',multiple='fill',legend=False)
-plt.xticks((0,1))
-plt.ylabel('Fraction')
-plt.axhline(.56,color='k')
-plt.xlim((-.5,1.5))
-plt.subplot(2,3,6)
-sns.histplot(data=df.sort_values('pr_status_Positive'), x='pr_status_Positive', hue='overall_survival',multiple='fill',legend=False)
-plt.xticks((0,1))
-plt.xlim((-.5,1.5))
-plt.axhline(.56,color='k')
-plt.ylabel('Fraction');
-```
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,8))
+  plt.subplot(2,3,1)
+  sns.histplot(data=df.sort_values('her2_status_Positive'), x='her2_status_Positive',hue='overall_survival',multiple='stack')
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.subplot(2,3,2)
+  sns.histplot(data=df.sort_values('er_status_Positive'), x='er_status_Positive', hue='overall_survival',multiple='stack',legend=False)
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.tight_layout()
+  plt.subplot(2,3,3)
+  sns.histplot(data=df.sort_values('pr_status_Positive'), x='pr_status_Positive', hue='overall_survival',multiple='stack',legend=False)
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.subplot(2,3,4)
+  sns.histplot(data=df.sort_values('her2_status_Positive'), x='her2_status_Positive',hue='overall_survival',multiple='fill', legend=False)
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.ylabel('Fraction')
+  plt.axhline(.56,color='k')
+  plt.subplot(2,3,5)
+  sns.histplot(data=df.sort_values('er_status_Positive'), x='er_status_Positive', hue='overall_survival',multiple='fill',legend=False)
+  plt.xticks((0,1))
+  plt.ylabel('Fraction')
+  plt.axhline(.56,color='k')
+  plt.xlim((-.5,1.5))
+  plt.subplot(2,3,6)
+  sns.histplot(data=df.sort_values('pr_status_Positive'), x='pr_status_Positive', hue='overall_survival',multiple='fill',legend=False)
+  plt.xticks((0,1))
+  plt.xlim((-.5,1.5))
+  plt.axhline(.56,color='k')
+  plt.ylabel('Fraction');
+  </pre>
+</details>
     
-![png](/assets/img/breast_cancer/output_39_0.png)
+![png](/assets/img/breast_cancer/output_34_0.png)
     
-
 
 We observe that HER2+ cancers have a higher than average mortality rate and are the most rare cancer subtype.
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,3,1)
+  sns.histplot(df,x ='3-gene_classifier_subtype_ER+/HER2- High Prolif',  bins=2, hue='overall_survival', multiple='stack')
+  plt.xticks((0,1))
+  plt.xlabel('ER+/HER2- High Prolif')
+  plt.subplot(1,3,2)
+  sns.histplot(df,x ='3-gene_classifier_subtype_ER+/HER2- Low Prolif',  bins=2,  hue='overall_survival',legend=False, multiple='stack')
+  plt.xticks((0,1))
+  plt.xlabel('ER+/HER2- Low Prolif')
+  plt.subplot(1,3,3)
+  sns.histplot(df,x ='3-gene_classifier_subtype_HER2+',  bins=2,  hue='overall_survival', multiple='stack', legend=False)
+  plt.xticks((0,1))
+  plt.xlabel('HER2+')
+  plt.tight_layout()
+  </pre>
+</details>
 
-```python
-plt.figure(figsize=(10,4))
-plt.subplot(1,3,1)
-sns.histplot(df,x ='3-gene_classifier_subtype_ER+/HER2- High Prolif',  bins=2, hue='overall_survival', multiple='stack')
-plt.xticks((0,1))
-plt.xlabel('ER+/HER2- High Prolif')
-plt.subplot(1,3,2)
-sns.histplot(df,x ='3-gene_classifier_subtype_ER+/HER2- Low Prolif',  bins=2,  hue='overall_survival',legend=False, multiple='stack')
-plt.xticks((0,1))
-plt.xlabel('ER+/HER2- Low Prolif')
-plt.subplot(1,3,3)
-sns.histplot(df,x ='3-gene_classifier_subtype_HER2+',  bins=2,  hue='overall_survival', multiple='stack', legend=False)
-plt.xticks((0,1))
-plt.xlabel('HER2+')
-plt.tight_layout()
-
-```
-
-
+![png](/assets/img/breast_cancer/output_36_0.png)
     
-![png](/assets/img/breast_cancer/output_41_0.png)
-    
-
 <h3><br></h3>
 <h3>Cancer severity</h3>
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #histplot
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,1)
+  sns.histplot(data=df_unscaled, x='tumor_stage', bins=5, hue='overall_survival',multiple='stack',shrink=.9)
 
-```python
-#histplot
-plt.figure(figsize=(10,4))
-plt.subplot(1,2,1)
-sns.histplot(data=df_unscaled, x='tumor_stage', bins=5, hue='overall_survival',multiple='stack',shrink=.9)
-
-plt.xlabel('Tumor stage')
-plt.subplot(1,2,2)
-sns.histplot(data=df_unscaled, x='tumor_stage' , bins=5, hue='overall_survival', multiple='fill',shrink=.9)
-plt.xticks(np.arange(0,5))
-plt.ylabel('Fraction');
-```
-
-
+  plt.xlabel('Tumor stage')
+  plt.subplot(1,2,2)
+  sns.histplot(data=df_unscaled, x='tumor_stage' , bins=5, hue='overall_survival', multiple='fill',shrink=.9)
+  plt.xticks(np.arange(0,5))
+  plt.ylabel('Fraction');
+  </pre>
+</details>
     
-![png](/assets/img/breast_cancer/output_43_0.png)
+![png](/assets/img/breast_cancer/output_38_0.png)
     
-
 
 Most tumors are diagnosed at stage 2, and the fraction of cancer-related mortalities increases with diagnosis stage, as expected. Clinical definition of cancer stage is given in the table below:
 
@@ -1204,49 +1104,46 @@ Most tumors are diagnosed at stage 2, and the fraction of cancer-related mortali
 | 2 - 3 | Cancer is larger and has grown into nearby tissue or lymph nodes. |
 | 4 | Advanced/metastatic cancer that has spread to other organs. |
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,1)
+  sns.histplot(data=df_unscaled, x='tumor_size', binwidth=10, hue='overall_survival', legend=True, kde=True)
+  plt.xlabel('Tumor size')
 
-```python
-plt.figure(figsize=(10,4))
-plt.subplot(1,2,1)
-sns.histplot(data=df_unscaled, x='tumor_size', binwidth=10, hue='overall_survival', legend=True, kde=True)
-plt.xlabel('Tumor size')
-
-plt.subplot(1,2,2)
-sns.histplot(data=df_unscaled, x='tumor_size', binwidth=20, hue='overall_survival', legend=False, kde=False,multiple='fill')
-plt.xlabel('Tumor size')
-plt.ylabel('Fraction')
-```
-
-
+  plt.subplot(1,2,2)
+  sns.histplot(data=df_unscaled, x='tumor_size', binwidth=20, hue='overall_survival', legend=False, kde=False,multiple='fill')
+  plt.xlabel('Tumor size')
+  plt.ylabel('Fraction')
+  </pre>
+</details>
     
-![png](/assets/img/breast_cancer/output_45_1.png)
+![png](/assets/img/breast_cancer/output_40_1.png)
     
-
 
 We see the size distribution of fatal cancers shifts towards larger tumor sizes. Also, we see the percentage of fatal cancers increase with tumor size.
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,4))
+  plt.subplot(1,2,1)
+  sns.histplot(data=df_unscaled, x='nott',hue='overall_survival',binwidth=1,legend=True, multiple='stack')
+  plt.xlabel('Nottingham index')
+  plt.xticks(np.arange(1,7))
 
-```python
-plt.figure(figsize=(10,4))
-plt.subplot(1,2,1)
-sns.histplot(data=df_unscaled, x='nott',hue='overall_survival',binwidth=1,legend=True, multiple='stack')
-plt.xlabel('Nottingham index')
-plt.xticks(np.arange(1,7))
+  plt.subplot(1,2,2)
+  sns.histplot(data=df_unscaled, x='nott',hue='overall_survival',binwidth=1,legend=False, multiple='fill')
+  plt.xlabel('Nottingham index')
+  plt.ylabel('Fraction')
+  plt.xticks(np.arange(1,7))
+  plt.tight_layout()
+  </pre>
+</details>
 
-plt.subplot(1,2,2)
-sns.histplot(data=df_unscaled, x='nott',hue='overall_survival',binwidth=1,legend=False, multiple='fill')
-plt.xlabel('Nottingham index')
-plt.ylabel('Fraction')
-plt.xticks(np.arange(1,7))
-plt.tight_layout()
-```
-
-
+![png](/assets/img/breast_cancer/output_42_0.png)
     
-![png](/assets/img/breast_cancer/output_47_0.png)
-    
-
-
 The Nottingham Prognostic index is used to determine the prognosis following surgery for breast cancer and is based on three pathological criteria: size of the tumor, number of involved lymph nodes, and the grade of the tumor. We see that most breast cancers are a level 4 and that patient mortality increases with Nottingham index.
 
 <h3><br></h3>
@@ -1287,8 +1184,8 @@ print('Top 10 features correlated with death:')
 df.corr(numeric_only=True)['overall_survival'].sort_values(ascending=False)[1:16]
 ```
 
-    Top 15 features correlated with death:
-    
+    Top 10 features correlated with death:
+
     age_at_diagnosis                     0.309256
     cohort_3.0                           0.210642
     tumor_size                           0.170795
@@ -1307,6 +1204,9 @@ df.corr(numeric_only=True)['overall_survival'].sort_values(ascending=False)[1:16
     Name: overall_survival, dtype: float64
 
 
+```python
+pickle.dump(df, open('clean_cancer_data.pickle','wb'))
+```
 <h2><br></h2>
 <h2>Predicting patient mortality</h2>
 <h3>Test and train sets</h3>
@@ -1317,44 +1217,56 @@ train_set, test_set = train_test_split(df, test_size=0.2, random_state=10)
 X_train, y_train = train_set.drop(columns=['overall_survival']), train_set['overall_survival']
 X_test, y_test = test_set.drop(columns=['overall_survival']), test_set['overall_survival']
 ```
-<h3><br></h3>
-<h3>Building classification models</h3>
+
+```python
+pickle.dump([X_train, y_train, X_test, y_test], open('test_train_cancer_data.pickle','wb'))
+```
+
+### Building classification models
 
 Several models are optimized manually, including three logistic regression models using ridge, lasso, and elastic net regularization techniques; two support vector machines classification models using linear and sigmoid kerels (the sigmoid kernel was the best performing non-linear model); a random forest model; and an extra trees model. The best performing model of each type was selected for further performance analysis.
 
 
 ```python
+def model_score(X_train,y_train,X_test,y_test):
+
+    #selecting models 
+    log_mod = LogisticRegression(max_iter=10000,random_state=10, C=0.01).fit(X_train, y_train) 
+    lasso_mod = LogisticRegression(max_iter=1000,penalty='l1',C=.15,solver='saga',random_state=10).fit(X_train, y_train)
+    elastic_mod = LogisticRegression(max_iter=10000,C=.2,penalty='elasticnet',l1_ratio=0.2,solver='saga', random_state=10).fit(X_train, y_train)
+    svm_mod = LinearSVC(random_state=10,max_iter=10000, C=.001).fit(X_train, y_train)
+    svm_kernel = SVC(kernel='sigmoid', random_state=10, max_iter=10000, gamma='scale').fit(X_train, y_train)
+    rf = RandomForestClassifier(n_estimators=700,random_state=10, ).fit(X_train,y_train)
+    et = ExtraTreesClassifier(n_estimators=700, random_state=10).fit(X_train, y_train)
+
+    models = [log_mod,lasso_mod,elastic_mod,svm_mod,svm_kernel, rf, et]
+    #models = [elastic_mod, svm_kernel, rf, et]
+    model_names = [type(model).__name__ for model in models]
+    #scoring models
+    accuracy = []
+    precision = []
+    recall = []
+    f1 = []
+    roc_auc = []
+
+    for model in models:
+        y_predict = model.predict(X_test)
+        accuracy.append(accuracy_score(y_test, y_predict))
+        precision.append(precision_score(y_test, y_predict))
+        f1.append(f1_score(y_test, y_predict))
+        roc_auc.append(roc_auc_score(y_test, y_predict))
+        recall.append(recall_score(y_test, y_predict))
+
+    scores = pd.DataFrame([accuracy, precision, recall, f1, roc_auc],columns=model_names,index=['accuracy','precision','recall','f1','roc_auc']).T
+
+    return models,model_names,scores
 
 
-#selecting models 
-log_mod = LogisticRegression(max_iter=10000,random_state=10, C=0.01).fit(X_train, y_train) 
-lasso_mod = LogisticRegression(max_iter=1000,penalty='l1',C=.15,solver='saga',random_state=10).fit(X_train, y_train)
-elastic_mod = LogisticRegression(max_iter=10000,C=.2,penalty='elasticnet',l1_ratio=0.2,solver='saga', random_state=10).fit(X_train, y_train)
-svm_mod = LinearSVC(random_state=10,max_iter=10000, C=.001).fit(X_train, y_train)
-svm_kernel = SVC(kernel='sigmoid', random_state=10, max_iter=10000, gamma='scale').fit(X_train, y_train)
-rf = RandomForestClassifier(n_estimators=700,random_state=10, ).fit(X_train,y_train)
-et = ExtraTreesClassifier(n_estimators=700, random_state=10).fit(X_train, y_train)
+```
 
-models = [log_mod,lasso_mod,elastic_mod,svm_mod,svm_kernel, rf, et]
-#models = [elastic_mod, svm_kernel, rf, et]
-model_names = [type(model).__name__ for model in models]
 
-#scoring models
-accuracy = []
-precision = []
-recall = []
-f1 = []
-roc_auc = []
-
-for model in models:
-    y_predict = model.predict(X_test)
-    accuracy.append(accuracy_score(y_test, y_predict))
-    precision.append(precision_score(y_test, y_predict))
-    f1.append(f1_score(y_test, y_predict))
-    roc_auc.append(roc_auc_score(y_test, y_predict))
-    recall.append(recall_score(y_test, y_predict))
-
-scores = pd.DataFrame([accuracy, precision, recall, f1, roc_auc],columns=model_names,index=['accuracy','precision','recall','f1','roc_auc']).T
+```python
+models, model_names, scores = model_score(X_train,y_train,X_test,y_test)
 ```
 
 
@@ -1552,17 +1464,20 @@ selected_models
 
 
 ```python
+pickle.dump(selected_models[1], open('svc_cancer_model.pickle','wb'))
+```
+
+
+```python
 ax = select_scores.sort_values('recall', ascending=False).T.plot(kind='bar')
 plt.ylim((0,1.1))
 ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
 plt.title('Selected model scores');
 ```
 
-
     
-![png](/assets/img/breast_cancer/output_59_0.png)
+![png](/assets/img/breast_cancer/output_58_0.png)
     
-
 
 Accuracy, precision, recall, f1 score, and ROC AUC are evaluated for the selected models, and are defined below as functions of true positive (TP), true negative (TN), false positive (FP) and false negative (FN) predictions:
 
@@ -1572,71 +1487,64 @@ Accuracy indicates how many cases were correctly predicted and is a good overall
 
 We see the effect of threshold on model performance in the below figures, which show precession and recall with threshold directly and recall (or true positive rate) against false positive rate (FP/(FP+FN)) at different thresholds.
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig = plt.figure(figsize=(12,6))
+  for model in selected_models:
+      #getting scores
+      try:
+        y_scores = model.decision_function(X_test)
+      except:
+        y_scores = model.predict_proba(X_test)[:,1]
+        
+      #cal_mod = CalibratedClassifierCV(model,cv='prefit')
+      #cal_mod.fit(X_train, y_train)
+      #y_scores = cal_mod.predict_proba(X_test)[:,1] #https://scikit-learn.org/stable/modules/calibration.html
 
-```python
- fig = plt.figure(figsize=(12,6))
-for model in selected_models:
-    #getting scores
-    try:
-      y_scores = model.decision_function(X_test)
-    except:
-      y_scores = model.predict_proba(X_test)[:,1]
-       
-    #cal_mod = CalibratedClassifierCV(model,cv='prefit')
-    #cal_mod.fit(X_train, y_train)
-    #y_scores = cal_mod.predict_proba(X_test)[:,1] #https://scikit-learn.org/stable/modules/calibration.html
+      #calculating precision, recall, false positive rate, true positive rate, and normalizing thresholds
+      fpr,tpr,thresholds=roc_curve(y_test, y_scores)
+      precisions, recalls, thresholds = precision_recall_curve(y_test, y_scores)
+      thresholds = (thresholds-min(thresholds))/(max(thresholds)-min(thresholds)) #rescale all thresholds
 
-    #calculating precision, recall, false positive rate, true positive rate, and normalizing thresholds
-    fpr,tpr,thresholds=roc_curve(y_test, y_scores)
-    precisions, recalls, thresholds = precision_recall_curve(y_test, y_scores)
-    thresholds = (thresholds-min(thresholds))/(max(thresholds)-min(thresholds)) #rescale all thresholds
+      #plotitng precision
+      plt.subplot(2,2,1)
+      plt.plot(thresholds, precisions[:-1],label=type(model).__name__)
+      plt.ylabel('Precision')
 
-    #plotitng precision
-    plt.subplot(2,2,1)
-    plt.plot(thresholds, precisions[:-1],label=type(model).__name__)
-    plt.ylabel('Precision')
+      #plotting recall
+      plt.subplot(2,2,3)
+      plt.plot(thresholds, recalls[:-1],label=type(model).__name__)
+      plt.ylabel("Recall")
+      plt.xlabel("Threshold")
+      #plt.legend()
 
-    #plotting recall
-    plt.subplot(2,2,3)
-    plt.plot(thresholds, recalls[:-1],label=type(model).__name__)
-    plt.ylabel("Recall")
-    plt.xlabel("Threshold")
-    #plt.legend()
+      #plotting ROC#
+      ax = plt.subplot(1,2,2)
+      plt.plot(fpr,tpr,label=type(model).__name__)
+      plt.xlabel('False Positive Rate (Fall Out)')
+      plt.ylabel('True Positive Rate (Recall)')
+      ax.legend(loc=4)
+  plt.tight_layout()
+  </pre>
+</details>
 
-    #plotting ROC#
-    ax = plt.subplot(1,2,2)
-    plt.plot(fpr,tpr,label=type(model).__name__)
-    plt.xlabel('False Positive Rate (Fall Out)')
-    plt.ylabel('True Positive Rate (Recall)')
-    ax.legend(loc=4)
-plt.tight_layout()
+![png](/assets/img/breast_cancer/output_61_0.png)
     
-```
-
-
-    
-![png](/assets/img/breast_cancer/output_62_0.png)
-    
-
-
 We see that the logistic regression and SVC models have superior precision up to a threshold of 0.6. Past this point, the tree-based classifiers outperform the other models. The AUC ROC is a measure of a classifier’s ability to separate classes. The logistic regression and SVC classifiers have the highest ROC AOC. The advantage of the tree-based classifiers is apparent in the recall curve, where extra trees has a much better recall at all thresholds.
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig, ax = plt.subplots(1)
+  for model in selected_models:
+      PrecisionRecallDisplay.from_estimator(model, X_test, y_test, ax = ax)
+      plt.title(type(model).__name__)
+  </pre>
+</details>
 
-```python
-
-
-fig, ax = plt.subplots(1)
-for model in selected_models:
-    PrecisionRecallDisplay.from_estimator(model, X_test, y_test, ax = ax)
-    plt.title(type(model).__name__)
-```
-
-
+![png](/assets/img/breast_cancer/output_63_0.png)
     
-![png](/assets/img/breast_cancer/output_64_0.png)
-    
-
-
 Precision vs. recall is plotted at different thresholds. At high thresholds, the tree-based models are much more precise than the other models. Thus, if high precision is needed, it may be advantages to use a tree-based model with a higher threshold. Were this model to be used by clinicians to make predictions directly to patients, high precision may be desirable when telling a patient that they are likely to die from cancer, where as low recall is less important.
 
 <h3><br></h3>
@@ -1699,8 +1607,7 @@ accuracy_score(y_test, y_pred)
 
 The voting classifier outperformed the linear SVC classifier with an accuracy of 0.734 on the test set. Interestingly, performance is degraded with the inclusion of the SVC classifier. Thus, the voting classifier is used for feature importance selection.
 
-<h2><br></h2>
-<h2>Feature importance</h2>
+## Feature importance
 Feature importances are determined by feature permutation using a permutation importance algorithm from sklearn. In this algorithm, the performance of the model on the test set is used as a baseline. The performance is then measured when each feature is shuffled. The difference in performance with each feature permuted against the baseline is a measure of how important a feature is to the model. The n_repeats parameter sets the number of times a feature is randomly shuffled and in this case we use 30.
 
 
@@ -1733,58 +1640,48 @@ f_mutants = f_importance[mutant_start:mutant_stop].sort_values('f_imp', ascendin
 f_importance = f_importance.sort_values('f_imp', ascending=False)
 ```
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,8))
+  plt.bar(x=f_importance.index.values[:50], height=f_importance['f_imp'][:50], yerr=f_importance['std_error'][:50])
+  plt.xticks(rotation=90)
+  plt.title('Feature importance -- All Features')
+  plt.tight_layout();
+  </pre>
+</details>
     
-      f_clinical = f_importance[:gene_start].append(f_importance[mutant_stop:]).append(f_importance[gene_stop:mutant_start]).sort_values('f_imp', ascending=False)
+![png](/assets/img/breast_cancer/output_76_0.png)
     
-      f_clinical = f_importance[:gene_start].append(f_importance[mutant_stop:]).append(f_importance[gene_stop:mutant_start]).sort_values('f_imp', ascending=False)
-    
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.figure(figsize=(10,6))
+  plt.subplot(1,3,1)
+  plt.title('Genes')
+  plt.bar(x=f_genes.index[:10], height=f_genes[:10]['f_imp'],yerr=f_genes[:10]['std_error'])
+  plt.ylabel = 'Decrease in accuracy'
+  plt.legend=False
+  plt.xticks(rotation=90)
+  plt.subplot(1,3,2)
+  plt.title('Mutations')
+  plt.bar(x=f_mutants.index[:10],height=f_mutants[:10]['f_imp'],yerr=f_mutants['std_error'][:10])
+  plt.ylabel = 'Decrease in accuracy'
+  plt.legend= legend=False
+  plt.xticks(rotation=90)
+  plt.ylim(0,.01)
+  plt.subplot(1,3,3)
+  plt.title('Clinical')
+  plt.bar(x=f_clinical.index[:10],height=f_clinical[:10]['f_imp'],yerr=f_clinical['std_error'][:10])
+  plt.ylabel = 'Decrease in accuracy'
+  plt.legend=False
+  plt.xticks(rotation=90)
+  plt.tight_layout()
+  </pre>
+</details>
 
-
-```python
-plt.figure(figsize=(10,8))
-plt.bar(x=f_importance.index.values[:50], height=f_importance['f_imp'][:50], yerr=f_importance['std_error'][:50])
-plt.xticks(rotation=90)
-plt.title('Feature importance -- All Features')
-plt.tight_layout();
-```
-
-
-    
 ![png](/assets/img/breast_cancer/output_77_0.png)
     
-
-
-
-```python
-plt.figure(figsize=(10,6))
-plt.subplot(1,3,1)
-plt.title('Genes')
-plt.bar(x=f_genes.index[:10], height=f_genes[:10]['f_imp'],yerr=f_genes[:10]['std_error'])
-plt.ylabel = 'Decrease in accuracy'
-plt.legend=False
-plt.xticks(rotation=90)
-plt.subplot(1,3,2)
-plt.title('Mutations')
-plt.bar(x=f_mutants.index[:10],height=f_mutants[:10]['f_imp'],yerr=f_mutants['std_error'][:10])
-plt.ylabel = 'Decrease in accuracy'
-plt.legend= legend=False
-plt.xticks(rotation=90)
-plt.ylim(0,.01)
-plt.subplot(1,3,3)
-plt.title('Clinical')
-plt.bar(x=f_clinical.index[:10],height=f_clinical[:10]['f_imp'],yerr=f_clinical['std_error'][:10])
-plt.ylabel = 'Decrease in accuracy'
-plt.legend=False
-plt.xticks(rotation=90)
-plt.tight_layout()
-```
-
-
-    
-![png](/assets/img/breast_cancer/output_78_0.png)
-    
-
-
 The METABRIC dataset contains m-RNA level z-scores for 331 genes and mutation information for 175 genes. Information on mutations has been condensed to either 0 or 1 for wild or mutant types. We briefly summarize the role of the top 10 genes and mutations that contribute significantly to our model's predictive power. All of the identified genes and mutations are known to contribute to human cancer, which supports the validity of our model. 
 
 <u>Genes</u>

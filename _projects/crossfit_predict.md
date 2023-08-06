@@ -1,15 +1,15 @@
 ---
 layout: page
-title: Predicting CrossFit performance
-description: Models are built and optimized to predict the total weight lifted by athletes in the CrossFit games. 
-img: assets/img/project_previews/crossfit_predict.png
+title: Predicting CrossFit performance with XGBoost
+description: Optimizing random forest, XGBoost and neural network models
+img: /assets/img/crossfit_predict/cfpredict_pic.jpg
 importance: 3
 category: Scikit-learn
 ---
 
-# Predicting CrossFit performance
-
-<h2><br></h2>
+<h1>Predicting CrossFit performance with XGBoost</h1>
+<h4><i> Optimizing random forest, XGBoost and neural network models </i></h4>
+<h4><br></h4>
 <h2>Introduction </h2>
 
 CrossFit is a high-intensity fitness program that combines elements of weightlifting, cardio, and gymnastics. It aims to improve overall physical fitness by incorporating constantly varied functional movements performed at a high intensity. At the pinnacle of CrossFit is the CrossFit Games, an annual competition that showcases the world's fittest athletes. The CrossFit Games serve as a platform for elite athletes to test their skills and compete in a wide range of demanding workouts, challenging their strength, speed, power, and mental resilience. In this analysis, we will delve into the performance of CrossFit athletes, examining key factors that contribute to their success in this highly demanding and competitive sport.  
@@ -47,23 +47,26 @@ The XGBoost and the random forest models are known to work well with tabular dat
 
 Cleaned data is imported from <i>A data-based approach to CrossFit</i>.
 
+<details>
+
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  import pandas as pd
+  import seaborn as sns
+  import matplotlib as mpl
+  import matplotlib.pyplot as plt
+  import os
+  import pickle
+  </pre>
+  <pre>
+  os.chdir('C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\crossfit_project\\crossfit_project')
+  </pre>
+</details>
 
 ```python
-import pandas as pd
-import seaborn as sns
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import os
-import pickle
-```
-
-
-```python
-os.chdir('C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\crossfit_project\\crossfit_project')
 df = pd.read_pickle('cleaned_cf_data.pkl')
 df.info()
 ```
-
     <class 'pandas.core.frame.DataFrame'>
     Int64Index: 28995 entries, 21 to 422961
     Data columns (total 54 columns):
@@ -126,15 +129,9 @@ df.info()
     dtypes: float64(14), int32(33), object(7)
     memory usage: 8.5+ MB
     
-
-
 ```python
 df.head()
 ```
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -482,7 +479,6 @@ df.head()
 <p>5 rows × 54 columns</p>
 </div>
 
-
 <h2><br></h2>
 <h2>Selecting input features</h2>
 
@@ -544,15 +540,16 @@ In our modeling we use the root mean squared error is used as a cost function:
 
 <img src="https://miro.medium.com/max/327/1*9hQVcasuwx5ddq_s3MFCyw.gif" />
 
+<details>
 
-
-```python
-from sklearn.model_selection import train_test_split,cross_val_score
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
-import xgboost as xgb
-```
-
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  from sklearn.model_selection import train_test_split,cross_val_score
+  from sklearn.ensemble import RandomForestRegressor
+  from sklearn.metrics import mean_squared_error
+  import xgboost as xgb
+  </pre>
+</details>
 
 ```python
 #Assigning test and train sets
@@ -562,9 +559,8 @@ X_train, y_train = train_set.drop(columns=['total_lift']), train_set['total_lift
 X_test, y_test = test_set.drop(columns=['total_lift']), test_set['total_lift']
 ```
 
-
 ```python
-#fit score
+#evaluating manually optimized random forest regressor
 rnd_clf = RandomForestRegressor(n_estimators=100, max_depth = 12,oob_score=True, random_state=10).fit(X_train,y_train)
 rnd_pred = rnd_clf.predict(X_test)
 rnd_score = mean_squared_error(y_test, rnd_pred,squared=False)
@@ -576,8 +572,7 @@ print(f'Random forest regression model RMSE: \n{rnd_score.round(3)}')
     
 <h2><br></h2>
 <h2>XGBoost</h2>
-
-### Model optimization
+<h3>Building and optimizing model</h3>
 
 XGBoost stands for eXtreme gradient boosting and is a gradient boosted trees algorithm. In boosting, trees are sequentially built such that each subsequent tree aims to reduce the errors of the previous tree. Custom XGBoost callbacks were created during model optimization to control learning rate decay, implement early stopping, and plot training results. A schematic of this iterative process is shown in the figure below.
 <br>
@@ -644,7 +639,7 @@ es = xgb.callback.EarlyStopping(rounds=100,save_best=True)
 
 
 ```python
-#XGBoost 
+#building model
 dtrain = xgb.DMatrix(X_train, label=y_train)
 dtest = xgb.DMatrix(X_test, label=y_test)
 param = {'max_depth': 4,'subsample':.6,'reg_alpha':0}
@@ -690,14 +685,7 @@ bst.best_iteration, round(bst_rmse,3)
 ```
 
     Best iteration and RMSE:
-    
-
-
-
-
     (1024, 0.839)
-
-
 
 
 ```python
@@ -755,12 +743,14 @@ The most significant decreases to the RMSE were observed when gender, age and BM
 
 A dense neural network was created to predict CrossFit athlete performance.  Neural networks are useful in situations where identifying complex patterns aids in predictive performance. Neural networks have been outperformed by XGBoost when working with smaller amounts of data and tabular data. 
 
-
-```python
-import tensorflow as tf
-from keras.layers import Dropout, BatchNormalization
-from functools import partial 
-```
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  import tensorflow as tf
+  from keras.layers import Dropout, BatchNormalization
+  from functools import partial 
+  </pre>
+</details>
 
 
 ```python
@@ -852,11 +842,6 @@ round(nn_rmse,3)
 ```
 
     Neural network RMSE:
-    
-
-
-
-
     0.863
 
 
@@ -1335,11 +1320,6 @@ round(my_rmse, 3)
 ```
 
     My RMSE:
-    
-
-
-
-
     1.782
 
 

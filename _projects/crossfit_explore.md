@@ -988,7 +988,6 @@ CrossFit athletes are encouraged to follow a paleo diet. A modern paleo diet inc
 {::options parse_block_html="true" /}
 <div class="alert alert-block alert-success" style="font-size:18px; line-height: 1.7em;">
 
-<br>
 - Athletes should target lean body compositions and BMIs of 23 kg/m<sup>2</sup> and 27 mg/m<sup>2</sup> for females and males respectively.<br>
 
 - Training should be managed for long-term adherence to CrossFit. While taking an overly aggressive approach to training may seem advantageous, the data indicates that there is a high risk of burnout or injury after four years, while performance continues to improve with CrossFit experience. <br>
