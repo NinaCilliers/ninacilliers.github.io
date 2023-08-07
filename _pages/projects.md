@@ -5,7 +5,7 @@ permalink: /projects/
 description: A growing collection of your cool projects.
 nav: true
 nav_order: 2
-display_categories: [Scikit-learn, Deep learning]
+display_categories: [Deep learning,Scikit-learn]
 horizontal: false
 ---
 
