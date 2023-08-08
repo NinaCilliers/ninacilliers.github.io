@@ -2,7 +2,7 @@
 layout: page
 title: Getting into SHAP
 description: Genetic drivers of breast cancer mortality are extracted from a black-box model as SHAP values. 
-img: assets/img/cancer_shap/SHAP_image.jpg
+img: assets/img/cancer_SHAP/SHAP_image.jpg
 importance: 3
 category: Scikit-learn
 ---

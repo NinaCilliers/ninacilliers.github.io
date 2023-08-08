@@ -2,14 +2,14 @@
 layout: page
 title: An optimized pipeline for Airbnb price prediction
 description: A pipeline is developed to predict Airbnb rental Airbnb prices in Europe. The performance of six data preprocessing strategies was evaluated in nine models against two error metrics. 
-img: assets/img/project_previews/airbnb_pipeline.png
+img: assets/img/airbnb_pipeline/airbnb_pic.webp
 importance: 4
 category: Scikit-learn
 ---
 
 <h1>An optimized pipeline for Airbnb price prediction</h1>
 <h1> <br> </h1>
-<h1>  Introduction </h1>
+<h1>  Introduction</h1>
            
 A pipeline is developed to predict the price of Airbnb stays in Europe. An optimized pipeline for Airbnb price forecasting can identify key factors that impact the price of listings and provide insights into market trends and competitors' offerings. By utilizing this pipeline to forecast future revenue based on these insights, hosts can make data-driven decisions that maximize their profits. This streamlined approach saves time, increases accuracy, and delivers the best possible experience to Airbnb guests. 
 <br>
@@ -17,7 +17,7 @@ A pipeline is developed to predict the price of Airbnb stays in Europe. An optim
 First, we carefully consider the range of prices of interest. Next, we develop several pre-processing strategies that utilize feature re-scaling and feature engineering. Next, we evaluate these strategies in conjunction with common models looking at two common error metrics. Extra trees and random forest regressors both perform, with extra trees performing the best. This model is combined with the optimal pre-processing strategy in a transferrable and concise final pipeline. 
 <br>
 <br>
-<img src="https://news.airbnb.com/wp-content/uploads/sites/4/2020/12/Airbnb-Stay-New-South-Wales.jpg?w=768" width="920px">
+![img](/assets/img/airbnb_pipeline/airbnb_pic.webp)
 
 <h1> <br></h1>
 <h1>  Project Outline </h1>
