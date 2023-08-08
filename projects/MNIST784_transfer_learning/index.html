@@ -121,8 +121,9 @@
         <div class="post">
 
           <article>
-            <h1 id="handwritten-digit-classification-with-transfer-learning-resnet50-inception-and-mobilenet">Handwritten digit classification with transfer learning: <br>Resnet50, Inception and Mobilenet</h1>
-<h2><br></h2>
+            <h1>Handwritten digit classification with transfer learning</h1>
+<h4><i>Testing Resnet50, Inception and Mobilenet</i></h4>
+<h4><br></h4>
 <h2>Project Overview</h2>
 
 <p>In this project we utilize pre-trained convolutional neural networks to decode the MNIST 784 dataset. We use Resnet50, Inception and Mobilenet with pre-trained weights from the ImageNet dataset. The ImageNet data set contains 100,000 images corresponding to distinct synsets, synonym sets of related words. The features used to classify these images should work well to also classify our handwritten digits.</p>
@@ -131,31 +132,28 @@
 
 <p>Because of the modular design of this code, the head of each transfer model can easily be adjusted along with the input image size for utilization on any image set. Thus, the functions developed in this project can easily be applied to future projects classifying other images.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_openml</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
-<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
-<span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
-<span class="kn">from</span> <span class="n">tensorflow.keras.applications</span> <span class="kn">import</span> <span class="n">ResNet50</span><span class="p">,</span> <span class="n">MobileNet</span>
-<span class="kn">from</span> <span class="n">tensorflow.keras.applications.inception_v3</span> <span class="kn">import</span> <span class="n">InceptionV3</span>
-<span class="kn">from</span> <span class="n">keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span>
-<span class="kn">from</span> <span class="n">keras.callbacks</span> <span class="kn">import</span> <span class="n">ModelCheckpoint</span>
-<span class="kn">import</span> <span class="n">os</span>
-<span class="kn">import</span> <span class="n">pickle</span>
-<span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="sh">'</span><span class="s">C:</span><span class="se">\\</span><span class="s">Users</span><span class="se">\\</span><span class="s">corne</span><span class="se">\\</span><span class="s">OneDrive</span><span class="se">\\</span><span class="s">Documents</span><span class="se">\\</span><span class="s">DS_Portfolio</span><span class="se">\\</span><span class="s">MNIST784_transfer_learning</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">os</span><span class="p">.</span><span class="nf">getcwd</span><span class="p">()</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\MNIST784_transfer_learning'
-</code></pre></div></div>
-
 <h2><br></h2>
 <h2>Image pre-processing</h2>
 
 <p>Preprocessing is intentionally minimal for this dataset. However, two adjustments are necessary for transfer model performance. First, data is rescaled from 0-255 to -1-1. Normalizing the pixel intensity improves model performance. Second, the shape of the images is adjusted from a 1-D black and white array to a 3-D RGB array by repeating the 1-D image three times. This is necessary as the input images used to train the transfer learning models require a three-channel format, as the shape of the weights of the base layer should not be modified and the models were trained using an RGB formatted image.</p>
+
+<details>
+    <summary>Click to view hidden code.</summary>
+    <pre>
+    from sklearn.datasets import fetch_openml
+    from sklearn.metrics import accuracy_score
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import tensorflow as tf
+    from tensorflow.keras.applications import ResNet50, MobileNet
+    from tensorflow.keras.applications.inception_v3 import InceptionV3
+    from keras.callbacks import EarlyStopping, ModelCheckpoint
+    from keras.callbacks import ModelCheckpoint
+    import os
+    import pickle
+    import pandas as pd
+    </pre>
+</details>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Loading MNIST_784 dataset from OpenML
 </span><span class="n">mnist</span> <span class="o">=</span> <span class="nf">fetch_openml</span><span class="p">(</span><span class="sh">'</span><span class="s">mnist_784</span><span class="sh">'</span><span class="p">,</span> <span class="n">as_frame</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="sh">'</span><span class="s">auto</span><span class="sh">'</span><span class="p">)</span> 
@@ -172,33 +170,31 @@
 <span class="nf">print</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">min</span><span class="p">(),</span><span class="mi">2</span><span class="p">),</span> <span class="nf">round</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">max</span><span class="p">(),</span><span class="mi">2</span><span class="p">))</span>
 
 </code></pre></div></div>
-
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>X range before rescaling:
 -1.0 1.0
 X range after rescaling
--1.01 -0.99
+-1.01 -0.99 ```python
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Defining function to look at a digit
-</span><span class="k">def</span> <span class="nf">show_num</span><span class="p">(</span><span class="n">input_pic</span><span class="p">):</span>
-  <span class="n">plt</span><span class="p">.</span><span class="nf">imshow</span><span class="p">(</span><span class="n">input_pic</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="sh">'</span><span class="s">binary</span><span class="sh">'</span><span class="p">)</span>
-  <span class="n">plt</span><span class="p">.</span><span class="nf">axis</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#repeating gray scale image in 3 channel format for compatability with three channel format 
+<p>#Defining function to look at a digit
+def show_num(input_pic):
+  plt.imshow(input_pic,cmap=’binary’)
+  plt.axis(False)</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>```python
+#repeating gray scale image in 3 channel format for compatability with three channel format 
 #of the pre-trained network
-</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Image shape before:</span><span class="sh">'</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>  
-<span class="n">X_rgb</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">repeat</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Image shape after:</span><span class="sh">'</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">X_rgb</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
 
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="se">\n</span><span class="s">Checking Image:</span><span class="sh">'</span><span class="p">)</span>
-<span class="c1">#checking repeat image 
-</span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="nf">show_num</span><span class="p">(</span><span class="n">X_rgb</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,:,</span><span class="n">n</span><span class="p">])</span>
+print('Image shape before:')
+print(X.shape)  
+X_rgb = np.repeat(X,3,axis=-1)
+print('Image shape after:')
+print(X_rgb.shape)
+
+print('\nChecking Image:')
+#checking repeat image 
+for n in range(3):
+    ax = plt.subplot(1,3,n+1)
+    show_num(X_rgb[0][:,:,n])
 </code></pre></div></div>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Image shape before:
@@ -525,48 +521,52 @@ Fine tuning all layers...
     <span class="k">return</span> <span class="n">acc</span><span class="p">,</span> <span class="n">val_acc</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">training_epochs</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">style</span><span class="p">.</span><span class="nf">use</span><span class="p">(</span><span class="sh">'</span><span class="s">ggplot</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">:</span>
-    <span class="n">acc</span><span class="p">,</span> <span class="n">val_acc</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">training_epochs</span> <span class="o">=</span> <span class="nf">model_scores</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
-    <span class="n">x_range</span> <span class="o">=</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nf">len</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    count = 1
+    plt.style.use('ggplot')
+    plt.figure(figsize=(8, 6))
+    for score in scores:
+        acc, val_acc, loss, val_loss, training_epochs = model_scores(score)
+        x_range = range(1,len(acc)+1)
 
-    <span class="c1">#selecting legend entry 
-</span>    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">label_train</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Training</span><span class="sh">'</span>
-        <span class="n">label_val</span><span class="o">=</span> <span class="sh">'</span><span class="s">Validation</span><span class="sh">'</span>
-    <span class="k">else</span><span class="p">:</span> 
-        <span class="n">label_train</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="n">label_val</span> <span class="o">=</span> <span class="bp">None</span>
+        #selecting legend entry 
+        if count == 1:
+            label_train = 'Training'
+            label_val= 'Validation'
+        else: 
+            label_train = None
+            label_val = None
 
-    <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_train</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">val_acc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_val</span><span class="p">)</span>
-    <span class="c1">#plt.ylim([0.8, 1])
-</span>    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">([</span><span class="n">training_epochs</span><span class="p">,</span> <span class="n">training_epochs</span><span class="p">],</span><span class="n">plt</span><span class="p">.</span><span class="nf">ylim</span><span class="p">(),</span> <span class="n">c</span> <span class="o">=</span> <span class="sh">'</span><span class="s">black</span><span class="sh">'</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Accuracy</span><span class="sh">'</span><span class="p">)</span>
-        <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        plt.subplot(2, 3, count)
+        plt.plot(x_range, acc, label=label_train)
+        plt.plot(x_range, val_acc, label=label_val)
+        #plt.ylim([0.8, 1])
+        plt.plot([training_epochs, training_epochs],plt.ylim(), c = 'black',linewidth=.5,label=None)
+        plt.legend(frameon=False)
+        plt.legend(loc=1)
+        if count == 1:
+            plt.ylabel('Accuracy')
+            plt.legend(frameon=True)
 
-    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="n">model_names</span><span class="p">[</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        plt.title(model_names[count-1])
 
-    <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">count</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-    <span class="c1">#plt.ylim([0, 1.0])
-</span>    <span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">([</span><span class="n">training_epochs</span><span class="p">,</span> <span class="n">training_epochs</span><span class="p">],</span><span class="n">plt</span><span class="p">.</span><span class="nf">ylim</span><span class="p">(),</span> <span class="n">c</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">epoch</span><span class="sh">'</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Loss</span><span class="sh">'</span><span class="p">)</span>
-    
-    <span class="n">count</span> <span class="o">+=</span><span class="mi">1</span>
+        plt.subplot(2, 3, count+3)
+        plt.plot(x_range, loss, label=None)
+        plt.plot(x_range, val_loss, label=None)
+        #plt.ylim([0, 1.0])
+        plt.plot([training_epochs, training_epochs],plt.ylim(), c='k', linewidth=0.5,label=None)
+        plt.legend(loc=2,frameon=False)
+        plt.xlabel('epoch')
+        if count == 1:
+            plt.ylabel('Loss')
+        
+        count +=1
 
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
+    plt.tight_layout()
+    </pre>
+</details>
 
 <p><img src="/assets/img/mnist_t_learning/output_30_1.png" alt="model accuracy and loss"></p>
 
@@ -602,6 +602,7 @@ Fine tuning all layers...
     .dataframe thead th {
         text-align: right;
     }
+<br>
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -626,14 +627,18 @@ Fine tuning all layers...
   </tbody>
 </table>
 </div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">model_names</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Models</span><span class="sh">'</span><span class="p">]).</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Total build and train time</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Minutes</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</code></pre></div></div>
-
-<p><img src="/assets/img/mnist_t_learning/output_34_1.png" alt="Model run times"></p>
+<p><br></p>
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    pd.DataFrame(times, index=model_names, columns=['Models']).plot(kind='bar')
+    plt.title('Total build and train time')
+    plt.ylabel('Minutes')
+    plt.legend(frameon=False)
+    </pre>
+</details>
+<p><br>
+<img src="/assets/img/mnist_t_learning/output_34_1.png" alt="Model run times"></p>
 
 <h2><br></h2>
 <h2>Conclusions</h2>
