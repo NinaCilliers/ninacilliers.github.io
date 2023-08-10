@@ -3,8 +3,8 @@ layout: page
 title: A data-based approach to CrossFit training
 description: Messy survey data is tranformed into usable training advice for CrossFit athletes.
 img: /assets/img/crossfit_explore/crossfit_image.jpg
-importance: 7
-category: Scikit-learn
+importance: 4
+category: Other projects
 ---
 
 <h1>A data-based approach to CrossFit training </h1>

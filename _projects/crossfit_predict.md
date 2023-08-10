@@ -4,7 +4,7 @@ title: Predicting CrossFit performance with XGBoost
 description: Optimizing random forest, XGBoost and neural network models
 img: /assets/img/crossfit_predict/cfpredict_pic.jpg
 importance: 3
-category: Scikit-learn
+category: Other projects
 ---
 
 <h1>Predicting CrossFit performance with XGBoost</h1>

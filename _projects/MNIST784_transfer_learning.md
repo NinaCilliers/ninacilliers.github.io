@@ -3,8 +3,8 @@ layout: page
 title: Handwritten digit classification with transfer learning 
 description: Three pre-trained models are used to classify the MNIST 784 dataset. All models perform well. Mobilenet had the fastest total training time, and Inception had the highest accuracy.
 img: /assets/img/mnist_t_learning/tlearn_pic.png
-importance: 1
-category: Deep learning
+importance: 2
+category: Featured projects
 ---
 <h1>Handwritten digit classification with transfer learning</h1>
 <h4><i>Testing Resnet50, Inception and Mobilenet</i></h4>

@@ -3,8 +3,8 @@ layout: page
 title: Nucleus segmentation with UNet
 description: A model with UNet architecture is built for semantic segmentation of cell nuclei microscopy image and evaluated against traditional Otsu thresholding.
 img: /assets/img/nucleus_seg/nucleus_image.jpg
-importance: 1
-category: Deep learning
+importance: 3
+category: Featured projects
 ---
 
 <h1>Nucleus segmentation with UNet </h1>
