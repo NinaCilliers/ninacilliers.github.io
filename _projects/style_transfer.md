@@ -8,6 +8,8 @@ category: Other projects
 ---
 
 <h1>Painting with convolutional neural networks</h1>
+<h4><i>Using style transfer to generate art with distinct style and content.</i></h4>
+<h4><br></h4>
 <h2>Introduction</h2>
 
 In this project we generate a new image from two distinct content and style images using a pre-trained VGG neural network. Instead of training the neural network weights, as is typical in a deep learning project, the generated image is adjusted to minimize a custom cost function. This project is inspired by "Deep Learning & Art: Neural Style Transfer" by Andrew Ng and follows the 2015 paper ["A Neural Algorithm of Artistic Style"](https://arxiv.org/abs/1508.06576) by Leon Gatys et al. 
@@ -29,94 +31,110 @@ F<sup>l</sup><sub>ij</sub> is the activation of the ith filter at position j in 
 
 ![Gram](/assets/img/style_transfer/gram.png)<br>
 
-
-
-```python
-import os
-from sklearn.datasets import fetch_openml
-import matplotlib.pyplot as plt
-import keras 
-from PIL import Image
-import copy
-import tensorflow as tf
-import numpy as np
-```
 <h2><br></h2>
-<h2>Content Image</h2>
+<h2>Preparing content image</h2>
 
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    import os
+    from sklearn.datasets import fetch_openml
+    import matplotlib.pyplot as plt
+    import keras 
+    from PIL import Image
+    import copy
+    import tensorflow as tf
+    import numpy as np
+    </pre>
+</details>
 
 ```python
-#content image
-
-#Defining function to look at a digit
-def show_num(input_pic):
-  plt.imshow(input_pic,cmap='binary')
-  plt.axis(False)
-
-content_image = Image.open('tokyo.jpg').resize((300,300))
-print(np.array(content_image).shape)
-print('Content Image:')
-content_image
-#[Helena Bradbury](https://www.helenabradbury.com/blog-1/72-hours-in-tokyo-japan)
+#import and resize content image
 ```
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+        import 
+    #Defining function to look at a digit
+    def show_num(input_pic):
+    plt.imshow(input_pic,cmap='binary')
+    plt.axis(False)
 
-    (300, 300, 3)
-    Content Image:
-    
+    content_image = Image.open('tokyo.jpg').resize((300,300))
+    print(np.array(content_image).shape)
+    print('Content Image:')
+    content_image
+    #[Helena Bradbury](https://www.helenabradbury.com/blog-1/72-hours-in-tokyo-japan)
+    </pre>
+</details>
 
-
-
-
+```
+Content Image size : 300, 300, 3)
+```
     
 ![content image](/assets/img/style_transfer/output_4_1.png)
 
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    #content image formatting 
+    print('Content image formatting:')
+    print(f'Original size: {content_image.size}')
+    </pre>
+    <pre>
+    #converting to tensor
+    content_image = np.array(content_image)/255
+    content_image = content_image[None,:,:,:]
+    print((f'Tensor size: {content_image.shape}'))
+    </pre>
+</details>
 
-
-
-```python
-#content image formatting 
-print('Content image formatting:')
-print(f'Original size: {content_image.size}')
-
-#converting to tensor
-content_image = np.array(content_image)/255
-content_image = content_image[None,:,:,:]
-print((f'Tensor size: {content_image.shape}'))
 ```
-
     Content image formatting:
     Original size: (300, 300)
     Tensor size: (1, 300, 300, 3)
-    
+```
+
 <h2><br></h2>
 <h2>Style Image</h2>
 
 
 ```python
-style_image = Image.open('pablo.jpg')
-
-print('Style image formatting:')
-print(f'Original size: {style_image.size}')
-
-#resizing, preserving aspect ratio
-style_image = style_image.resize((300,int(300*818/650)))
-#print(f'Size after resizing: {style_image.size}')
-
-#cropping
-style_image = style_image.crop((0,10,300,310)) #left, upper, right, lower
-print(f'Size after cropping: {style_image.size}')
-
-#converting to tensor
-style_image = np.array(style_image)/255
-style_image = style_image[None,:,:,:]
-print((f'Tensor size: {style_image.shape}'))
+#import, crop and resize style image
 ```
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    style_image = Image.open('pablo.jpg')
 
+    print('Style image formatting:')
+    print(f'Original size: {style_image.size}')
+    </pre>
+    <pre>
+    #resizing, preserving aspect ratio
+    style_image = style_image.resize((300,int(300*818/650)))
+    #print(f'Size after resizing: {style_image.size}')
+    </pre>
+    <pre>
+    #cropping
+    style_image = style_image.crop((0,10,300,310)) #left, upper, right, lower
+    print(f'Size after cropping: {style_image.size}')
+    </pre>
+    <pre>
+    #converting to tensor
+    style_image = np.array(style_image)/255
+    style_image = style_image[None,:,:,:]
+    print((f'Tensor size: {style_image.shape}'))
+    </pre>
+    </pre>
+</details>
+
+```python
     Style image formatting:
     Original size: (650, 818)
     Size after cropping: (300, 300)
     Tensor size: (1, 300, 300, 3)
-    
+```  
 
 
 ```python
@@ -129,6 +147,9 @@ def show_tensor(tensor):
         assert tensor.shape[0] == 1
         tensor = tensor[0]
     return Image.fromarray(tensor)
+```
+
+ ```python   
 show_tensor(style_image)
 ```
 
@@ -482,23 +503,26 @@ for ratio in alpha_beta_range:
     
 
 
-```python
-#results of ratio fit 
-plt.figure(figsize=(10,8))
-rows = int(np.ceil(len(image_log)/2))
-plt.subplot(2,rows,1)
-plt.title('Starting point')
-plt.imshow(show_tensor(starting_point))
-plt.axis('off')
-
-for i, image in enumerate(image_log):
-    plt.subplot(2,rows,i+2)
-    plt.title(alpha_beta_range[i])
-    plt.imshow(show_tensor(image))
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    #results of ratio fit 
+    plt.figure(figsize=(10,8))
+    rows = int(np.ceil(len(image_log)/2))
+    plt.subplot(2,rows,1)
+    plt.title('Starting point')
+    plt.imshow(show_tensor(starting_point))
     plt.axis('off')
 
-plt.tight_layout()
-```
+    for i, image in enumerate(image_log):
+        plt.subplot(2,rows,i+2)
+        plt.title(alpha_beta_range[i])
+        plt.imshow(show_tensor(image))
+        plt.axis('off')
+
+    plt.tight_layout()
+    </pre>
+</details>
 
 
 ![alpha beta](/assets/img/style_transfer/output_30_0.png)
@@ -547,22 +571,24 @@ for i,layer in enumerate(CONTENT_LAYERS):
     
 
 
-```python
-#results of ratio fit 
-plt.figure(figsize=(10,8))
-plt.subplot(2,int((len(layer_log)+1)/2),1)
-plt.title('Starting point')
-plt.imshow(show_tensor(starting_point))
-plt.axis('off')
-
-for i, image in enumerate(layer_log):
-    plt.subplot(2,int((len(layer_log)+1)/2),i+2)
-    plt.title(str(CONTENT_LAYERS[i][0].title()[:6]))
-    plt.imshow(show_tensor(image))
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    plt.figure(figsize=(10,8))
+    plt.subplot(2,int((len(layer_log)+1)/2),1)
+    plt.title('Starting point')
+    plt.imshow(show_tensor(starting_point))
     plt.axis('off')
 
-plt.tight_layout()
-```
+    for i, image in enumerate(layer_log):
+        plt.subplot(2,int((len(layer_log)+1)/2),i+2)
+        plt.title(str(CONTENT_LAYERS[i][0].title()[:6]))
+        plt.imshow(show_tensor(image))
+        plt.axis('off')
+
+    plt.tight_layout()
+    </pre>
+</details>
 
 
 ![content layers](/assets/img/style_transfer/output_36_0.png)<br>
@@ -597,22 +623,25 @@ for rate in learning_rates:
     
 
 
-```python
-#results of ratio fit 
-plt.figure(figsize=(10,8))
-plt.subplot(2,int((len(lr_log)+1)/2),1)
-plt.title('Starting point')
-plt.imshow(show_tensor(content_image))
-plt.axis('off')
-
-for i, image in enumerate(lr_log):
-    plt.subplot(2,int((len(lr_log)+1)/2),i+2)
-    plt.title(learning_rates[i])
-    plt.imshow(show_tensor(image))
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    #result of learning rate
+    plt.figure(figsize=(10,8))
+    plt.subplot(2,int((len(lr_log)+1)/2),1)
+    plt.title('Starting point')
+    plt.imshow(show_tensor(content_image))
     plt.axis('off')
 
-plt.tight_layout()
-```
+    for i, image in enumerate(lr_log):
+        plt.subplot(2,int((len(lr_log)+1)/2),i+2)
+        plt.title(learning_rates[i])
+        plt.imshow(show_tensor(image))
+        plt.axis('off')
+
+    plt.tight_layout()
+    </pre>
+</details>
 
 
 ![learning rates](/assets/img/style_transfer/output_40_0.png)<br>
@@ -638,33 +667,30 @@ img = train(epochs, alpha_beta, progress=True)
     Epoch 400 - Done
     Epoch 600 - Done
     Epoch 800 - Done
-    Epoch 1000 - Done
-    Image training progression:
-    
+    Epoch 1000 - Done   
 
-![training final image](/assets/img/style_transfer/outputs_43_1.png)   
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    plt.figure(figsize=(10,8))
+    plt.subplot(1,3,1)
+    plt.imshow(show_tensor(content_image))
+    plt.axis('off')
+    plt.title('Content Image')
 
+    plt.subplot(1,3,2)
+    plt.imshow(show_tensor(style_image))
+    plt.axis('off')
+    plt.title('Style Image')
 
+    plt.subplot(1,3,3)
+    plt.imshow(show_tensor(img))
+    plt.axis('off')
+    plt.title('Generated image')
 
-```python
-plt.figure(figsize=(10,8))
-plt.subplot(1,3,1)
-plt.imshow(show_tensor(content_image))
-plt.axis('off')
-plt.title('Content Image')
-
-plt.subplot(1,3,2)
-plt.imshow(show_tensor(style_image))
-plt.axis('off')
-plt.title('Style Image')
-
-plt.subplot(1,3,3)
-plt.imshow(show_tensor(img))
-plt.axis('off')
-plt.title('Generated image')
-
-plt.tight_layout()
-```
+    plt.tight_layout()
+    </pre>
+</details>
 
 
 ![final image generation](/assets/img/style_transfer/output_44_0.png)
