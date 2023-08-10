@@ -78,11 +78,11 @@
               
 
               <!-- Other pages -->
-              <li class="nav-item ">
-                <a class="nav-link" href="/publications/">Publications</a>
-              </li>
               <li class="nav-item active">
                 <a class="nav-link" href="/projects/">Projects<span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
               </li>
               <li class="nav-item ">
                 <a class="nav-link" href="/repositories/">Repositories</a>
@@ -124,9 +124,35 @@
             <!-- pages/projects.md -->
 <div class="projects">
   <!-- Display categorized projects -->
-  <h2 class="category">Deep learning</h2>
+  <h2 class="category">Featured projects</h2>
   <!-- Generate cards for each project -->
   <div class="grid">
+<!-- _includes/projects.html -->
+<div class="grid-sizer"></div>
+<div class="grid-item">
+  <a href="/projects/breast_cancer/">
+      <div class="card hoverable">
+<figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/breast_cancer/cancer_science_img.jpg" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+        <div class="card-body">
+          <h2 class="card-title" style="font-size:1.2em">Predicting breast cancer mortality</h2>
+          <p class="card-text" style="font-size:0.7em">Binary classifiers are optimized to predict breast cancer mortality from clinical and genetic features. Key features are identified by permutation.</p>
+          <div class="row ml-1 mr-1 p-0">
+          </div>
+        </div>
+      </div>
+    </a>
+</div>
 <!-- _includes/projects.html -->
 <div class="grid-sizer"></div>
 <div class="grid-item">
@@ -179,6 +205,36 @@
       </div>
     </a>
 </div>
+  </div>
+  <h2 class="category">Other projects</h2>
+  <!-- Generate cards for each project -->
+  <div class="grid">
+<!-- _includes/projects.html -->
+<div class="grid-sizer"></div>
+<div class="grid-item">
+  <a href="/projects/MNIST_data_aug/">
+      <div class="card hoverable">
+<figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/mnist_data_aug/output_10_0.png" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+        <div class="card-body">
+          <h2 class="card-title" style="font-size:1.2em">Digit classification with 99.6% accuracy using image augmentation</h2>
+          <p class="card-text" style="font-size:0.7em">A small convolutional neural network decodes digits with superior speed and accuracy using a tailore image augmentation strategy.</p>
+          <div class="row ml-1 mr-1 p-0">
+          </div>
+        </div>
+      </div>
+    </a>
+</div>
 <!-- _includes/projects.html -->
 <div class="grid-sizer"></div>
 <div class="grid-item">
@@ -199,62 +255,6 @@
         <div class="card-body">
           <h2 class="card-title" style="font-size:1.2em">Painting with convolutional neural networks</h2>
           <p class="card-text" style="font-size:0.7em">A novel image is generated with distinct user selected style and content.</p>
-          <div class="row ml-1 mr-1 p-0">
-          </div>
-        </div>
-      </div>
-    </a>
-</div>
-<!-- _includes/projects.html -->
-<div class="grid-sizer"></div>
-<div class="grid-item">
-  <a href="/projects/MNIST_data_aug/">
-      <div class="card hoverable">
-<figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/mnist_data_aug/output_10_0.png" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-        <div class="card-body">
-          <h2 class="card-title" style="font-size:1.2em">Handwritten digit classification with 99.6% accuracy using a convolutional neural network</h2>
-          <p class="card-text" style="font-size:0.7em">A small convolutional neural network is built to decode the MNIST 784 dataset. The final model was trained in ~30 minutes and achieved 99.6% accuracy. A smart data augmentation strategy is the key to the model's high accuracy.</p>
-          <div class="row ml-1 mr-1 p-0">
-          </div>
-        </div>
-      </div>
-    </a>
-</div>
-  </div>
-  <h2 class="category">Scikit-learn</h2>
-  <!-- Generate cards for each project -->
-  <div class="grid">
-<!-- _includes/projects.html -->
-<div class="grid-sizer"></div>
-<div class="grid-item">
-  <a href="/projects/breast_cancer/">
-      <div class="card hoverable">
-<figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/breast_cancer/cancer_science_img.jpg" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-        <div class="card-body">
-          <h2 class="card-title" style="font-size:1.2em">Predicting breast cancer mortality</h2>
-          <p class="card-text" style="font-size:0.7em">Binary classifiers are optimized to predict breast cancer mortality from clinical and genetic features. Key features are identified by permutation.</p>
           <div class="row ml-1 mr-1 p-0">
           </div>
         </div>
@@ -316,32 +316,6 @@
 <!-- _includes/projects.html -->
 <div class="grid-sizer"></div>
 <div class="grid-item">
-  <a href="/projects/air_bnb_pipeline/">
-      <div class="card hoverable">
-<figure>
-
-  <picture>
-    
-
-    <!-- Fallback to the original file -->
-    <img src="/assets/img/airbnb_pipeline/airbnb_pic.webp" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
-
-  </picture>
-
-</figure>
-
-        <div class="card-body">
-          <h2 class="card-title" style="font-size:1.2em">An optimized pipeline for Airbnb price prediction</h2>
-          <p class="card-text" style="font-size:0.7em">A pipeline is developed to predict Airbnb rental Airbnb prices in Europe. The performance of six data preprocessing strategies was evaluated in nine models against two error metrics.</p>
-          <div class="row ml-1 mr-1 p-0">
-          </div>
-        </div>
-      </div>
-    </a>
-</div>
-<!-- _includes/projects.html -->
-<div class="grid-sizer"></div>
-<div class="grid-item">
   <a href="/projects/crossfit_explore/">
       <div class="card hoverable">
 <figure>
@@ -359,6 +333,32 @@
         <div class="card-body">
           <h2 class="card-title" style="font-size:1.2em">A data-based approach to CrossFit training</h2>
           <p class="card-text" style="font-size:0.7em">Messy survey data is tranformed into usable training advice for CrossFit athletes.</p>
+          <div class="row ml-1 mr-1 p-0">
+          </div>
+        </div>
+      </div>
+    </a>
+</div>
+<!-- _includes/projects.html -->
+<div class="grid-sizer"></div>
+<div class="grid-item">
+  <a href="/projects/air_bnb_pipeline/">
+      <div class="card hoverable">
+<figure>
+
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/airbnb_pipeline/airbnb_pic.webp" width="auto" height="auto" alt="project thumbnail" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+
+  </picture>
+
+</figure>
+
+        <div class="card-body">
+          <h2 class="card-title" style="font-size:1.2em">An optimized pipeline for Airbnb price prediction</h2>
+          <p class="card-text" style="font-size:0.7em">A pipeline is developed to predict Airbnb rental Airbnb prices in Europe. The performance of six data preprocessing strategies was evaluated in nine models against two error metrics.</p>
           <div class="row ml-1 mr-1 p-0">
           </div>
         </div>

@@ -10,9 +10,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Handwritten digit classification with 99.6% accuracy using a convolutional neural network | Nina  Cilliers</title>
+    <title>Digit classification with 99.6% accuracy using image augmentation | Nina  Cilliers</title>
     <meta name="author" content="Nina  Cilliers">
-    <meta name="description" content="A small convolutional neural network is built to decode the MNIST 784 dataset. The final model was trained in ~30 minutes and achieved 99.6% accuracy. A smart data augmentation strategy is the key to the model's high accuracy.">
+    <meta name="description" content="A small convolutional neural network decodes digits with superior speed and accuracy using a tailore image augmentation strategy.">
     <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
 
 
@@ -79,10 +79,10 @@
 
               <!-- Other pages -->
               <li class="nav-item ">
-                <a class="nav-link" href="/publications/">Publications</a>
+                <a class="nav-link" href="/projects/">Projects</a>
               </li>
               <li class="nav-item ">
-                <a class="nav-link" href="/projects/">Projects</a>
+                <a class="nav-link" href="/publications/">Publications</a>
               </li>
               <li class="nav-item ">
                 <a class="nav-link" href="/repositories/">Repositories</a>
@@ -121,22 +121,29 @@
         <div class="post">
 
           <article>
-            <h1 id="handwritten-digit-classification-with-996-accuracy-using-a-convolutional-neural-network">Handwritten digit classification with 99.6% accuracy using a convolutional neural network</h1>
-
+            <h1>Digit classification with 99.6% accuracy using image augmentation</h1>
+<h4><i>Building a small convolutional neural with superior performance.</i></h4>
+<h4><br></h4>
+<h2>Introduction</h2>
 <p>A small convolutional neural network is built to decode the MNIST 784 dataset. This dataset contains a subset of 70,000 size-normalized and centered hand written digits. The architecture of the network was built up iteratively until apparent improvements to performance stagnated. Then, the model was optimized by evaluating data augmentation strategies, optimizers and dropout layers. The final model was trained in ~30 minutes and achieved 99.6% accuracy on the test set. The high level of accuracy is due to careful data augmentation during preprocessing.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span> <span class="n">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_openml</span>
-<span class="kn">from</span> <span class="n">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
-<span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
-<span class="kn">from</span> <span class="n">functools</span> <span class="kn">import</span> <span class="n">partial</span> 
-<span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
-<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
-<span class="kn">from</span> <span class="n">keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">ConfusionMatrixDisplay</span>
-</code></pre></div></div>
-<h3><br></h3>
-<h3>Importing data</h3>
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import fetch_openml
+    from collections import Counter
+    import pandas as pd
+    from functools import partial 
+    import tensorflow as tf
+    import numpy as np
+    from keras.callbacks import EarlyStopping, ModelCheckpoint
+    from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+    </pre>
+</details>
+
+<h2><br></h2>
+<h2>Importing data</h2>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Loading MNIST_784 dataset from OpenML
 </span><span class="n">mnist</span> <span class="o">=</span> <span class="nf">fetch_openml</span><span class="p">(</span><span class="sh">'</span><span class="s">mnist_784</span><span class="sh">'</span><span class="p">,</span> <span class="n">as_frame</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="sh">'</span><span class="s">auto</span><span class="sh">'</span><span class="p">)</span> 
@@ -144,11 +151,11 @@
 <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="nf">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">)</span>
 <span class="n">mnist</span><span class="p">.</span><span class="n">DESCR</span>
 </code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"**Author**: Yann LeCun, Corinna Cortes, Christopher J.C. Burges  \n**Source**: [MNIST Website](http://yann.lecun.com/exdb/mnist/) - Date unknown  \n**Please cite**:  \n\nThe MNIST database of handwritten digits with 784 features, raw data available at: http://yann.lecun.com/exdb/mnist/. It can be split in a training set of the first 60,000 examples, and a test set of 10,000 examples  \n\nIt is a subset of a larger set available from NIST. The digits have been size-normalized and centered in a fixed-size image. It is a good database for people who want to try learning techniques and pattern recognition methods on real-world data while spending minimal efforts on preprocessing and formatting. The original black and white (bilevel) images from NIST were size normalized to fit in a 20x20 pixel box while preserving their aspect ratio. The resulting images contain grey levels as a result of the anti-aliasing technique used by the normalization algorithm. the images were centered in a 28x28 image by computing the center of mass of the pixels, and translating the image so as to position this point at the center of the 28x28 field.  \n\nWith some classification methods (particularly template-based methods, such as SVM and K-nearest neighbors), the error rate improves when the digits are centered by bounding box rather than center of mass. If you do this kind of pre-processing, you should report it in your publications. The MNIST database was constructed from NIST's NIST originally designated SD-3 as their training set and SD-1 as their test set. However, SD-3 is much cleaner and easier to recognize than SD-1. The reason for this can be found on the fact that SD-3 was collected among Census Bureau employees, while SD-1 was collected among high-school students. Drawing sensible conclusions from learning experiments requires that the result be independent of the choice of training set and test among the complete set of samples. Therefore it was necessary to build a new database by mixing NIST's datasets.  \n\nThe MNIST training set is composed of 30,000 patterns from SD-3 and 30,000 patterns from SD-1. Our test set was composed of 5,000 patterns from SD-3 and 5,000 patterns from SD-1. The 60,000 pattern training set contained examples from approximately 250 writers. We made sure that the sets of writers of the training set and test set were disjoint. SD-1 contains 58,527 digit images written by 500 different writers. In contrast to SD-3, where blocks of data from each writer appeared in sequence, the data in SD-1 is scrambled. Writer identities for SD-1 is available and we used this information to unscramble the writers. We then split SD-1 in two: characters written by the first 250 writers went into our new training set. The remaining 250 writers were placed in our test set. Thus we had two sets with nearly 30,000 examples each. The new training set was completed with enough examples from SD-3, starting at pattern # 0, to make a full set of 60,000 training patterns. Similarly, the new test set was completed with SD-3 examples starting at pattern # 35,000 to make a full set with 60,000 test patterns. Only a subset of 10,000 test images (5,000 from SD-1 and 5,000 from SD-3) is available on this site. The full 60,000 sample training set is available.\n\nDownloaded from openml.org."
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"**Author**: Yann LeCun, Corinna Cortes, Christopher J.C. Burges  \n**Source**: [MNIST Website](http://yann.lecun.com/exdb/mnist/) - Date unknown  \n**Please cite**:  \n\nThe MNIST database of handwritten digits with 784 features, raw data available at: http://yann.lecun.com/exdb/mnist/. It can be split in a training set of the first 60,000 examples, and a test set of 10,000 examples  \n\nIt is a subset of a larger set available from NIST. The digits have been size-normalized and centered in a fixed-size image. It is a good database for people who want to try learning techniques and pattern recognition methods on real-world data while spending minimal efforts on preprocessing and formatting. The original black and white (bilevel) images from NIST were size normalized to fit in a 20x20 pixel box while preserving their aspect ratio. The resulting images contain grey levels as a result of the anti-aliasing technique used by the normalization algorithm. the images were centered in a 28x28 image by computing the center of mass of the pixels, and translating the image so as to position this point at the center of the 28x28 field.  \n\nWith some classification methods (particularly template-based methods, such as SVM and K-nearest neighbors), the error rate improves when the digits are centered by bounding box rather than center of mass. If you do this kind of pre-processing, you should report it in your publications. The MNIST database was constructed from NIST's NIST originally designated SD-3 as their training set and SD-1 as their test set. However, SD-3 is much cleaner and easier to recognize than SD-1. The reason for this can be found on the fact that SD-3 was collected among Census Bureau employees, while SD-1 was collected among high-school students. Drawing sensible conclusions from learning experiments requires that the result be independent of the choice of training set and test among the complete set of samples. Therefore it was necessary to build a new database by mixing NIST's datasets.  \n\nThe MNIST training set is composed of 30,000 patterns from SD-3 and 30,000 patterns from SD-1. Our test set was composed of 5,000 patterns from SD-3 and 5,000 patterns from SD-1. The 60,000 pattern training set contained examples from approximately 250 writers. We made sure that the sets of writers of the training set and test set were disjoint. SD-1 contains 58,527 digit images written by 500 different writers. In contrast to SD-3, where blocks of data from each writer appeared in sequence, the data in SD-1 is scrambled. Writer identities for SD-1 is available and we used this information to unscramble the writers. We then split SD-1 in two: characters written by the first 250 writers went into our new training set. The remaining 250 writers were placed in our test set. Thus we had two sets with nearly 30,000 examples each. The new training set was completed with enough examples from SD-3, starting at pattern # 0, to make a full set of 60,000 training patterns. Similarly, the new test set was completed with SD-3 examples starting at pattern # 35,000 to make a full set with 60,000 test patterns. Only a subset of 10,000 test images (5,000 from SD-1 and 5,000 from SD-3) is available on this site. The full 60,000 sample training set is available.\n\nDownloaded from openml.org.
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Making test and train sets
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">#Making test and train sets
 </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="mi">60000</span><span class="p">],</span> <span class="n">y</span><span class="p">[:</span><span class="mi">60000</span><span class="p">],</span><span class="n">X</span><span class="p">[</span><span class="mi">60000</span><span class="p">:</span><span class="mi">65000</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="mi">60000</span><span class="p">:</span><span class="mi">65000</span><span class="p">],</span><span class="n">X</span><span class="p">[</span><span class="mi">65000</span><span class="p">:],</span><span class="n">y</span><span class="p">[</span><span class="mi">65000</span><span class="p">:]</span>
 </code></pre></div></div>
 
@@ -170,84 +177,107 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>((70000, 28, 28, 1), (28, 28, 1))
 </code></pre></div></div>
 
-<h3><br></h3>
-<h3>EDA</h3>
+<h2><br></h2>
+<h2>EDA</h2>
 
 <p>Examples (25) of handwritten digits with their labels are shown below. Note the variation in slanting and character orientation apparent in different handwriting styles.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Looking at 10 random digits
-</span><span class="k">def</span> <span class="nf">show_num</span><span class="p">(</span><span class="n">input_pic</span><span class="p">):</span>
-  <span class="n">plt</span><span class="p">.</span><span class="nf">imshow</span><span class="p">(</span><span class="n">input_pic</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="sh">'</span><span class="s">binary</span><span class="sh">'</span><span class="p">)</span>
-  <span class="n">plt</span><span class="p">.</span><span class="nf">axis</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    #Looking at 10 random digits
+    def show_num(input_pic):
+    plt.imshow(input_pic,cmap='binary')
+    plt.axis(False)
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">25</span><span class="p">):</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="nf">show_num</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="nf">squeeze</span><span class="p">()))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
+    for i in range(0,25):
+        ax = plt.subplot(5,5,i+1)
+        show_num(X[i])
+        plt.title(str(y[i].squeeze()))
+    plt.tight_layout()
+    </pre>
+</details>
 
 <p><img src="/assets/img/mnist_data_aug/output_10_0.png" alt="data preview"></p>
 
 <p>The distribution of digits is balanced with all digits occurring at approximately the same frequency.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="nc">Counter</span><span class="p">(</span><span class="n">y</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()).</span><span class="nf">items</span><span class="p">(),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Digit</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">]).</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">Digit</span><span class="sh">'</span><span class="p">).</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">Digit</span><span class="sh">'</span><span class="p">).</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">bar</span><span class="sh">'</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="sh">'</span><span class="s">Count</span><span class="sh">'</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
-</code></pre></div></div>
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    pd.DataFrame(Counter(y.squeeze()).items(),columns=['Digit','Count']).sort_values('Digit').set_index('Digit').plot(kind='bar',ylabel='Count',legend=None, figsize=(7,3))
+    plt.xticks(rotation=0);
+    </pre>
+</details>
 <p><img src="/assets/img/mnist_data_aug/output_12_0.png" alt="number distribution"></p>
 
-<h3><br></h3>
-<h3>Data Augmentation</h3>
+<h2><br></h2>
+<h2>Data Augmentation</h2>
 
 <p>Data augmentation is a powerful method to boost model performance. In data augmentation, variation or noise is added to the training set. By training with this more complicated artificial dataset, neural networks can become better at evaluating test cases. To enhance performance, the added variation needs to be consistent with what is encountered in the test set. For example, if digits aren’t rotated 180 degrees in the test set, rotating digits 180 in the training set may not improve performance.</p>
 
 <p>In our dataset, we see slight variations in digit orientation and slanting. These factors are amplified in our test set by artificially shifting and rotating our test set digits. If features are overly shifted or rotated, it may increase the bias of our model and deviate from what is observed in our test set. For this reason, the levels of shifting and rotation were tuned in our model optimization.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#image rotation (mimicks variation in handwriting slant)
-</span><span class="n">img_rotation</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">RandomRotation</span><span class="p">(</span>
-    <span class="n">factor</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">),</span>
-    <span class="n">fill_mode</span> <span class="o">=</span> <span class="sh">'</span><span class="s">nearest</span><span class="sh">'</span><span class="p">,</span>
-    <span class="n">seed</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="p">)</span>
+</span></code></pre></div></div>
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    img_rotation = tf.keras.layers.RandomRotation(
+        factor = (-0.05,0.05),
+        fill_mode = 'nearest',
+        seed = 10
+    )
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">):</span>
-    <span class="n">aug_img</span> <span class="o">=</span> <span class="nf">img_rotation</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="nf">show_num</span><span class="p">(</span><span class="n">aug_img</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="nf">squeeze</span><span class="p">()))</span>
-</code></pre></div></div>
+    for i in range(0,9):
+        aug_img = img_rotation(X[i])
+        ax = plt.subplot(3,3,i+1)
+        show_num(aug_img)
+        plt.title(str(y[i].squeeze()))
+    </pre>
+</details>
 
 <p><img src="/assets/img/mnist_data_aug/output_14_0.png" alt="rotated data"></p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#image shifting - mimicks sligh variation in image centering 
-</span><span class="n">img_shift</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="nc">RandomTranslation</span><span class="p">(</span>
-    <span class="n">height_factor</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">width_factor</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">fill_mode</span> <span class="o">=</span> <span class="sh">'</span><span class="s">nearest</span><span class="sh">'</span><span class="p">,</span>
-    <span class="n">seed</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="p">)</span>
+</span></code></pre></div></div>
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    img_shift = tf.keras.layers.RandomTranslation(
+        height_factor = 0.1,
+        width_factor = 0.1,
+        fill_mode = 'nearest',
+        seed = 10
+    )
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">):</span>
-    <span class="n">aug_img</span> <span class="o">=</span> <span class="nf">img_shift</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="nf">show_num</span><span class="p">(</span><span class="n">aug_img</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-</code></pre></div></div>
+    for i in range(0,9):
+        aug_img = img_shift(X[i])
+        ax = plt.subplot(3,3,i+1)
+        show_num(aug_img)
+        plt.title(str(y[i]))
+    </pre>
+</details>
 
 <p><img src="/assets/img/mnist_data_aug/output_15_0.png" alt="shifted data"></p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#combining both augmentations 
-</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">):</span>
-    <span class="n">aug_img</span> <span class="o">=</span> <span class="nf">img_shift</span><span class="p">(</span><span class="nf">img_rotation</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="nf">show_num</span><span class="p">(</span><span class="n">aug_img</span><span class="p">)</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-</code></pre></div></div>
+</span></code></pre></div></div>
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    for i in range(0,9):
+        aug_img = img_shift(img_rotation(X[i]))
+        ax = plt.subplot(3,3,i+1)
+        show_num(aug_img)
+        plt.title(str(y[i]))
+    </pre>
+</details>
 
 <p><img src="/assets/img/mnist_data_aug/output_16_0.png" alt="augmented data"></p>
 
-<h3><br></h3>
-<h3>Model building</h3>
+<h2><br></h2>
+<h2>Convolutional neural network development</h2>
 
 <p>A small convolutional neural network was built to decode our digits. The input image is first rotated and shifted as described previously. The convolutional layers are configured with padding so that dimensionality is not reduced during convolution, use ReLU activation to introduce non-linearity, and are initialized using the He normal initialization method. The number of filters used in each convolution step is increased from 64 to 256 and the filter size is decreased from 7 to 3.</p>
 
@@ -333,8 +363,8 @@ Non-trainable params: 0
 _________________________________________________________________
 </code></pre></div></div>
 
-<h3><br></h3>
-<h3>Model optimization</h3>
+<h2><br></h2>
+<h2>Model optimization</h2>
 
 <p>The model was optimized in three phases:</p>
 <ol>
@@ -347,7 +377,8 @@ _________________________________________________________________
 <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">))</span>
 </code></pre></div></div>
 
-<p>Images were first rotated and then shifted independently. The augmentation ranges were fine-tuned so as not to adversely affect model bias. It was found that rotations of 0.1 were too extreme but that 0.05 worked nicely. Similarly, an image shift of 0.1 performed well. The combination of these two augmentations outperformed the individual augmentations and notably decreased the variance of the model. The observed preservation of bias and reduction of variance is optimal for an image augmentation strategy and will be implemented going forward.</p>
+<p>Images were first rotated and then shifted independently. The augmentation ranges were fine-tuned so as not to adversely affect model bias. It was found that rotations of 0.1 were too extreme but that 0.05 worked nicely. Similarly, an image shift of 0.1 performed well. The combination of these two augmentations outperformed the individual augmentations and notably decreased the variance of the model. The observed preservation of bias and reduction of variance is optimal for an image augmentation strategy and will be implemented going forward.<br>
+<br></p>
 
 <table>
   <thead>
@@ -404,9 +435,11 @@ _________________________________________________________________
   </tbody>
 </table>
 
-<p>Three optimizers were evaluated by considering training set performance and run time. Overfitting the validation set was not considered, as this could be an indicator of an optimizer working well and can be combated with regularization techniques. Stochastic gradient descent (sgd) adjusts the network’s weights by taking small steps in the direction of the steepest descent of the loss function. Adam and AdamW are variations of sgd that uses an adaptive learning rate based on first and second moments of the gradients. The incorporation of momentum helps accelerate convergence by adding a fraction of the previous gradients to the current updates step. The second moment of the gradient is used to dampen the gradient in the steepest direction, which provides robustness and functionality in noisy environments. AdamW additionally includes weight decay, which is a regularization technique that reduces the size of model’s weights at each training iteration.</p>
+<p><br>
+Three optimizers were evaluated by considering training set performance and run time. Overfitting the validation set was not considered, as this could be an indicator of an optimizer working well and can be combated with regularization techniques. Stochastic gradient descent (sgd) adjusts the network’s weights by taking small steps in the direction of the steepest descent of the loss function. Adam and AdamW are variations of sgd that uses an adaptive learning rate based on first and second moments of the gradients. The incorporation of momentum helps accelerate convergence by adding a fraction of the previous gradients to the current updates step. The second moment of the gradient is used to dampen the gradient in the steepest direction, which provides robustness and functionality in noisy environments. AdamW additionally includes weight decay, which is a regularization technique that reduces the size of model’s weights at each training iteration.</p>
 
-<p>Adam was selected for its superior training accuracy and low runtime and is used in all cases going forward.</p>
+<p>Adam was selected for its superior training accuracy and low runtime and is used in all cases going forward.
+<br></p>
 
 <table>
   <thead>
@@ -443,11 +476,13 @@ _________________________________________________________________
   </tbody>
 </table>
 
-<p>Dropout is a regularization technique that sets a fraction of the input units to zero during each training iteration. By randomly dropping neurons, dropout forces the network to rely on different subsets of neurons for each training example, which prevents overfitting. Dropout also functions as a form of ensemble learning built from training each varying subset of the network.</p>
+<p><br>
+Dropout is a regularization technique that sets a fraction of the input units to zero during each training iteration. By randomly dropping neurons, dropout forces the network to rely on different subsets of neurons for each training example, which prevents overfitting. Dropout also functions as a form of ensemble learning built from training each varying subset of the network.</p>
 
 <p>We expect to see higher validation accuracy than training accuracy for each case due to differences in the training and test data, as image augmentation will make training predictions more challenging than test predictions. If dropout is not too disruptive, we should see a further improvement to the validation accuracy. For this reason, the validation accuracy will be compared to the validation accuracy of the network with no dropout layers.</p>
 
-<p>Two dropout rates of 0.2 and 0.5 were tested in the fully connected layers and in the convolutional layers. In the convolutional layers, incorporation of 0.5 dropout significantly increased model bias, and 0.2 dropout slightly increased bias, both without a significant reduction in model variance. Thus, dropout was not included in the convolutional layers. In the fully connected layers, both 0.2 and 0.5 dropout levels increased model bias, but 0.2 dropout model’s validation accuracy outperformed the baseline case. Thus, layers of 0.2 dropout were included in the fully connected layers.</p>
+<p>Two dropout rates of 0.2 and 0.5 were tested in the fully connected layers and in the convolutional layers. In the convolutional layers, incorporation of 0.5 dropout significantly increased model bias, and 0.2 dropout slightly increased bias, both without a significant reduction in model variance. Thus, dropout was not included in the convolutional layers. In the fully connected layers, both 0.2 and 0.5 dropout levels increased model bias, but 0.2 dropout model’s validation accuracy outperformed the baseline case. Thus, layers of 0.2 dropout were included in the fully connected layers.
+<br></p>
 
 <table>
   <thead>
@@ -492,8 +527,8 @@ _________________________________________________________________
   </tbody>
 </table>
 
-<h3><br></h3>
-<h3>Model training</h3>
+<h2><br></h2>
+<h2>Model training</h2>
 
 <p>The optimized model was trained using early stopping and evaluated on the test set.</p>
 
@@ -564,34 +599,38 @@ Epoch 21/200
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>157/157 [==============================] - 5s 35ms/step
 
-
-
-
-
 0.9956
 </code></pre></div></div>
 
 <p>The model accuracy on the test set was 0.9956.</p>
 
-<h3><br></h3>
-<h3>Error analysis</h3>
+<h2><br></h2>
+<h2>Error analysis</h2>
 
 <p>In order to asses the model’s performance and determine possible pathways for model improvement, we look at the performance of the model. All of the mislabeled digits are displayed with the correct label in the figure below.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Total number of mislabeled instances in test dataset:</span><span class="sh">'</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">((</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span> <span class="o">!=</span> <span class="n">y_pred</span><span class="p">).</span><span class="nf">sum</span><span class="p">())</span>
-</code></pre></div></div>
+<details>
+    <summary>Click to see hidden code.</summary>
+    <pre>
+    print('Total number of mislabeled instances in test dataset:')
+    print((y_test.squeeze() != y_pred).sum())
+    </pre>
+</details>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Total number of mislabeled instances in test dataset:
 22
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">22</span><span class="p">):</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="nf">show_num</span><span class="p">(</span><span class="n">X_test</span><span class="p">[</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span> <span class="o">!=</span> <span class="n">y_pred</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Actual: </span><span class="sh">'</span><span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span> <span class="o">!=</span> <span class="n">y_pred</span><span class="p">][</span><span class="n">i</span><span class="p">].</span><span class="nf">squeeze</span><span class="p">())</span> <span class="o">+</span><span class="sh">'</span><span class="se">\n</span><span class="s">Predicted: </span><span class="sh">'</span><span class="o">+</span><span class="nf">str</span><span class="p">(</span><span class="n">y_pred</span><span class="p">[</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span> <span class="o">!=</span> <span class="n">y_pred</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
+<details>
+    <summary>Click to see hidden code.</summary>
+    <pre>
+    for i in range(0,22):
+        ax = plt.subplot(5,5,i+1)
+        show_num(X_test[y_test.squeeze() != y_pred][i])
+        plt.title('Actual: '+ str(y_test[y_test.squeeze() != y_pred][i].squeeze()) +'\nPredicted: '+str(y_pred[y_test.squeeze() != y_pred][i]))
+    plt.tight_layout()
+    </pre>
+</details>
 
 <p><img src="/assets/img/mnist_data_aug/output_32_0.png" alt="misclassified numbers"></p>
 
@@ -599,35 +638,45 @@ Epoch 21/200
 
 <p>The frequency of misclassifications is shown in the confusion matrix below. It is noted that the most common misclassification was overly classifying 7’s as 2’s. The misclassified 7’s are shown for reference. For future model development, it may be of interest to obtain more 7’s and 2’s, especially 7’s with a bottom sherif.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cm</span> <span class="o">=</span> <span class="nf">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
-<span class="n">disp</span> <span class="o">=</span> <span class="nc">ConfusionMatrixDisplay</span><span class="p">(</span><span class="n">confusion_matrix</span><span class="o">=</span><span class="n">cm</span><span class="p">)</span>
-<span class="n">disp</span><span class="p">.</span><span class="nf">plot</span><span class="p">()</span>
-</code></pre></div></div>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#confusion matrix
+</span></code></pre></div></div>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x17c9e1a29d0&gt;
-</code></pre></div></div>
+<details>
+    <summary>Click to see hidden code.</summary>
+    <pre>
+    cm = confusion_matrix(y_test, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+    disp.plot()
+    </pre>
+</details>
 
 <p><img src="/assets/img/mnist_data_aug/output_34_1.png" alt="confusion matrix"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="nf">show_num</span><span class="p">(</span><span class="n">X_test</span><span class="p">[(</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span><span class="o">==</span><span class="mi">7</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">y_pred</span><span class="o">==</span><span class="mi">2</span><span class="p">)][</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Acutal: </span><span class="sh">'</span><span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">y_test</span><span class="p">[(</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span><span class="o">==</span><span class="mi">7</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">y_pred</span><span class="o">==</span><span class="mi">2</span><span class="p">)][</span><span class="n">i</span><span class="p">].</span><span class="nf">squeeze</span><span class="p">())</span> <span class="o">+</span><span class="sh">'</span><span class="se">\n</span><span class="s">Predicted: </span><span class="sh">'</span><span class="o">+</span><span class="nf">str</span><span class="p">(</span><span class="n">y_pred</span><span class="p">[(</span><span class="n">y_test</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">()</span><span class="o">==</span><span class="mi">7</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">y_pred</span><span class="o">==</span><span class="mi">2</span><span class="p">)][</span><span class="n">i</span><span class="p">]))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Show 7's misclssified as 2's
+</span></code></pre></div></div>
+<details>
+    <summary>Click to see hidden code.</summary>
+    <pre>
+    for i in range(0,5):
+        ax = plt.subplot(1,5,i+1)
+        show_num(X_test[(y_test.squeeze()==7)&amp;(y_pred==2)][i])
+        plt.title('Acutal: '+ str(y_test[(y_test.squeeze()==7)&amp;(y_pred==2)][i].squeeze()) +'\nPredicted: '+str(y_pred[(y_test.squeeze()==7)&amp;(y_pred==2)][i]))
+    plt.tight_layout()
+    </pre>
+</details>
 
 <p><img src="/assets/img/mnist_data_aug/output_35_0.png" alt="Misclassified sevens"></p>
 
-<h3><br></h3>
-<h3>Benchmarking model performance</h3>
+<h2><br></h2>
+<h2>Benchmarking model performance</h2>
 
 <p>LeChunn has compiled a summary of model performance on the MNIST dataset. The results for convolutional neural networks are shown in the table below. In the first column there is a description of the network, the second column describes preprocessing steps, the third collumn is the test error rate (%), and the fourth column is the reference for the model.</p>
 
-<p><img src="attachment:CV_perf_MNIST784.png" alt="CV_perf_MNIST784.png"></p>
+<p><img src="/assets/img/mnist_data_aug/CV_perf_MNIST784.png" alt="CV_perf_MNIST784.png"></p>
 
 <p>Full table available at http://yann.lecun.com/exdb/mnist/</p>
 
-<p>The error rate is 1 - the accuracy rate, and our model has an error rate percentage of 0.44, which is in line or better than the scores on these larger convenolutional networks. Likely, the preprocessing steps added to our model provide a singificant boost to model performance.</p>
+<p>The error rate is 1 - the accuracy rate. <b>Our model has an error rate percentage of 0.44, which is comparable or better than the scores on these larger convenolutional networks.</b> Likely, the preprocessing steps added to our model provide a singificant boost to model performance.</p>
 
           </article>
 
