@@ -2,7 +2,6 @@ github_users:
   - ninacilliers
 
 github_repos:
-  - ninacilliers/ninacilliers.github.io
   - ninacilliers/crossfit_project
   - NinaCilliers/MNIST784_transfer_learning
   - NinaCilliers/style_transfer
