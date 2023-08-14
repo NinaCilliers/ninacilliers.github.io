@@ -9,61 +9,59 @@ category: Other projects
 
 <h1>Predicting brand loyality </h1>
 <h4><i>Optimizing an adaptive boosting classifier to preduct return visits to Starbucks</i></h4>
-
+<h4><br></h4>
 <h2>Introduction</h2>
 
 A small survey was conducted in Malaysia to learn more about consumer behavior at Starbucks. In sum, a total of 122 individuals answered 20 questions. Questions were asked targeting current purchasing behavior as well as perceptions of Starbucks' products and facilities. Basic demographic information was also collected. Respondents were asked if they planned on returning to Starbucks in the future, which is taken as an indicator of consumer loyalty. 
 
-We extensively explored this data and used clustering techniques to segment the Starbucks' consumer base in a {previous project](link). Here, a model to predict consumer loyalty was developed. Common classifiers in the Scikit learn package were sampled and optimized. Several classifiers individually reached ~87.5% accuracy on the test dataset. Accuracy was not improved by combining classifiers into a voting classifier. 
+We extensively explored this data and used clustering techniques to segment the Starbucks' consumer base in a [previous project](link). Here, a model to predict consumer loyalty was developed. Common classifiers in the Scikit learn package were sampled and optimized. Several classifiers individually reached ~87.5% accuracy on the test dataset. Accuracy was not improved by combining classifiers into a voting classifier. 
 
 Finally, feature selection was performed using a random forest classifier. It is shown that customer loyalty is dependent on customers being able to afford Starbucks, perceiving Starbucks as high quality, and enjoying the ambiance. Loyalty prediction using just eight input features performed as well as all individual classifiers built on the full dataset. This indicates that these metrics should be the focus for loyalty improvement and future surveys.
 
 <h2><br></h2>
-<h2>Data cleaning</h2>
+<h2>Importing data</h2>
+Cleaned data is loaded from a [previous project](previous).
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  import os
+  import numpy as np
+  import matplotlib.pyplot as plt
+  import pandas as pd
+  from sklearn import set_config
+  import seaborn as sns
+  from copy import deepcopy
+  from sklearn.preprocessing import OrdinalEncoder
+  from sklearn.preprocessing import MinMaxScaler
+  #importing packages
+  from sklearn.decomposition import PCA 
+  from sklearn.cluster import KMeans
+  from sklearn.metrics import silhouette_score
+  import pickle
 
-
-```python
-#importing packages 
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn import set_config
-import seaborn as sns
-from copy import deepcopy
-from sklearn.preprocessing import OrdinalEncoder
-from sklearn.preprocessing import MinMaxScaler
-#importing packages
-from sklearn.decomposition import PCA 
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-import pickle
-
-#importaing packages
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.svm import LinearSVC
-from sklearn.svm import SVC
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from scipy.stats import loguniform,expon, uniform, randint
-from sklearn.ensemble import StackingClassifier
-from sklearn.ensemble import VotingClassifier
-```
-
-
-```python
-#changing settings
-set_config(transform_output="pandas")
-pd.set_option('display.max_columns', 100)
-plt.style.use('ggplot')
-```
-
+  #importaing packages
+  from sklearn.model_selection import train_test_split
+  from sklearn.tree import DecisionTreeClassifier
+  from sklearn.ensemble import RandomForestClassifier
+  from sklearn.ensemble import AdaBoostClassifier
+  from sklearn.ensemble import ExtraTreesClassifier
+  from sklearn.metrics import accuracy_score
+  from sklearn.ensemble import GradientBoostingClassifier
+  from sklearn.svm import LinearSVC
+  from sklearn.svm import SVC
+  from sklearn.linear_model import LogisticRegression
+  from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
+  from scipy.stats import loguniform,expon, uniform, randint
+  from sklearn.ensemble import StackingClassifier
+  from sklearn.ensemble import VotingClassifier
+  </pre>
+  <pre>
+  #changing settings
+  set_config(transform_output="pandas")
+  pd.set_option('display.max_columns', 100)
+  plt.style.use('ggplot')
+  </pre>
+</details>
 
 ```python
 with open('cleaned_data.pkl','wb') as f:
@@ -423,10 +421,6 @@ df
 </div>
 
 
-
-Summary of cleaned dataset:
-
-
 ```python
 df.info()
 ```
@@ -464,16 +458,15 @@ df.info()
     memory usage: 23.0 KB
     
 
-<h2><br></br>
+<h2><br></h2>
 <h2>Feature correlation</h2>
 A full EDA and exploration of this data is available in a previous [project](). We present the feature correlation map here, as it guides what we should expect to seee in our model.
 
+![png](/assets/img/starbucks_cluster/output_20_0.png)
+
 - The tendency to recommend Starbucks as a meeting place, quality rating, ambience rating, service rating, and the desire to visit Starbucks in the future are all positively correlated. 
-
 - We also see that items in the consumption location and career categories are negatively correlated, as customers can only select one of these sub-categories. 
-
 - Starbucks members tend to have high incomes, visit Starbucks more frequently, spend more money, and positively view Starbucks' quality. 
-
 - Frequent visitors of Starbucks tend to spend more money and positively perceive the product quality. 
 
 <h2><br></h2>
@@ -700,16 +693,7 @@ acc_voting = cross_val_score(voting_clf,X_test, y_test,scoring='accuracy',cv=10,
 acc_voting
 ```
 
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\model_selection\_split.py:700: UserWarning: The least populated class in y has only 8 members, which is less than n_splits=10.
-      warnings.warn(
-    
-
-
-
-
     0.875
-
-
 
 <h3><br></h3>
 <h3>Stacking classifier</h3>
@@ -731,13 +715,6 @@ acc_stacking = cross_val_score(voting_clf,X_test, y_test,scoring='accuracy',cv=1
 acc_stacking
 ```
 
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\model_selection\_split.py:700: UserWarning: The least populated class in y has only 8 members, which is less than n_splits=10.
-      warnings.warn(
-    
-
-
-
-
     0.875
 
 
@@ -755,30 +732,26 @@ rnd_clf = RandomForestClassifier(n_estimators=50, oob_score=True, n_jobs=-1, ran
 rnd_clf.oob_score_
 ```
 
-
-
-
     0.8032786885245902
-
-
 
 
 ```python
 feature_importance = pd.Series(rnd_clf.feature_importances_, index=rnd_clf.feature_names_in_).sort_values(ascending=False)
 ```
 
-
-```python
-plt.bar(feature_importance.index.values.tolist(), feature_importance, width=.7,color='lightblue')
-plt.bar(feature_importance[:6].index.values.tolist(), feature_importance[:6], width=.7,color='crimson')
-plt.ylabel('Feature importance', fontsize=14)
-plt.xticks(rotation=90)
-plt.show()
-```
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.bar(feature_importance.index.values.tolist(), feature_importance, width=.7,color='lightblue')
+  plt.bar(feature_importance[:6].index.values.tolist(), feature_importance[:6], width=.7,color='crimson')
+  plt.ylabel('Feature importance', fontsize=14)
+  plt.xticks(rotation=90)
+  plt.show()
+  </pre>
+A</details>
 
     
-![png](output_31_0.png)
+![png](/assets/img/starbucks_predict/output_31_0.png)
     
 
 
@@ -791,25 +764,6 @@ Key features for predicting loyalty include price rating, quality rating, procli
 
 
 ```python
-#Model definition
-'''
-ada_top_clf = AdaBoostClassifier(n_estimators=9, learning_rate=4.1, random_state=10)
-log_top_clf = LogisticRegression(C=.816,penalty='l1',solver='saga',random_state=10, max_iter=10000)
-svc_top_clf =SVC(kernel='rbf', random_state=10, max_iter=10000,C=18, gamma=.0071,probability=True)
-'''
-
-#selected_models = [ada_clf, log_clf, svc_clf]
-#selected_names = ['Adaptive boosting','Logistic classifier','SVC classifier']
-
-```
-
-
-```python
-#Finding the accuracy score for each feature number
-score_ada = []
-score_log = []
-score_svc = []
-
 scores = pd.DataFrame(data=np.zeros((22,len(names))),columns=names)
 for kk in range(1,22):
   top_features = feature_importance[:kk]
@@ -821,24 +775,22 @@ for kk in range(1,22):
     scores.iloc[kk,m] = acc_
 ```
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  #Plotitng results
+  x_range = range(0,22)
 
-```python
-#Plotitng results
-x_range = range(0,22)
-
-for n,model in enumerate(clfs):
-    plt.plot(x_range, scores.iloc[:,n],'o-',label = names[n])
-#lt.plot(x_range, scores['Logistic classifier'],'o-',label = 'Logistic regression', color='lightgreen')
-#plt.plot(x_range, scores['SVC classifier'],'o-',label = 'SVC with rbf kernel', color='pink')
-plt.legend(loc=4,facecolor='white')
-plt.ylabel('Accuracy score')
-plt.xlabel('Features selected')
-plt.show()
-```
-
-
+  for n,model in enumerate(clfs):
+      plt.plot(x_range, scores.iloc[:,n],'o-',label = names[n])
+  #lt.plot(x_range, scores['Logistic classifier'],'o-',label = 'Logistic regression', color='lightgreen')
+  #plt.plot(x_range, scores['SVC classifier'],'o-',label = 'SVC with rbf kernel', color='pink')
+  plt.legend(loc=4,facecolor='white')
+  plt.ylabel('Accuracy score')
+  plt.xlabel('Features selected')
+  plt.show()
+</details>
     
-![png](output_36_0.png)
+![png](/assets/img/starbucks_predict/output_36_0.png)
     
 
 
