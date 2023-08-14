@@ -2,13 +2,13 @@
 layout: page
 title: Handwritten digit classification with transfer learning 
 description: Three pre-trained models are used to classify the MNIST 784 dataset. All models perform well. Mobilenet had the fastest total training time, and Inception had the highest accuracy.
-img: /assets/img/mnist_t_learning/output_30_1.png
-importance: 1
-category: Deep learning
+img: /assets/img/mnist_t_learning/tlearn_pic.png
+importance: 2
+category: Featured projects
 ---
-
-# Handwritten digit classification with transfer learning: <br>Resnet50, Inception and Mobilenet
-<h2><br></h2>
+<h1>Handwritten digit classification with transfer learning</h1>
+<h4><i>Testing Resnet50, Inception and Mobilenet</i></h4>
+<h4><br></h4>
 <h2>Project Overview</h2>
 
 In this project we utilize pre-trained convolutional neural networks to decode the MNIST 784 dataset. We use Resnet50, Inception and Mobilenet with pre-trained weights from the ImageNet dataset. The ImageNet data set contains 100,000 images corresponding to distinct synsets, synonym sets of related words. The features used to classify these images should work well to also classify our handwritten digits.
@@ -17,41 +17,28 @@ We utilize the simple MNIST 784 dataset, which contains a subset of 70,000 size-
 
 Because of the modular design of this code, the head of each transfer model can easily be adjusted along with the input image size for utilization on any image set. Thus, the functions developed in this project can easily be applied to future projects classifying other images.
 
-
-
-```python
-from sklearn.datasets import fetch_openml
-from sklearn.metrics import accuracy_score
-import matplotlib.pyplot as plt
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras.applications import ResNet50, MobileNet
-from tensorflow.keras.applications.inception_v3 import InceptionV3
-from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.callbacks import ModelCheckpoint
-import os
-import pickle
-import pandas as pd
-```
-
-
-```python
-os.chdir('C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\MNIST784_transfer_learning')
-os.getcwd()
-```
-
-
-
-
-    'C:\\Users\\corne\\OneDrive\\Documents\\DS_Portfolio\\MNIST784_transfer_learning'
-
-
 <h2><br></h2>
 <h2>Image pre-processing</h2>
 
 Preprocessing is intentionally minimal for this dataset. However, two adjustments are necessary for transfer model performance. First, data is rescaled from 0-255 to -1-1. Normalizing the pixel intensity improves model performance. Second, the shape of the images is adjusted from a 1-D black and white array to a 3-D RGB array by repeating the 1-D image three times. This is necessary as the input images used to train the transfer learning models require a three-channel format, as the shape of the weights of the base layer should not be modified and the models were trained using an RGB formatted image. 
 
-
+<details>
+    <summary>Click to view hidden code.</summary>
+    <pre>
+    from sklearn.datasets import fetch_openml
+    from sklearn.metrics import accuracy_score
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import tensorflow as tf
+    from tensorflow.keras.applications import ResNet50, MobileNet
+    from tensorflow.keras.applications.inception_v3 import InceptionV3
+    from keras.callbacks import EarlyStopping, ModelCheckpoint
+    from keras.callbacks import ModelCheckpoint
+    import os
+    import pickle
+    import pandas as pd
+    </pre>
+</details>
 
 ```python
 #Loading MNIST_784 dataset from OpenML
@@ -71,22 +58,17 @@ print('X range after rescaling')
 print(round(X[0].min(),2), round(X[0].max(),2))
 
 ```
-
     X range before rescaling:
     -1.0 1.0
     X range after rescaling
     -1.01 -0.99
-    
-
-
 ```python
+
 #Defining function to look at a digit
 def show_num(input_pic):
   plt.imshow(input_pic,cmap='binary')
   plt.axis(False)
 ```
-
-
 ```python
 #repeating gray scale image in 3 channel format for compatability with three channel format 
 #of the pre-trained network
@@ -458,50 +440,52 @@ def model_scores(score):
     return acc, val_acc, loss, val_loss, training_epochs
 ```
 
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    count = 1
+    plt.style.use('ggplot')
+    plt.figure(figsize=(8, 6))
+    for score in scores:
+        acc, val_acc, loss, val_loss, training_epochs = model_scores(score)
+        x_range = range(1,len(acc)+1)
 
-```python
-count = 1
-plt.style.use('ggplot')
-plt.figure(figsize=(8, 6))
-for score in scores:
-    acc, val_acc, loss, val_loss, training_epochs = model_scores(score)
-    x_range = range(1,len(acc)+1)
+        #selecting legend entry 
+        if count == 1:
+            label_train = 'Training'
+            label_val= 'Validation'
+        else: 
+            label_train = None
+            label_val = None
 
-    #selecting legend entry 
-    if count == 1:
-        label_train = 'Training'
-        label_val= 'Validation'
-    else: 
-        label_train = None
-        label_val = None
+        plt.subplot(2, 3, count)
+        plt.plot(x_range, acc, label=label_train)
+        plt.plot(x_range, val_acc, label=label_val)
+        #plt.ylim([0.8, 1])
+        plt.plot([training_epochs, training_epochs],plt.ylim(), c = 'black',linewidth=.5,label=None)
+        plt.legend(frameon=False)
+        plt.legend(loc=1)
+        if count == 1:
+            plt.ylabel('Accuracy')
+            plt.legend(frameon=True)
 
-    plt.subplot(2, 3, count)
-    plt.plot(x_range, acc, label=label_train)
-    plt.plot(x_range, val_acc, label=label_val)
-    #plt.ylim([0.8, 1])
-    plt.plot([training_epochs, training_epochs],plt.ylim(), c = 'black',linewidth=.5,label=None)
-    plt.legend(frameon=False)
-    plt.legend(loc=1)
-    if count == 1:
-        plt.ylabel('Accuracy')
-        plt.legend(frameon=True)
+        plt.title(model_names[count-1])
 
-    plt.title(model_names[count-1])
+        plt.subplot(2, 3, count+3)
+        plt.plot(x_range, loss, label=None)
+        plt.plot(x_range, val_loss, label=None)
+        #plt.ylim([0, 1.0])
+        plt.plot([training_epochs, training_epochs],plt.ylim(), c='k', linewidth=0.5,label=None)
+        plt.legend(loc=2,frameon=False)
+        plt.xlabel('epoch')
+        if count == 1:
+            plt.ylabel('Loss')
+        
+        count +=1
 
-    plt.subplot(2, 3, count+3)
-    plt.plot(x_range, loss, label=None)
-    plt.plot(x_range, val_loss, label=None)
-    #plt.ylim([0, 1.0])
-    plt.plot([training_epochs, training_epochs],plt.ylim(), c='k', linewidth=0.5,label=None)
-    plt.legend(loc=2,frameon=False)
-    plt.xlabel('epoch')
-    if count == 1:
-        plt.ylabel('Loss')
-    
-    count +=1
-
-plt.tight_layout()
-```
+    plt.tight_layout()
+    </pre>
+</details>
     
 
 ![model accuracy and loss](/assets/img/mnist_t_learning/output_30_1.png)
@@ -546,6 +530,7 @@ pd.DataFrame(test_accuracy,index=model_names, columns=['Accuracy'])
     .dataframe thead th {
         text-align: right;
     }
+<br>
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -570,19 +555,17 @@ pd.DataFrame(test_accuracy,index=model_names, columns=['Accuracy'])
   </tbody>
 </table>
 </div>
-
-
-
-
-```python
-pd.DataFrame(times, index=model_names, columns=['Models']).plot(kind='bar')
-plt.title('Total build and train time')
-plt.ylabel('Minutes')
-plt.legend(frameon=False)
-```
-
-
-
+<br>
+<details>
+    <Summary>Click to show hidden code.</summary>
+    <pre>
+    pd.DataFrame(times, index=model_names, columns=['Models']).plot(kind='bar')
+    plt.title('Total build and train time')
+    plt.ylabel('Minutes')
+    plt.legend(frameon=False)
+    </pre>
+</details>
+<br>
 ![Model run times](/assets/img/mnist_t_learning/output_34_1.png)
 
 <h2><br></h2>

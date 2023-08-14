@@ -1,30 +1,35 @@
 ---
 layout: page
-title: Handwritten digit classification with 99.6% accuracy using a convolutional neural network
-description: A small convolutional neural network is built to decode the MNIST 784 dataset. The final model was trained in ~30 minutes and achieved 99.6% accuracy. A smart data augmentation strategy is the key to the model's high accuracy. 
+title: Digit classification with 99.6% accuracy using image augmentation
+description: A small convolutional neural network decodes digits with superior speed and accuracy using a tailore image augmentation strategy.
 img: assets/img/mnist_data_aug/output_10_0.png
-importance: 5
-category: Deep learning
+importance: 1
+category: Other projects
 ---
 
-# Handwritten digit classification with 99.6% accuracy using a convolutional neural network
-
+<h1>Digit classification with 99.6% accuracy using image augmentation</h1>
+<h4><i>Building a small convolutional neural with superior performance.</i></h4>
+<h4><br></h4>
+<h2>Introduction</h2>
 A small convolutional neural network is built to decode the MNIST 784 dataset. This dataset contains a subset of 70,000 size-normalized and centered hand written digits. The architecture of the network was built up iteratively until apparent improvements to performance stagnated. Then, the model was optimized by evaluating data augmentation strategies, optimizers and dropout layers. The final model was trained in ~30 minutes and achieved 99.6% accuracy on the test set. The high level of accuracy is due to careful data augmentation during preprocessing.
 
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import fetch_openml
+    from collections import Counter
+    import pandas as pd
+    from functools import partial 
+    import tensorflow as tf
+    import numpy as np
+    from keras.callbacks import EarlyStopping, ModelCheckpoint
+    from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+    </pre>
+</details>
 
-```python
-import matplotlib.pyplot as plt
-from sklearn.datasets import fetch_openml
-from collections import Counter
-import pandas as pd
-from functools import partial 
-import tensorflow as tf
-import numpy as np
-from keras.callbacks import EarlyStopping, ModelCheckpoint
-from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
-```
-<h3><br></h3>
-<h3>Importing data</h3>
+<h2><br></h2>
+<h2>Importing data</h2>
 
 
 ```python
@@ -34,16 +39,10 @@ X,y = mnist.data.reshape(-1,28,28,1)/255, mnist.target.reshape(-1,1)
 y = y.astype(np.int64)
 mnist.DESCR
 ```
-
-
-
-
-    "**Author**: Yann LeCun, Corinna Cortes, Christopher J.C. Burges  \n**Source**: [MNIST Website](http://yann.lecun.com/exdb/mnist/) - Date unknown  \n**Please cite**:  \n\nThe MNIST database of handwritten digits with 784 features, raw data available at: http://yann.lecun.com/exdb/mnist/. It can be split in a training set of the first 60,000 examples, and a test set of 10,000 examples  \n\nIt is a subset of a larger set available from NIST. The digits have been size-normalized and centered in a fixed-size image. It is a good database for people who want to try learning techniques and pattern recognition methods on real-world data while spending minimal efforts on preprocessing and formatting. The original black and white (bilevel) images from NIST were size normalized to fit in a 20x20 pixel box while preserving their aspect ratio. The resulting images contain grey levels as a result of the anti-aliasing technique used by the normalization algorithm. the images were centered in a 28x28 image by computing the center of mass of the pixels, and translating the image so as to position this point at the center of the 28x28 field.  \n\nWith some classification methods (particularly template-based methods, such as SVM and K-nearest neighbors), the error rate improves when the digits are centered by bounding box rather than center of mass. If you do this kind of pre-processing, you should report it in your publications. The MNIST database was constructed from NIST's NIST originally designated SD-3 as their training set and SD-1 as their test set. However, SD-3 is much cleaner and easier to recognize than SD-1. The reason for this can be found on the fact that SD-3 was collected among Census Bureau employees, while SD-1 was collected among high-school students. Drawing sensible conclusions from learning experiments requires that the result be independent of the choice of training set and test among the complete set of samples. Therefore it was necessary to build a new database by mixing NIST's datasets.  \n\nThe MNIST training set is composed of 30,000 patterns from SD-3 and 30,000 patterns from SD-1. Our test set was composed of 5,000 patterns from SD-3 and 5,000 patterns from SD-1. The 60,000 pattern training set contained examples from approximately 250 writers. We made sure that the sets of writers of the training set and test set were disjoint. SD-1 contains 58,527 digit images written by 500 different writers. In contrast to SD-3, where blocks of data from each writer appeared in sequence, the data in SD-1 is scrambled. Writer identities for SD-1 is available and we used this information to unscramble the writers. We then split SD-1 in two: characters written by the first 250 writers went into our new training set. The remaining 250 writers were placed in our test set. Thus we had two sets with nearly 30,000 examples each. The new training set was completed with enough examples from SD-3, starting at pattern # 0, to make a full set of 60,000 training patterns. Similarly, the new test set was completed with SD-3 examples starting at pattern # 35,000 to make a full set with 60,000 test patterns. Only a subset of 10,000 test images (5,000 from SD-1 and 5,000 from SD-3) is available on this site. The full 60,000 sample training set is available.\n\nDownloaded from openml.org."
-
-
-
+    "**Author**: Yann LeCun, Corinna Cortes, Christopher J.C. Burges  \n**Source**: [MNIST Website](http://yann.lecun.com/exdb/mnist/) - Date unknown  \n**Please cite**:  \n\nThe MNIST database of handwritten digits with 784 features, raw data available at: http://yann.lecun.com/exdb/mnist/. It can be split in a training set of the first 60,000 examples, and a test set of 10,000 examples  \n\nIt is a subset of a larger set available from NIST. The digits have been size-normalized and centered in a fixed-size image. It is a good database for people who want to try learning techniques and pattern recognition methods on real-world data while spending minimal efforts on preprocessing and formatting. The original black and white (bilevel) images from NIST were size normalized to fit in a 20x20 pixel box while preserving their aspect ratio. The resulting images contain grey levels as a result of the anti-aliasing technique used by the normalization algorithm. the images were centered in a 28x28 image by computing the center of mass of the pixels, and translating the image so as to position this point at the center of the 28x28 field.  \n\nWith some classification methods (particularly template-based methods, such as SVM and K-nearest neighbors), the error rate improves when the digits are centered by bounding box rather than center of mass. If you do this kind of pre-processing, you should report it in your publications. The MNIST database was constructed from NIST's NIST originally designated SD-3 as their training set and SD-1 as their test set. However, SD-3 is much cleaner and easier to recognize than SD-1. The reason for this can be found on the fact that SD-3 was collected among Census Bureau employees, while SD-1 was collected among high-school students. Drawing sensible conclusions from learning experiments requires that the result be independent of the choice of training set and test among the complete set of samples. Therefore it was necessary to build a new database by mixing NIST's datasets.  \n\nThe MNIST training set is composed of 30,000 patterns from SD-3 and 30,000 patterns from SD-1. Our test set was composed of 5,000 patterns from SD-3 and 5,000 patterns from SD-1. The 60,000 pattern training set contained examples from approximately 250 writers. We made sure that the sets of writers of the training set and test set were disjoint. SD-1 contains 58,527 digit images written by 500 different writers. In contrast to SD-3, where blocks of data from each writer appeared in sequence, the data in SD-1 is scrambled. Writer identities for SD-1 is available and we used this information to unscramble the writers. We then split SD-1 in two: characters written by the first 250 writers went into our new training set. The remaining 250 writers were placed in our test set. Thus we had two sets with nearly 30,000 examples each. The new training set was completed with enough examples from SD-3, starting at pattern # 0, to make a full set of 60,000 training patterns. Similarly, the new test set was completed with SD-3 examples starting at pattern # 35,000 to make a full set with 60,000 test patterns. Only a subset of 10,000 test images (5,000 from SD-1 and 5,000 from SD-3) is available on this site. The full 60,000 sample training set is available.\n\nDownloaded from openml.org.
 
 ```python
+
 #Making test and train sets
 X_train, y_train, X_valid, y_valid, X_test, y_test = X[:60000], y[:60000],X[60000:65000],y[60000:65000],X[65000:],y[65000:]
 ```
@@ -83,41 +82,44 @@ X.shape,X[0].shape
     ((70000, 28, 28, 1), (28, 28, 1))
 
 
-<h3><br></h3>
-<h3>EDA</h3>
+<h2><br></h2>
+<h2>EDA</h2>
 
 Examples (25) of handwritten digits with their labels are shown below. Note the variation in slanting and character orientation apparent in different handwriting styles.
 
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    #Looking at 10 random digits
+    def show_num(input_pic):
+    plt.imshow(input_pic,cmap='binary')
+    plt.axis(False)
 
-```python
-#Looking at 10 random digits
-def show_num(input_pic):
-  plt.imshow(input_pic,cmap='binary')
-  plt.axis(False)
+    for i in range(0,25):
+        ax = plt.subplot(5,5,i+1)
+        show_num(X[i])
+        plt.title(str(y[i].squeeze()))
+    plt.tight_layout()
+    </pre>
+</details>
 
-for i in range(0,25):
-    ax = plt.subplot(5,5,i+1)
-    show_num(X[i])
-    plt.title(str(y[i].squeeze()))
-plt.tight_layout()
-```
-
-
-    
 ![data preview](/assets/img/mnist_data_aug/output_10_0.png)
     
 
 The distribution of digits is balanced with all digits occurring at approximately the same frequency.
 
 
-```python
-pd.DataFrame(Counter(y.squeeze()).items(),columns=['Digit','Count']).sort_values('Digit').set_index('Digit').plot(kind='bar',ylabel='Count',legend=None, figsize=(7,3))
-plt.xticks(rotation=0);
-```
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    pd.DataFrame(Counter(y.squeeze()).items(),columns=['Digit','Count']).sort_values('Digit').set_index('Digit').plot(kind='bar',ylabel='Count',legend=None, figsize=(7,3))
+    plt.xticks(rotation=0);
+    </pre>
+</details>
 ![number distribution](/assets/img/mnist_data_aug/output_12_0.png)
 
-<h3><br></h3>
-<h3>Data Augmentation</h3>
+<h2><br></h2>
+<h2>Data Augmentation</h2>
 
 Data augmentation is a powerful method to boost model performance. In data augmentation, variation or noise is added to the training set. By training with this more complicated artificial dataset, neural networks can become better at evaluating test cases. To enhance performance, the added variation needs to be consistent with what is encountered in the test set. For example, if digits aren't rotated 180 degrees in the test set, rotating digits 180 in the training set may not improve performance.
 
@@ -127,18 +129,23 @@ In our dataset, we see slight variations in digit orientation and slanting. Thes
 
 ```python
 #image rotation (mimicks variation in handwriting slant)
-img_rotation = tf.keras.layers.RandomRotation(
-    factor = (-0.05,0.05),
-    fill_mode = 'nearest',
-    seed = 10
-)
-
-for i in range(0,9):
-    aug_img = img_rotation(X[i])
-    ax = plt.subplot(3,3,i+1)
-    show_num(aug_img)
-    plt.title(str(y[i].squeeze()))
 ```
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    img_rotation = tf.keras.layers.RandomRotation(
+        factor = (-0.05,0.05),
+        fill_mode = 'nearest',
+        seed = 10
+    )
+
+    for i in range(0,9):
+        aug_img = img_rotation(X[i])
+        ax = plt.subplot(3,3,i+1)
+        show_num(aug_img)
+        plt.title(str(y[i].squeeze()))
+    </pre>
+</details>
 
 ![rotated data](/assets/img/mnist_data_aug/output_14_0.png)
 
@@ -147,38 +154,47 @@ for i in range(0,9):
 
 ```python
 #image shifting - mimicks sligh variation in image centering 
-img_shift = tf.keras.layers.RandomTranslation(
-    height_factor = 0.1,
-    width_factor = 0.1,
-    fill_mode = 'nearest',
-    seed = 10
-)
-
-for i in range(0,9):
-    aug_img = img_shift(X[i])
-    ax = plt.subplot(3,3,i+1)
-    show_num(aug_img)
-    plt.title(str(y[i]))
 ```
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    img_shift = tf.keras.layers.RandomTranslation(
+        height_factor = 0.1,
+        width_factor = 0.1,
+        fill_mode = 'nearest',
+        seed = 10
+    )
+
+    for i in range(0,9):
+        aug_img = img_shift(X[i])
+        ax = plt.subplot(3,3,i+1)
+        show_num(aug_img)
+        plt.title(str(y[i]))
+    </pre>
+</details>
 
 ![shifted data](/assets/img/mnist_data_aug/output_15_0.png)  
 
 
 ```python
 #combining both augmentations 
-for i in range(0,9):
-    aug_img = img_shift(img_rotation(X[i]))
-    ax = plt.subplot(3,3,i+1)
-    show_num(aug_img)
-    plt.title(str(y[i]))
 ```
-
+<details>
+    <summary>Click to show hidden text.</summary>
+    <pre>
+    for i in range(0,9):
+        aug_img = img_shift(img_rotation(X[i]))
+        ax = plt.subplot(3,3,i+1)
+        show_num(aug_img)
+        plt.title(str(y[i]))
+    </pre>
+</details>
 
 ![augmented data](/assets/img/mnist_data_aug/output_16_0.png)  
     
 
-<h3><br></h3>
-<h3>Model building</h3>
+<h2><br></h2>
+<h2>Convolutional neural network development</h2>
 
 A small convolutional neural network was built to decode our digits. The input image is first rotated and shifted as described previously. The convolutional layers are configured with padding so that dimensionality is not reduced during convolution, use ReLU activation to introduce non-linearity, and are initialized using the He normal initialization method. The number of filters used in each convolution step is increased from 64 to 256 and the filter size is decreased from 7 to 3. 
 
@@ -265,8 +281,8 @@ model.summary()
     Non-trainable params: 0
     _________________________________________________________________
     
-<h3><br></h3>
-<h3>Model optimization</h3>
+<h2><br></h2>
+<h2>Model optimization</h2>
 
 The model was optimized in three phases: 
 1. Image augmentaiton 
@@ -280,6 +296,8 @@ history = model.fit(X_train, y_train, epochs=3, validation_data=(X_valid, y_vali
 ```
 
 Images were first rotated and then shifted independently. The augmentation ranges were fine-tuned so as not to adversely affect model bias. It was found that rotations of 0.1 were too extreme but that 0.05 worked nicely. Similarly, an image shift of 0.1 performed well. The combination of these two augmentations outperformed the individual augmentations and notably decreased the variance of the model. The observed preservation of bias and reduction of variance is optimal for an image augmentation strategy and will be implemented going forward.  
+<br>
+
 
 | Test case | Training Accuracy | Validation Accuracy | Run Time | Epochs | Optimizer |
 | --- | --- | --- | --- |--- |--- |
@@ -289,10 +307,13 @@ Images were first rotated and then shifted independently. The augmentation range
 | Image shift = .1 | .9821 | .9832 | 7:38 | 3 | sgd |
 | Image rotation = .05 + shift = .1 | .9757 | .9878 | 7:52 | 3 | sgd |
 
+
+<br>
 Three optimizers were evaluated by considering training set performance and run time. Overfitting the validation set was not considered, as this could be an indicator of an optimizer working well and can be combated with regularization techniques. Stochastic gradient descent (sgd) adjusts the network's weights by taking small steps in the direction of the steepest descent of the loss function. Adam and AdamW are variations of sgd that uses an adaptive learning rate based on first and second moments of the gradients. The incorporation of momentum helps accelerate convergence by adding a fraction of the previous gradients to the current updates step. The second moment of the gradient is used to dampen the gradient in the steepest direction, which provides robustness and functionality in noisy environments. AdamW additionally includes weight decay, which is a regularization technique that reduces the size of model's weights at each training iteration. 
 
 
 Adam was selected for its superior training accuracy and low runtime and is used in all cases going forward.
+<br>
 
 
 | Test case | Training Accuracy | Validation Accuracy | Run Time | Epochs |
@@ -301,11 +322,15 @@ Adam was selected for its superior training accuracy and low runtime and is used
 | adam | .9834 | .9866 | 8:30 | 3 |
 | adamW | .9828 | .9882 | 13:08 | 3 |
 
+
+<br>
 Dropout is a regularization technique that sets a fraction of the input units to zero during each training iteration. By randomly dropping neurons, dropout forces the network to rely on different subsets of neurons for each training example, which prevents overfitting. Dropout also functions as a form of ensemble learning built from training each varying subset of the network. 
 
 We expect to see higher validation accuracy than training accuracy for each case due to differences in the training and test data, as image augmentation will make training predictions more challenging than test predictions. If dropout is not too disruptive, we should see a further improvement to the validation accuracy. For this reason, the validation accuracy will be compared to the validation accuracy of the network with no dropout layers. 
 
 Two dropout rates of 0.2 and 0.5 were tested in the fully connected layers and in the convolutional layers. In the convolutional layers, incorporation of 0.5 dropout significantly increased model bias, and 0.2 dropout slightly increased bias, both without a significant reduction in model variance. Thus, dropout was not included in the convolutional layers. In the fully connected layers, both 0.2 and 0.5 dropout levels increased model bias, but 0.2 dropout model's validation accuracy outperformed the baseline case. Thus, layers of 0.2 dropout were included in the fully connected layers.
+<br>
+
 
 
 | Test case | Training Accuracy | Validation Accuracy | Epochs |
@@ -316,8 +341,10 @@ Two dropout rates of 0.2 and 0.5 were tested in the fully connected layers and i
 | Dropout in FC layers (0.2) + Conv2D layers (0.5) | .9484 | .9474 |  20 |
 | Dropout in FC layers (0.2) + Conv2D layers (0.2) | .9818 | .9890 |  20 | 
 
-<h3><br></h3>
-<h3>Model training</h3>
+
+
+<h2><br></h2>
+<h2>Model training</h2>
 
 The optimized model was trained using early stopping and evaluated on the test set.
 
@@ -398,39 +425,36 @@ accuracy_score(y_test,y_pred)
 
     157/157 [==============================] - 5s 35ms/step
     
-
-
-
-
     0.9956
-
-
 
 The model accuracy on the test set was 0.9956.
 
-<h3><br></h3>
-<h3>Error analysis</h3>
+<h2><br></h2>
+<h2>Error analysis</h2>
 
 In order to asses the model's performance and determine possible pathways for model improvement, we look at the performance of the model. All of the mislabeled digits are displayed with the correct label in the figure below.
 
-
-```python
-print('Total number of mislabeled instances in test dataset:')
-print((y_test.squeeze() != y_pred).sum())
-```
+<details>
+    <summary>Click to see hidden code.</summary>
+    <pre>
+    print('Total number of mislabeled instances in test dataset:')
+    print((y_test.squeeze() != y_pred).sum())
+    </pre>
+</details>
 
     Total number of mislabeled instances in test dataset:
     22
     
-
-
-```python
-for i in range(0,22):
-    ax = plt.subplot(5,5,i+1)
-    show_num(X_test[y_test.squeeze() != y_pred][i])
-    plt.title('Actual: '+ str(y_test[y_test.squeeze() != y_pred][i].squeeze()) +'\nPredicted: '+str(y_pred[y_test.squeeze() != y_pred][i]))
-plt.tight_layout()
-```
+<details>
+    <summary>Click to see hidden code.</summary>
+    <pre>
+    for i in range(0,22):
+        ax = plt.subplot(5,5,i+1)
+        show_num(X_test[y_test.squeeze() != y_pred][i])
+        plt.title('Actual: '+ str(y_test[y_test.squeeze() != y_pred][i].squeeze()) +'\nPredicted: '+str(y_pred[y_test.squeeze() != y_pred][i]))
+    plt.tight_layout()
+    </pre>
+</details>
 
 
 ![misclassified numbers](/assets/img/mnist_data_aug/output_32_0.png)    
@@ -443,43 +467,47 @@ The frequency of misclassifications is shown in the confusion matrix below. It i
 
 
 ```python
-cm = confusion_matrix(y_test, y_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-disp.plot()
+#confusion matrix
 ```
 
-
-
-
-    <sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x17c9e1a29d0>
-
-
+<details>
+    <summary>Click to see hidden code.</summary>
+    <pre>
+    cm = confusion_matrix(y_test, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+    disp.plot()
+    </pre>
+</details>
 
 
 ![confusion matrix](/assets/img/mnist_data_aug/output_34_1.png)   
     
 
-
-
 ```python
-for i in range(0,5):
-    ax = plt.subplot(1,5,i+1)
-    show_num(X_test[(y_test.squeeze()==7)&(y_pred==2)][i])
-    plt.title('Acutal: '+ str(y_test[(y_test.squeeze()==7)&(y_pred==2)][i].squeeze()) +'\nPredicted: '+str(y_pred[(y_test.squeeze()==7)&(y_pred==2)][i]))
-plt.tight_layout()
+#Show 7's misclssified as 2's
 ```
+<details>
+    <summary>Click to see hidden code.</summary>
+    <pre>
+    for i in range(0,5):
+        ax = plt.subplot(1,5,i+1)
+        show_num(X_test[(y_test.squeeze()==7)&(y_pred==2)][i])
+        plt.title('Acutal: '+ str(y_test[(y_test.squeeze()==7)&(y_pred==2)][i].squeeze()) +'\nPredicted: '+str(y_pred[(y_test.squeeze()==7)&(y_pred==2)][i]))
+    plt.tight_layout()
+    </pre>
+</details>
 
 
 ![Misclassified sevens](/assets/img/mnist_data_aug/output_35_0.png)    
 
 
-<h3><br></h3>
-<h3>Benchmarking model performance</h3>
+<h2><br></h2>
+<h2>Benchmarking model performance</h2>
 
 LeChunn has compiled a summary of model performance on the MNIST dataset. The results for convolutional neural networks are shown in the table below. In the first column there is a description of the network, the second column describes preprocessing steps, the third collumn is the test error rate (%), and the fourth column is the reference for the model. 
 
-![CV_perf_MNIST784.png](attachment:CV_perf_MNIST784.png)
+![CV_perf_MNIST784.png](/assets/img/mnist_data_aug/CV_perf_MNIST784.png)
 
 Full table available at http://yann.lecun.com/exdb/mnist/
 
-The error rate is 1 - the accuracy rate, and our model has an error rate percentage of 0.44, which is in line or better than the scores on these larger convenolutional networks. Likely, the preprocessing steps added to our model provide a singificant boost to model performance.
+The error rate is 1 - the accuracy rate. <b>Our model has an error rate percentage of 0.44, which is comparable or better than the scores on these larger convenolutional networks.</b> Likely, the preprocessing steps added to our model provide a singificant boost to model performance.
