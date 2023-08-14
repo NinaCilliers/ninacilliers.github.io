@@ -2,7 +2,7 @@
 layout: page
 title: Predicting brand loyalty
 description: An adaptive boosting classifier is optimized to preduct a customer's proclivity to return to Starbucks from survey information.
-img: assets/img/mnist_data_aug/output_10_0.png
+img: assets/img/starbucks_predict/head.jpg
 importance: 6
 category: Other projects
 ---

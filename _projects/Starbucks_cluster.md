@@ -2,13 +2,13 @@
 layout: page
 title: Starbucks customer segmentation
 description: Data reduction and clustering techniques are used to segment Starbucks consumers into distinct groups.
-img: assets/img/mnist_data_aug/output_10_0.png
+img: assets/img/starbucks_cluster/head.jpeg
 importance: 5
 category: Other projects
 ---
 
 <h1>Starbucks consumer segmentation</h1>
-<h4><i>Clustering consumer data into distinct segments</i><h4>
+<h4><i>Clustering consumer data into distinct segments</i></h4>
 <h4><br></h4>
 <h2>Introduction</h2>
 
@@ -17,6 +17,7 @@ A small survey was conducted in Malaysia to learn more about consumer behavior a
 Using this data, the customer base was segmented into groups. Cluster silhouette and inertia scores were used to determine the optimal number of consumer sub-groups. The most efficient cluster number suggested by these analyses (k=12) was too large given the limited data available, and the characteristics of formed groups was highly variable and changed with the random kernel used during clustering. 
 
 Instead, a reduced number of clusters (k=5) was found to me more robust and offered clearer insight into consumer segments. It is likely that increasing the number of respondents in this data set would reveal a more complicated and potentially insightful map of consumer behavior. However, at k=5 we are still are able to segment the Starbucks' consumer base into meaningful groups. The five key groups identified were as follows:
+<br>
 
 1. Starbucks loyalists
 2. Convenience shoppers
@@ -25,7 +26,7 @@ Instead, a reduced number of clusters (k=5) was found to me more robust and offe
 5. Budget students
 
 <h2><br></h2>
-<h2>Outline</h2>
+<h2>Project outline</h2>
 
 1. Data cleaning
 2. Feature correlation 
@@ -45,43 +46,36 @@ Instead, a reduced number of clusters (k=5) was found to me more robust and offe
 <br> g. Group Identities
 5. Recommendations 
 
-<h2></h2>
-<h2>Data cleaning</h2>
-
-
-```python
-#importing packages 
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn import set_config
-import seaborn as sns
-from copy import deepcopy
-from sklearn.preprocessing import OrdinalEncoder
-from sklearn.preprocessing import MinMaxScaler
-
-#importing packages
-from sklearn.decomposition import PCA 
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-import pickle
-```
-
-
-```python
-#changing settings
-set_config(transform_output="pandas")
-pd.set_option('display.max_columns', 100)
-plt.style.use('ggplot')
-```
 
 <h2><br></h2>
 <h2>Cleaning data</h2>
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #importing packages 
+  import os
+  import numpy as np
+  import matplotlib.pyplot as plt
+  import pandas as pd
+  from sklearn import set_config
+  import seaborn as sns
+  from copy import deepcopy
+  from sklearn.preprocessing import OrdinalEncoder
+  from sklearn.preprocessing import MinMaxScaler
+  from sklearn.decomposition import PCA 
+  from sklearn.cluster import KMeans
+  from sklearn.metrics import silhouette_score
+  import pickle
+  </pre>
+  <pre>
+  set_config(transform_output="pandas")
+  pd.set_option('display.max_columns', 100)
+  plt.style.use('ggplot')
+  </pre>
+</details>
 
 ```python
-#importing data
 def import_data(file_path):
     df = pd.read_csv(file_path)
     print("Survey resondants: ",df.shape[0])
@@ -641,28 +635,29 @@ with open('cleaned_data.pkl','wb') as f:
 
 To assess correlations between features in a dataset the Pearson correlation coefficient is calculated for each pair and visualized in a heatmap.
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #Heat map 
 
-```python
-#Heat map 
+  #optimizng range for color scale
+  min = df.corr().min().min()
+  max = df.corr()[df.corr()!=1].max().max()
 
-#optimizng range for color scale
-min = df.corr().min().min()
-max = df.corr()[df.corr()!=1].max().max()
+  #thresholding selected correlations
+  df_corr  = df.corr()[np.absolute(df.corr())>0.3]
 
-#thresholding selected correlations
-df_corr  = df.corr()[np.absolute(df.corr())>0.3]
+  #Mask for selecting only bottom triangle
+  mask = np.triu(df_corr)
 
-#Mask for selecting only bottom triangle
-mask = np.triu(df_corr)
+  with plt.style.context('default'):
+    sns.heatmap(df_corr, vmin=min, vmax=max, mask=mask)
+    plt.show()
+  </pre>
+</details>
 
-with plt.style.context('default'):
-  sns.heatmap(df_corr, vmin=min, vmax=max, mask=mask)
-  plt.show()
-```
-
-
-    
-![png](output_20_0.png)
+ 
+![png](/assets/img/starbucks_cluster/output_20_0.png)
     
 
 
@@ -674,14 +669,13 @@ with plt.style.context('default'):
 
 - Frequent visitors of Starbucks tend to spend more money and positively perceive the product quality. 
 
-#Cluster analysis
+<h2><br></h2>
+<h2>Clustering survey data</h2>
 We divide consumers into subset using the k-means clustering algorithm. The number of features in the dataset is first reduced using principal components analysis (PCA). Inertia and silhouette scores are used to determine the optimal cluster number.
 
 Clusters are visualized against principal components. A reduced number of clusters is selected for functional purposes. Additional data needs to be added to meaningfully segment consumers into more groups.
 
-
-<h2><br></h2>
-<h2>Clustering</h2>
+<h3><br></h3>
 <h3>Dimensionality reduction using PCA</h3>
 
 
@@ -693,24 +687,24 @@ print('PCA reduced dimensions from ', df.shape[1],' to ',X_pca.shape[1] ,' and p
 
     PCA reduced dimensions from  24  to  15  and preserved 95% of variance.
     
-
-
-```python
-plt.bar(range(pca.n_components_), pca.explained_variance_ratio_,color='mediumseagreen')
-plt.xlabel('Principle component')
-plt.ylabel('Explained variance ratio')
-#plt.xticks(range(pca.n_components_));
-plt.show()
-```
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.bar(range(pca.n_components_), pca.explained_variance_ratio_,color='mediumseagreen')
+  plt.xlabel('Principle component')
+  plt.ylabel('Explained variance ratio')
+  #plt.xticks(range(pca.n_components_));
+  plt.show()
+  </pre>
+</details>
 
     
-![png](output_25_0.png)
+![png](/assets/img/starbucks_cluster/output_25_0.png)
     
 
 
 The explained variance ratio of each principal component is shown in the figure above. The first three principal components preserve ~45% of the variance. These principal components will be used to visualize clusters.
-
+<h3><br></h3>
 <h3>Selecting cluster number: Inertia and silouette scores</h3>
 
 The inertia score is the sum of the squared distances between instances and their closest centroids. When selecting the optimal number of clusters for a dataset, the smallest number of clusters with a small inertia should be selected.
@@ -721,56 +715,20 @@ The inertia score is the sum of the squared distances between instances and thei
 k_range = np.arange(2,20,1)
 kmeans = [KMeans(n_clusters = k, n_init=100, random_state=10).fit(X_pca) for k in k_range]
 inertia = [kmeans.inertia_ for kmeans in kmeans]
-
-plt.plot(k_range, inertia,'o-', color = 'royalblue')
-plt.plot([12], [inertia[10]],'x', color = 'yellow')
-#plt.axvline(x=2)
-plt.xlabel('k', fontsize=14)
-plt.ylabel('Inertia', fontsize=14)
-plt.show()
 ```
-
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.plot(k_range, inertia,'o-', color = 'royalblue')
+  plt.plot([12], [inertia[10]],'x', color = 'yellow')
+  #plt.axvline(x=2)
+  plt.xlabel('k', fontsize=14)
+  plt.ylabel('Inertia', fontsize=14)
+  plt.show()
+  </pre>
+</details>
     
-
-
-    
-![png](output_29_1.png)
+![png](/assets/img/starbucks_cluster/output_29_1.png)
     
 
 
@@ -788,18 +746,21 @@ s_scores = [silhouette_score(df, kmeans.labels_) for kmeans in kmeans] #you need
 max_idx = np.argmax(s_scores)
 max_k = k_range[max_idx]
 max_score = s_scores[max_idx]
-
-plt.plot(k_range, s_scores,'o-',color = 'royalblue')
-plt.plot(max_k, max_score,'x',c='yellow')
-plt.text(max_k+.5, max_score,f'Max k = {max_k}')
-plt.xlabel('k', fontsize=14)
-plt.ylabel('Silouette Scores', fontsize=14)
-plt.show()
 ```
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.plot(k_range, s_scores,'o-',color = 'royalblue')
+  plt.plot(max_k, max_score,'x',c='yellow')
+  plt.text(max_k+.5, max_score,f'Max k = {max_k}')
+  plt.xlabel('k', fontsize=14)
+  plt.ylabel('Silouette Scores', fontsize=14)
+  plt.show()
+  </pre>
+</details>
 
-    
-![png](output_31_0.png)
+![png](/assets/img/starbucks_cluster/output_31_0.png)
     
 
 
@@ -818,32 +779,28 @@ X_pca['Cluster ID'] = kmeans_best.fit_predict(X_pca)
 df['Cluster ID'] = X_pca['Cluster ID']
 ```
 
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #plotting
+  plt.figure(figsize=(10,8))
+  plt.subplot(3,3,1)
+  sns.scatterplot(data=X_pca, x='pca0', y='pca1', hue='Cluster ID',palette='Spectral', legend=False, s=15)
+  plt.grid(False)
+  plt.subplot(3,3,2)
+  sns.scatterplot(data=X_pca, x='pca0', y='pca2', hue='Cluster ID',palette='Spectral', legend=False, s=15)
+  plt.grid(False)
+  plt.subplot(3,3,3)
+  ax = plt.gca()
+  sns.scatterplot(data=X_pca, x='pca1', y='pca2', hue='Cluster ID',palette='Spectral', legend=True, s=15)
 
+  plt.tight_layout()
+  ax.legend(title='Cluster ID',bbox_to_anchor=(1, 1),facecolor='white',edgecolor='k',fontsize=8)
+  plt.show()
+  </pre>
+</details>
 
-```python
-#plotting
-plt.figure(figsize=(10,8))
-plt.subplot(3,3,1)
-sns.scatterplot(data=X_pca, x='pca0', y='pca1', hue='Cluster ID',palette='Spectral', legend=False, s=15)
-plt.grid(False)
-plt.subplot(3,3,2)
-sns.scatterplot(data=X_pca, x='pca0', y='pca2', hue='Cluster ID',palette='Spectral', legend=False, s=15)
-plt.grid(False)
-plt.subplot(3,3,3)
-ax = plt.gca()
-sns.scatterplot(data=X_pca, x='pca1', y='pca2', hue='Cluster ID',palette='Spectral', legend=True, s=15)
-
-plt.tight_layout()
-ax.legend(title='Cluster ID',bbox_to_anchor=(1, 1),facecolor='white',edgecolor='k',fontsize=8)
-plt.show()
-```
-
-
-    
-![png](output_35_0.png)
+![png](/assets/img/starbucks_cluster/output_35_0.png)
     
 
 
@@ -869,11 +826,6 @@ X_pca['Cluster ID'] = kmeans_best.fit_predict(X_pca)
 df['Cluster ID'] = X_pca['Cluster ID']
 ```
 
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\cluster\_kmeans.py:1382: UserWarning: KMeans is known to have a memory leak on Windows with MKL, when there are less chunks than available threads. You can avoid it by setting the environment variable OMP_NUM_THREADS=1.
-      warnings.warn(
-    
-
-
 ```python
 #Re-ordering cluster numbers following tendoncy to want to visit Starbucks again in the future 
 df_key = df.groupby('Cluster ID').agg('mean').sort_values('Future visits_Yes', ascending=False).reset_index().iloc[:,0]
@@ -883,16 +835,9 @@ df.replace({'Cluster ID':df_key},inplace=True)
 ```
 
 Mean features for k=5 clusters:
-
-
-
-
-
 ```python
 df.groupby('Cluster ID').agg('mean').sort_values('Future visits_Yes', ascending=False).reset_index()
 ```
-
-
 
 
 <div>
@@ -1089,32 +1034,29 @@ df.groupby('Cluster ID').agg('mean').sort_values('Future visits_Yes', ascending=
 
 Visualizing clusters against principal components
 
-
-
-
-```python
-#plotting k=5 clusters
-plt.figure(figsize=(10,8))
-plt.subplot(3,3,1)
-sns.scatterplot(data=X_pca, x='pca0', y='pca1', hue='Cluster ID',palette='Spectral', legend=False, s=15)
-plt.grid(False)
-plt.subplot(3,3,2)
-sns.scatterplot(data=X_pca, x='pca0', y='pca2', hue='Cluster ID',palette='Spectral', legend=False, s=15)
-plt.grid(False)
-plt.subplot(3,3,3)
-ax = plt.gca()
-sns.scatterplot(data=X_pca, x='pca1', y='pca2', hue='Cluster ID',palette='Spectral', legend=True, s=15)
-plt.grid(False)
-plt.tight_layout()
-ax.legend(title='Cluster ID',bbox_to_anchor=(1, 1),facecolor='white',edgecolor='k',fontsize=8)
-plt.show()
-```
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #plotting k=5 clusters
+  plt.figure(figsize=(10,8))
+  plt.subplot(3,3,1)
+  sns.scatterplot(data=X_pca, x='pca0', y='pca1', hue='Cluster ID',palette='Spectral', legend=False, s=15)
+  plt.grid(False)
+  plt.subplot(3,3,2)
+  sns.scatterplot(data=X_pca, x='pca0', y='pca2', hue='Cluster ID',palette='Spectral', legend=False, s=15)
+  plt.grid(False)
+  plt.subplot(3,3,3)
+  ax = plt.gca()
+  sns.scatterplot(data=X_pca, x='pca1', y='pca2', hue='Cluster ID',palette='Spectral', legend=True, s=15)
+  plt.grid(False)
+  plt.tight_layout()
+  ax.legend(title='Cluster ID',bbox_to_anchor=(1, 1),facecolor='white',edgecolor='k',fontsize=8)
+  plt.show()
+  </pre>
+</details>
     
-![png](output_45_0.png)
+![png](/assets/img/starbucks_cluster/output_45_0.png)
     
-
 
 * We see less overlap between clusters and larger groups with ~2x more instances per group. 
 *   Diffuse clusters are apparent in pca1 vs. pca2 and pca 2 vs. pca1. 
@@ -1122,21 +1064,23 @@ plt.show()
 
 The separation apparent in pca2 vs pca1 is mostly driven by consumption location, with the top group having as strong preferance for taking their order to go, while the bottom group tends to use the drive through or has never been to a Starbucks. Other differences are summarized in the table below:
 
-
-```python
-pca_avg = df.groupby('Cluster ID').agg('mean').reset_index()
-top_dict = {11:0, 10:0, 7:0, 2:0, 0:0,9:1,8:1,6:1,5:1,4:1,3:1,1:1}
-pca_avg['Cluster'] = pca_avg['Cluster ID'].replace(top_dict)
-pca_avg = pca_avg.groupby('Cluster').agg('mean')
-pca_avg = pca_avg.drop(columns=['Cluster ID']).T.reset_index()
-pca_avg['%'] = np.absolute(pca_avg[0]-pca_avg[1])/np.mean([pca_avg[0],pca_avg[1]])*100
-pca_avg = pca_avg.set_index('index')
-pca_avg['%'] = pca_avg['%'].astype(int)
-pca_avg[[0,1]]=pca_avg[[0,1]].round(2)
-pca_avg.rename(columns={0:'Top',1:'Bottom'}, inplace=True)
-pca_avg = pca_avg[pca_avg['%']>40].sort_values('%', ascending=False)
-pca_avg
-```
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  pca_avg = df.groupby('Cluster ID').agg('mean').reset_index()
+  top_dict = {11:0, 10:0, 7:0, 2:0, 0:0,9:1,8:1,6:1,5:1,4:1,3:1,1:1}
+  pca_avg['Cluster'] = pca_avg['Cluster ID'].replace(top_dict)
+  pca_avg = pca_avg.groupby('Cluster').agg('mean')
+  pca_avg = pca_avg.drop(columns=['Cluster ID']).T.reset_index()
+  pca_avg['%'] = np.absolute(pca_avg[0]-pca_avg[1])/np.mean([pca_avg[0],pca_avg[1]])*100
+  pca_avg = pca_avg.set_index('index')
+  pca_avg['%'] = pca_avg['%'].astype(int)
+  pca_avg[[0,1]]=pca_avg[[0,1]].round(2)
+  pca_avg.rename(columns={0:'Top',1:'Bottom'}, inplace=True)
+  pca_avg = pca_avg[pca_avg['%']>40].sort_values('%', ascending=False)
+  pca_avg
+  </pre>
+</details>
 
 
 
@@ -1163,12 +1107,7 @@ pca_avg
       <th>Bottom</th>
       <th>%</th>
     </tr>
-    <tr>
-      <th>index</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
+
   </thead>
   <tbody>
     <tr>
@@ -1230,28 +1169,29 @@ pca_avg
 </div>
 
 
-
+<h2><br></h2>
 <h2>Consumer segmentation analysis</h2>
 <h3>Group Loyalty</h3>
 
-
-```python
-#Fraction of customers that plan on returning to Starbucks in each cluster
-f_visit_counts = df.groupby(['Future visits_Yes','Cluster ID']).size().reset_index()
-f_visit_counts = f_visit_counts[f_visit_counts['Future visits_Yes']==1]
-f_visit_counts = f_visit_counts.reset_index(drop=True)[0]/df.groupby('Cluster ID').size()
-f_visit_counts = f_visit_counts.reset_index()
-
-#Visualizing
-sns.barplot(data=f_visit_counts, y=0, x='index', color='dodgerblue');
-plt.xlabel('Cluster ID', fontsize=14)
-plt.ylabel('Returning customer fraction', fontsize=14)
-plt.show()
-```
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #Fraction of customers that plan on returning to Starbucks in each cluster
+  f_visit_counts = df.groupby(['Future visits_Yes','Cluster ID']).size().reset_index()
+  f_visit_counts = f_visit_counts[f_visit_counts['Future visits_Yes']==1]
+  f_visit_counts = f_visit_counts.reset_index(drop=True)[0]/df.groupby('Cluster ID').size()
+  f_visit_counts = f_visit_counts.reset_index()
+  </pre>
+  <pre>
+  #Visualizing
+  sns.barplot(data=f_visit_counts, y=0, x='index', color='dodgerblue');
+  plt.xlabel('Cluster ID', fontsize=14)
+  plt.ylabel('Returning customer fraction', fontsize=14)
+  plt.show()
+  </pre>
+</details>
     
-![png](output_50_0.png)
+![png](/assets/img/starbucks_cluster/output_50_0.png)
     
 
 
@@ -1260,26 +1200,25 @@ Groups 0-2 are very likely to return to Starbucks, while 3 and 4 are less likely
 
 <h3><br></h3>
 <h3>Group demographics</h3>
-
-
-```python
-#Cluster demographics 
-fig = plt.figure(figsize=(8,4))
-plt.subplot(231)
-sns.boxplot(data=df, x='Cluster ID', y='Age',palette='Pastel1')
-plt.subplot(232)
-sns.boxplot(data=df, x='Cluster ID', y='Income',palette='Pastel1')
-plt.subplot(233)
-sns.boxplot(data=df, x='Cluster ID', y='Gender_Male',palette='Pastel1')
-plt.subplot(234)
-sns.boxplot(data=df, x='Cluster ID', y='Distance',palette='Pastel1')
-plt.tight_layout()
-plt.show()
-```
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #Cluster demographics 
+  fig = plt.figure(figsize=(8,4))
+  plt.subplot(231)
+  sns.boxplot(data=df, x='Cluster ID', y='Age',palette='Pastel1')
+  plt.subplot(232)
+  sns.boxplot(data=df, x='Cluster ID', y='Income',palette='Pastel1')
+  plt.subplot(233)
+  sns.boxplot(data=df, x='Cluster ID', y='Gender_Male',palette='Pastel1')
+  plt.subplot(234)
+  sns.boxplot(data=df, x='Cluster ID', y='Distance',palette='Pastel1')
+  plt.tight_layout()
+  plt.show()
+  </pre>
+</details>
     
-![png](output_53_0.png)
+![png](/assets/img/starbucks_cluster/output_53_0.png)
     
 
 
@@ -1293,27 +1232,27 @@ plt.show()
 <h3><br></h3>
 <h3>Group job type</h3>
 
-
-```python
-job_pie = df[['Job_Employed','Job_Self-employed','Job_Student','Job_Housewife','Cluster ID']].groupby('Cluster ID').agg('sum')
-labels = ['Employed','Self-\nEmployed','Student','Housewife']
-colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral']
-fig = plt.figure(figsize=(10,10))
-for row in range(job_pie.shape[0]):
-  plt.subplot(1,5,row+1)
-  plt.title(f'Cluster {row}')
-  pie_data = job_pie.T[job_pie.T != 0][row].fillna(0)
-  #pie_label = [labels[i] if pie_data[i]!=0 else '' for i in range(0,4) ]
-  pie_label = [labels[i] for i in range(0,4) if pie_data[i]!=0]
-  pie_color = [colors[i] for i in range(0,4) if pie_data[i]!=0]
-  pie_data = job_pie.T[job_pie.T != 0][row].dropna()
-  plt.pie(pie_data, labels=pie_label, autopct='%.1f%%',colors=pie_color, textprops={'size': 'x-small'}, startangle=90)
-plt.show()
-```
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  job_pie = df[['Job_Employed','Job_Self-employed','Job_Student','Job_Housewife','Cluster ID']].groupby('Cluster ID').agg('sum')
+  labels = ['Employed','Self-\nEmployed','Student','Housewife']
+  colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral']
+  fig = plt.figure(figsize=(10,10))
+  for row in range(job_pie.shape[0]):
+    plt.subplot(1,5,row+1)
+    plt.title(f'Cluster {row}')
+    pie_data = job_pie.T[job_pie.T != 0][row].fillna(0)
+    #pie_label = [labels[i] if pie_data[i]!=0 else '' for i in range(0,4) ]
+    pie_label = [labels[i] for i in range(0,4) if pie_data[i]!=0]
+    pie_color = [colors[i] for i in range(0,4) if pie_data[i]!=0]
+    pie_data = job_pie.T[job_pie.T != 0][row].dropna()
+    plt.pie(pie_data, labels=pie_label, autopct='%.1f%%',colors=pie_color, textprops={'size': 'x-small'}, startangle=90)
+  plt.show()
+  </pre>
+</details>
     
-![png](output_56_0.png)
+![png](/assets/img/starbucks_cluster/output_56_0.png)
     
 
 
@@ -1325,36 +1264,29 @@ plt.show()
 <h3><br></h3>
 <h3>Group experience ratings</h3>
 
-
-```python
-fig = plt.figure(figsize=(8,4))
-plt.subplot(231)
-sns.boxplot(data = df, y='Quality rating', x='Cluster ID',palette='Pastel1')
-plt.subplot(232)
-sns.boxplot(data = df, y='Price rating', x='Cluster ID',palette='Pastel1')
-plt.subplot(233)
-sns.boxplot(data = df, y='Wifi rating', x='Cluster ID',palette='Pastel1')
-plt.subplot(234)
-sns.boxplot(data = df, y='Service rating', x='Cluster ID',palette='Pastel1')
-plt.subplot(235)
-sns.boxplot(data = df, y='Ambiance rating', x='Cluster ID',palette='Pastel1')
-plt.subplot(236)
-sns.boxplot(data = df, y='Referral score', x='Cluster ID',palette='Pastel1')
-plt.tight_layout()
-plt.show()
-```
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig = plt.figure(figsize=(8,4))
+  plt.subplot(231)
+  sns.boxplot(data = df, y='Quality rating', x='Cluster ID',palette='Pastel1')
+  plt.subplot(232)
+  sns.boxplot(data = df, y='Price rating', x='Cluster ID',palette='Pastel1')
+  plt.subplot(233)
+  sns.boxplot(data = df, y='Wifi rating', x='Cluster ID',palette='Pastel1')
+  plt.subplot(234)
+  sns.boxplot(data = df, y='Service rating', x='Cluster ID',palette='Pastel1')
+  plt.subplot(235)
+  sns.boxplot(data = df, y='Ambiance rating', x='Cluster ID',palette='Pastel1')
+  plt.subplot(236)
+  sns.boxplot(data = df, y='Referral score', x='Cluster ID',palette='Pastel1')
+  plt.tight_layout()
+  plt.show()
+  </pre>
+</details>
+      
+![png](/assets/img/starbucks_cluster/output_59_1.png)
     
-![png](output_59_0.png)
-    
-
-
-
-    
-![png](output_59_1.png)
-    
-
 
 * Ratings tend to decrease as groups become less likely to visit Starbucks in the future. 
 * Wi-Fi ratings are an exception to this, as it remains constant across clusters. It is likely that this Starbucks does not have issues with their Wi-Fi.
@@ -1363,36 +1295,28 @@ plt.show()
 <h3><br></h3>
 <h3>Visit type</h3>
 
-
-```python
-loc_pie = df[['Consumption Location_Dine in','Consumption Location_Drive-thru','Consumption Location_Never','Consumption Location_Take away','Cluster ID']].groupby('Cluster ID').agg('sum')
-labels = ['Dine in','Drive-thru','Never','Take away']
-colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral']
-fig = plt.figure(figsize=(10,10))
-for row in range(job_pie.shape[0]):
-  plt.subplot(1,5,row+1)
-  plt.title(f'Cluster {row}')
-  pie_data = loc_pie.T[loc_pie.T != 0][row].fillna(0)
-  #pie_label = [labels[i] if pie_data[i]!=0 else '' for i in range(0,4) ]
-  pie_label = [labels[i] for i in range(0,4) if pie_data[i]!=0]
-  pie_color = [colors[i] for i in range(0,4) if pie_data[i]!=0]
-  pie_data = loc_pie.T[loc_pie.T != 0][row].dropna()
-  plt.pie(pie_data, labels=pie_label, autopct='%.1f%%',colors=pie_color, textprops={'size': 'x-small'}, startangle=90)
-plt.show()
-
-```
-
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  loc_pie = df[['Consumption Location_Dine in','Consumption Location_Drive-thru','Consumption Location_Never','Consumption Location_Take away','Cluster ID']].groupby('Cluster ID').agg('sum')
+  labels = ['Dine in','Drive-thru','Never','Take away']
+  colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral']
+  fig = plt.figure(figsize=(10,10))
+  for row in range(job_pie.shape[0]):
+    plt.subplot(1,5,row+1)
+    plt.title(f'Cluster {row}')
+    pie_data = loc_pie.T[loc_pie.T != 0][row].fillna(0)
+    #pie_label = [labels[i] if pie_data[i]!=0 else '' for i in range(0,4) ]
+    pie_label = [labels[i] for i in range(0,4) if pie_data[i]!=0]
+    pie_color = [colors[i] for i in range(0,4) if pie_data[i]!=0]
+    pie_data = loc_pie.T[loc_pie.T != 0][row].dropna()
+    plt.pie(pie_data, labels=pie_label, autopct='%.1f%%',colors=pie_color, textprops={'size': 'x-small'}, startangle=90)
+  plt.show()
+  </pre>
+</details>
     
-![png](output_62_0.png)
+![png](/assets/img/starbucks_cluster/output_62_0.png)
     
-
-
-
-    
-![png](output_62_1.png)
-    
-
 
 * Groups 0 and 4 dine in. 
 * Groups 1 and 3 take away. 
@@ -1401,31 +1325,23 @@ plt.show()
 <h3><br></h3>
 <h3>Group purchasing behavior</h3>
 
+<details>
+  <summary>Click to show hidden code.</summary>
+    <pre>
+  #Consumer profiles 
+  fig = plt.figure(figsize=(8,4))
+  plt.subplot(231)
+  sns.boxplot(data = df, y='Price', x='Cluster ID',palette='Pastel1')
+  plt.subplot(232)
+  sns.boxplot(data = df, y='Sale importance', x='Cluster ID',palette='Pastel1')
+  plt.subplot(233)
+  sns.boxplot(data = df, y='Member_Yes', x='Cluster ID',palette='Pastel1')
+  plt.tight_layout()
+  plt.show()
+  </pre>
+</details>
 
-
-
-```python
-#Consumer profiles 
-fig = plt.figure(figsize=(8,4))
-plt.subplot(231)
-sns.boxplot(data = df, y='Price', x='Cluster ID',palette='Pastel1')
-plt.subplot(232)
-sns.boxplot(data = df, y='Sale importance', x='Cluster ID',palette='Pastel1')
-plt.subplot(233)
-sns.boxplot(data = df, y='Member_Yes', x='Cluster ID',palette='Pastel1')
-plt.tight_layout()
-plt.show()
-```
-
-
-    
-![png](output_66_0.png)
-    
-
-
-
-    
-![png](output_66_1.png)
+![png](/assets/img/starbucks_cluster/output_66_0.png)
     
 
 
