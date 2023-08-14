@@ -123,56 +123,59 @@
           <article>
             <h1>Predicting brand loyality </h1>
 <h4><i>Optimizing an adaptive boosting classifier to preduct return visits to Starbucks</i></h4>
-
+<h4><br></h4>
 <h2>Introduction</h2>
 
 <p>A small survey was conducted in Malaysia to learn more about consumer behavior at Starbucks. In sum, a total of 122 individuals answered 20 questions. Questions were asked targeting current purchasing behavior as well as perceptions of Starbucks’ products and facilities. Basic demographic information was also collected. Respondents were asked if they planned on returning to Starbucks in the future, which is taken as an indicator of consumer loyalty.</p>
 
-<p>We extensively explored this data and used clustering techniques to segment the Starbucks’ consumer base in a {previous project](link). Here, a model to predict consumer loyalty was developed. Common classifiers in the Scikit learn package were sampled and optimized. Several classifiers individually reached ~87.5% accuracy on the test dataset. Accuracy was not improved by combining classifiers into a voting classifier.</p>
+<p>We extensively explored this data and used clustering techniques to segment the Starbucks’ consumer base in a <a href="link">previous project</a>. Here, a model to predict consumer loyalty was developed. Common classifiers in the Scikit learn package were sampled and optimized. Several classifiers individually reached ~87.5% accuracy on the test dataset. Accuracy was not improved by combining classifiers into a voting classifier.</p>
 
 <p>Finally, feature selection was performed using a random forest classifier. It is shown that customer loyalty is dependent on customers being able to afford Starbucks, perceiving Starbucks as high quality, and enjoying the ambiance. Loyalty prediction using just eight input features performed as well as all individual classifiers built on the full dataset. This indicates that these metrics should be the focus for loyalty improvement and future surveys.</p>
 
 <h2><br></h2>
-<h2>Data cleaning</h2>
+<h2>Importing data</h2>
+<p>Cleaned data is loaded from a <a href="previous">previous project</a>.</p>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  import os
+  import numpy as np
+  import matplotlib.pyplot as plt
+  import pandas as pd
+  from sklearn import set_config
+  import seaborn as sns
+  from copy import deepcopy
+  from sklearn.preprocessing import OrdinalEncoder
+  from sklearn.preprocessing import MinMaxScaler
+  #importing packages
+  from sklearn.decomposition import PCA 
+  from sklearn.cluster import KMeans
+  from sklearn.metrics import silhouette_score
+  import pickle
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#importing packages 
-</span><span class="kn">import</span> <span class="n">os</span>
-<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
-<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
-<span class="kn">from</span> <span class="n">sklearn</span> <span class="kn">import</span> <span class="n">set_config</span>
-<span class="kn">import</span> <span class="n">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
-<span class="kn">from</span> <span class="n">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="n">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OrdinalEncoder</span>
-<span class="kn">from</span> <span class="n">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
-<span class="c1">#importing packages
-</span><span class="kn">from</span> <span class="n">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span> 
-<span class="kn">from</span> <span class="n">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">silhouette_score</span>
-<span class="kn">import</span> <span class="n">pickle</span>
-
-<span class="c1">#importaing packages
-</span><span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">from</span> <span class="n">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">AdaBoostClassifier</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">ExtraTreesClassifier</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingClassifier</span>
-<span class="kn">from</span> <span class="n">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span>
-<span class="kn">from</span> <span class="n">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
-<span class="kn">from</span> <span class="n">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
-<span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">RandomizedSearchCV</span><span class="p">,</span> <span class="n">GridSearchCV</span>
-<span class="kn">from</span> <span class="n">scipy.stats</span> <span class="kn">import</span> <span class="n">loguniform</span><span class="p">,</span><span class="n">expon</span><span class="p">,</span> <span class="n">uniform</span><span class="p">,</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">StackingClassifier</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">VotingClassifier</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#changing settings
-</span><span class="nf">set_config</span><span class="p">(</span><span class="n">transform_output</span><span class="o">=</span><span class="sh">"</span><span class="s">pandas</span><span class="sh">"</span><span class="p">)</span>
-<span class="n">pd</span><span class="p">.</span><span class="nf">set_option</span><span class="p">(</span><span class="sh">'</span><span class="s">display.max_columns</span><span class="sh">'</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">style</span><span class="p">.</span><span class="nf">use</span><span class="p">(</span><span class="sh">'</span><span class="s">ggplot</span><span class="sh">'</span><span class="p">)</span>
-</code></pre></div></div>
+  #importaing packages
+  from sklearn.model_selection import train_test_split
+  from sklearn.tree import DecisionTreeClassifier
+  from sklearn.ensemble import RandomForestClassifier
+  from sklearn.ensemble import AdaBoostClassifier
+  from sklearn.ensemble import ExtraTreesClassifier
+  from sklearn.metrics import accuracy_score
+  from sklearn.ensemble import GradientBoostingClassifier
+  from sklearn.svm import LinearSVC
+  from sklearn.svm import SVC
+  from sklearn.linear_model import LogisticRegression
+  from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
+  from scipy.stats import loguniform,expon, uniform, randint
+  from sklearn.ensemble import StackingClassifier
+  from sklearn.ensemble import VotingClassifier
+  </pre>
+  <pre>
+  #changing settings
+  set_config(transform_output="pandas")
+  pd.set_option('display.max_columns', 100)
+  plt.style.use('ggplot')
+  </pre>
+</details>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">cleaned_data.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
@@ -527,8 +530,6 @@
 <p>122 rows × 24 columns</p>
 </div>
 
-<p>Summary of cleaned dataset:</p>
-
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="nf">info</span><span class="p">()</span>
 </code></pre></div></div>
 
@@ -565,73 +566,62 @@ dtypes: float64(24)
 memory usage: 23.0 KB
 </code></pre></div></div>
 
-<h2>
-<br>&lt;/br&gt;
+<h2><br></h2>
 <h2>Feature correlation</h2>
-A full EDA and exploration of this data is available in a previous [project](). We present the feature correlation map here, as it guides what we should expect to seee in our model.
+<p>A full EDA and exploration of this data is available in a previous <a href="">project</a>. We present the feature correlation map here, as it guides what we should expect to seee in our model.</p>
 
-- The tendency to recommend Starbucks as a meeting place, quality rating, ambience rating, service rating, and the desire to visit Starbucks in the future are all positively correlated. 
+<p><img src="/assets/img/starbucks_cluster/output_20_0.png" alt="png"></p>
 
-- We also see that items in the consumption location and career categories are negatively correlated, as customers can only select one of these sub-categories. 
-
-- Starbucks members tend to have high incomes, visit Starbucks more frequently, spend more money, and positively view Starbucks' quality. 
-
-- Frequent visitors of Starbucks tend to spend more money and positively perceive the product quality. 
+<ul>
+  <li>The tendency to recommend Starbucks as a meeting place, quality rating, ambience rating, service rating, and the desire to visit Starbucks in the future are all positively correlated.</li>
+  <li>We also see that items in the consumption location and career categories are negatively correlated, as customers can only select one of these sub-categories.</li>
+  <li>Starbucks members tend to have high incomes, visit Starbucks more frequently, spend more money, and positively view Starbucks’ quality.</li>
+  <li>Frequent visitors of Starbucks tend to spend more money and positively perceive the product quality.</li>
+</ul>
 
 <h2><br></h2>
 <h2>Selecting base classifiers</h2>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
+</code></pre></div></div>
 
-```python
-from sklearn.model_selection import cross_val_score
-```
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Making test and training sets to predict Future visit score
+</span><span class="n">X_K</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">df_unscaled</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Future visits_Yes</span><span class="sh">'</span><span class="p">]),</span> <span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">Future visits_Yes</span><span class="sh">'</span><span class="p">]</span>
 
+<span class="n">train_set</span><span class="p">,</span> <span class="n">test_set</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="n">df_unscaled</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">df_unscaled</span><span class="p">[</span><span class="sh">'</span><span class="s">Future visits_Yes</span><span class="sh">'</span><span class="p">],</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-```python
-#Making test and training sets to predict Future visit score
-X_K,y = df_unscaled.drop(columns=['Future visits_Yes']), df_unscaled['Future visits_Yes']
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">train_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Future visits_Yes</span><span class="sh">'</span><span class="p">]),</span> <span class="n">train_set</span><span class="p">[</span><span class="sh">'</span><span class="s">Future visits_Yes</span><span class="sh">'</span><span class="p">]</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">test_set</span><span class="p">.</span><span class="nf">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Future visits_Yes</span><span class="sh">'</span><span class="p">]),</span> <span class="n">test_set</span><span class="p">[</span><span class="sh">'</span><span class="s">Future visits_Yes</span><span class="sh">'</span><span class="p">]</span>
+</code></pre></div></div>
 
-train_set, test_set = train_test_split(df_unscaled, test_size=0.3, stratify=df_unscaled['Future visits_Yes'], random_state=10)
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Sampling selected classifiers
+</span><span class="n">rnd_clf</span> <span class="o">=</span> <span class="nc">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">oob_score</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">gboost_clf</span> <span class="o">=</span> <span class="nc">GradientBoostingClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">n_iter_no_change</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">learning_rate</span> <span class="o">=</span> <span class="p">.</span><span class="mi">7</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ada_clf</span> <span class="o">=</span> <span class="nc">AdaBoostClassifier</span><span class="p">(</span><span class="n">n_estimators</span> <span class="o">=</span> <span class="mi">84</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">3.84</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">extra_clf</span> <span class="o">=</span> <span class="nc">ExtraTreesClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">svc_clf</span> <span class="o">=</span> <span class="nc">LinearSVC</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">C</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000000</span><span class="p">)</span>
+<span class="n">svc_rbf_clf</span> <span class="o">=</span> <span class="nc">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="sh">'</span><span class="s">rbf</span><span class="sh">'</span><span class="p">,</span><span class="n">C</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span><span class="n">gamma</span><span class="o">=</span><span class="p">.</span><span class="mi">0071</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span><span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">log_clf</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="p">.</span><span class="mi">816</span><span class="p">,</span><span class="n">penalty</span><span class="o">=</span><span class="sh">'</span><span class="s">l1</span><span class="sh">'</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="sh">'</span><span class="s">saga</span><span class="sh">'</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="c1">#LogisticRegression(C=.734,penalty='l1',solver='saga',random_state=10, max_iter=10000)
+</span>
+<span class="n">clfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">rnd_clf</span><span class="p">,</span> <span class="n">ada_clf</span><span class="p">,</span> <span class="n">gboost_clf</span><span class="p">,</span> <span class="n">extra_clf</span><span class="p">,</span> <span class="n">svc_clf</span><span class="p">,</span> <span class="n">svc_rbf_clf</span><span class="p">,</span> <span class="n">log_clf</span><span class="p">]</span>
 
-X_train, y_train = train_set.drop(columns=['Future visits_Yes']), train_set['Future visits_Yes']
-X_test, y_test = test_set.drop(columns=['Future visits_Yes']), test_set['Future visits_Yes']
-```
+<span class="n">acc</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="n">clfs</span><span class="p">:</span>
+  <span class="n">classifier</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+  <span class="n">acc_</span> <span class="o">=</span> <span class="nf">cross_val_score</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+  <span class="n">acc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">acc_</span><span class="p">)</span>
 
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Random tree</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">Adaptive boosting</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">Gradiant boosting</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Extra trees</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Linear SVC</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">SVC rbf</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Logistic regression</span><span class="sh">'</span><span class="p">]</span>
 
-```python
-#Sampling selected classifiers
-rnd_clf = RandomForestClassifier(n_estimators=50, oob_score=True, random_state=10)
-gboost_clf = GradientBoostingClassifier(n_estimators=5000, n_iter_no_change=10, learning_rate = .7, random_state=10)
-ada_clf = AdaBoostClassifier(n_estimators = 84, learning_rate=3.84, random_state=10)
-extra_clf = ExtraTreesClassifier(n_estimators=15, random_state=10)
-svc_clf = LinearSVC(random_state=10,C=100, max_iter=1000000)
-svc_rbf_clf = SVC(kernel='rbf',C=18,gamma=.0071, max_iter=100000, random_state = 10,probability=True)
-log_clf = LogisticRegression(C=.816,penalty='l1',solver='saga',random_state=10, max_iter=10000)
-#LogisticRegression(C=.734,penalty='l1',solver='saga',random_state=10, max_iter=10000)
+<span class="n">plt</span><span class="p">.</span><span class="nf">barh</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">axvline</span><span class="p">(</span><span class="nf">sum</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span><span class="o">/</span><span class="nf">len</span><span class="p">(</span><span class="n">acc</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="sh">'</span><span class="s">--</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Classifier accuracy score</span><span class="sh">'</span><span class="p">);</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
 
-clfs = [rnd_clf, ada_clf, gboost_clf, extra_clf, svc_clf, svc_rbf_clf, log_clf]
-
-acc = []
-for classifier in clfs:
-  classifier.fit(X_train, y_train)
-  acc_ = cross_val_score(classifier,X_test, y_test,scoring='accuracy',cv=10,n_jobs=-1).mean()
-  acc.append(acc_)
-
-names = ['Random tree', 'Adaptive boosting', 'Gradiant boosting','Extra trees','Linear SVC', 'SVC rbf','Logistic regression']
-
-plt.barh(names, acc)
-plt.axvline(sum(acc)/len(acc), color='k', linestyle='--')
-plt.title('Classifier accuracy score');
-plt.show()
-```
-
-
-```python
-pd.DataFrame(data=acc,index=names,columns=['Accuracy score (cv=10)']).sort_values('Accuracy score (cv=10)',ascending=False)
-```
-
-
-
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">acc</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">names</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">Accuracy score (cv=10)</span><span class="sh">'</span><span class="p">]).</span><span class="nf">sort_values</span><span class="p">(</span><span class="sh">'</span><span class="s">Accuracy score (cv=10)</span><span class="sh">'</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
 
 <div>
 <style scoped="">
@@ -687,272 +677,198 @@ pd.DataFrame(data=acc,index=names,columns=['Accuracy score (cv=10)']).sort_value
 </table>
 </div>
 
-
-
 <h2><br></h2>
 <h2>Optimizing base classifiers</h2>
-Base clasifiers were optimzed through manual hyperparameter adjustment. The optimized parameters were updated in the above section such that the accuracy scores reflect the optimized model performance.
+<p>Base clasifiers were optimzed through manual hyperparameter adjustment. The optimized parameters were updated in the above section such that the accuracy scores reflect the optimized model performance.</p>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iters</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">rs</span> <span class="o">=</span> <span class="mi">10</span>
+</code></pre></div></div>
 
-```python
-iters = 1
-rs = 10
-```
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Logistic regression optimization
+</span><span class="n">log_best_clf</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">rs</span><span class="p">)</span>
+<span class="n">lin_params</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="sh">'</span><span class="s">C</span><span class="sh">'</span><span class="p">:</span><span class="nf">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+    <span class="sh">'</span><span class="s">solver</span><span class="sh">'</span><span class="p">:[</span><span class="sh">'</span><span class="s">saga</span><span class="sh">'</span><span class="p">],</span>
+    <span class="sh">'</span><span class="s">penalty</span><span class="sh">'</span><span class="p">:[</span><span class="sh">'</span><span class="s">l1</span><span class="sh">'</span><span class="p">]},{</span>
+  <span class="sh">'</span><span class="s">C</span><span class="sh">'</span><span class="p">:</span><span class="nf">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+   <span class="sh">'</span><span class="s">solver</span><span class="sh">'</span><span class="p">:[</span><span class="sh">'</span><span class="s">saga</span><span class="sh">'</span><span class="p">],</span>
+   <span class="sh">'</span><span class="s">penalty</span><span class="sh">'</span><span class="p">:[</span><span class="sh">'</span><span class="s">elasticnet</span><span class="sh">'</span><span class="p">],</span>
+   <span class="sh">'</span><span class="s">l1_ratio</span><span class="sh">'</span><span class="p">:</span><span class="nf">uniform</span><span class="p">(.</span><span class="mi">5</span><span class="p">,.</span><span class="mi">9</span><span class="p">)},{</span>   
+    <span class="sh">'</span><span class="s">C</span><span class="sh">'</span><span class="p">:</span><span class="nf">uniform</span><span class="p">(.</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+   <span class="sh">'</span><span class="s">solver</span><span class="sh">'</span><span class="p">:[</span><span class="sh">'</span><span class="s">liblinear</span><span class="sh">'</span><span class="p">],</span>
+   <span class="sh">'</span><span class="s">penalty</span><span class="sh">'</span><span class="p">:[</span><span class="sh">'</span><span class="s">l2</span><span class="sh">'</span><span class="p">]}</span> 
+<span class="p">]</span>
 
-
-```python
-#Logistic regression optimization
-log_best_clf = LogisticRegression(max_iter=100000, random_state=rs)
-lin_params = [{
-    'C':uniform(0.1,5),
-    'solver':['saga'],
-    'penalty':['l1']},{
-  'C':uniform(0.1,5),
-   'solver':['saga'],
-   'penalty':['elasticnet'],
-   'l1_ratio':uniform(.5,.9)},{   
-    'C':uniform(.1,5),
-   'solver':['liblinear'],
-   'penalty':['l2']} 
-]
-
-rnd_search=RandomizedSearchCV(log_best_clf, param_distributions=lin_params, n_iter=iters*3, cv=10, scoring='accuracy',random_state=rs)
-rnd_search.fit(X_train, y_train);
-#Best model
-%log_best_clf = LogisticRegression(C=.816,penalty='l1',solver='saga',random_state=10, max_iter=10000)
-#best score 0.847
+<span class="n">rnd_search</span><span class="o">=</span><span class="nc">RandomizedSearchCV</span><span class="p">(</span><span class="n">log_best_clf</span><span class="p">,</span> <span class="n">param_distributions</span><span class="o">=</span><span class="n">lin_params</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="n">iters</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="n">rs</span><span class="p">)</span>
+<span class="n">rnd_search</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">);</span>
+<span class="c1">#Best model
+</span><span class="o">%</span><span class="n">log_best_clf</span> <span class="o">=</span> <span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="p">.</span><span class="mi">816</span><span class="p">,</span><span class="n">penalty</span><span class="o">=</span><span class="sh">'</span><span class="s">l1</span><span class="sh">'</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="sh">'</span><span class="s">saga</span><span class="sh">'</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="c1">#best score 0.847
 #rnd_search.best_score_, rnd_search.best_params_
-```
+</span></code></pre></div></div>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Optimizing SVC
+</span><span class="n">svc_best_clf</span> <span class="o">=</span><span class="nc">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="sh">'</span><span class="s">rbf</span><span class="sh">'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">rs</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 
-```python
-#Optimizing SVC
-svc_best_clf =SVC(kernel='rbf', random_state=rs, max_iter=10000)
+<span class="n">svc_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sh">'</span><span class="s">C</span><span class="sh">'</span><span class="p">:</span><span class="nf">randint</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span>
+    <span class="sh">'</span><span class="s">gamma</span><span class="sh">'</span><span class="p">:</span><span class="nf">uniform</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="p">}</span>
 
-svc_params = {
-    'C':randint(7,20),
-    'gamma':uniform(0.001,0.05)
-}
-
-svc_search=RandomizedSearchCV(svc_best_clf, param_distributions=svc_params, n_iter=iters, cv=10, scoring='accuracy',random_state=rs)
-svc_search.fit(X_train, y_train);
-#best model 
+<span class="n">svc_search</span><span class="o">=</span><span class="nc">RandomizedSearchCV</span><span class="p">(</span><span class="n">svc_best_clf</span><span class="p">,</span> <span class="n">param_distributions</span><span class="o">=</span><span class="n">svc_params</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="n">iters</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="n">rs</span><span class="p">)</span>
+<span class="n">svc_search</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">);</span>
+<span class="c1">#best model 
 #svc_best_clf =SVC(kernel='rbf', C=18, gamma=.0071, random_state=10, max_iter=10000)
 #best score .844
 #svc_search.best_score_, svc_search.best_params_
-```
+</span></code></pre></div></div>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Optimizing Adaboost
+</span><span class="n">ada_best_clf</span> <span class="o">=</span> <span class="nc">AdaBoostClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">rs</span><span class="p">)</span>
+<span class="n">ada_params</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="sh">'</span><span class="s">n_estimators</span><span class="sh">'</span><span class="p">:</span><span class="nf">randint</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span>
+   <span class="sh">'</span><span class="s">learning_rate</span><span class="sh">'</span><span class="p">:</span><span class="nf">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)}</span>
 
-```python
-#Optimizing Adaboost
-ada_best_clf = AdaBoostClassifier(random_state=rs)
-ada_params = {
-   'n_estimators':randint(20,100),
-   'learning_rate':uniform(1,5)}
+<span class="n">ada_search</span><span class="o">=</span><span class="nc">RandomizedSearchCV</span><span class="p">(</span><span class="n">ada_best_clf</span><span class="p">,</span> <span class="n">param_distributions</span><span class="o">=</span><span class="n">ada_params</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="n">iters</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">rs</span><span class="p">)</span>
+<span class="n">ada_search</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">);</span>
 
-ada_search=RandomizedSearchCV(ada_best_clf, param_distributions=ada_params, n_iter=iters, cv=10, scoring='accuracy', random_state=rs)
-ada_search.fit(X_train, y_train);
-
-#best model found 81.5%
+<span class="c1">#best model found 81.5%
 #ada_base_best_clf = AdaBoostClassifier(n_estimators = 84, learning_rate=3.84)
 #ada_search.best_score_, ada_search.best_params_
-```
+</span></code></pre></div></div>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Optimizing Adaboost with base estimator 
+</span><span class="n">ada_base_best_clf</span> <span class="o">=</span> <span class="nc">AdaBoostClassifier</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="nc">DecisionTreeClassifier</span><span class="p">(),</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ada_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sh">'</span><span class="s">estimator__max_features</span><span class="sh">'</span><span class="p">:[</span><span class="sh">'</span><span class="s">sqrt</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">log2</span><span class="sh">'</span><span class="p">],</span>
+   <span class="sh">'</span><span class="s">estimator__max_depth</span><span class="sh">'</span><span class="p">:</span><span class="nf">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span>
+   <span class="sh">'</span><span class="s">n_estimators</span><span class="sh">'</span><span class="p">:</span><span class="nf">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">200</span><span class="p">),</span>
+   <span class="sh">'</span><span class="s">learning_rate</span><span class="sh">'</span><span class="p">:</span><span class="nf">uniform</span><span class="p">(.</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span>
+   <span class="sh">'</span><span class="s">estimator__criterion</span><span class="sh">'</span><span class="p">:</span> <span class="p">[</span><span class="sh">'</span><span class="s">gini</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">entropy</span><span class="sh">'</span><span class="p">],</span>
+   <span class="sh">'</span><span class="s">estimator__min_weight_fraction_leaf</span><span class="sh">'</span><span class="p">:</span><span class="nf">uniform</span><span class="p">(.</span><span class="mi">1</span><span class="p">,.</span><span class="mi">5</span><span class="p">)}</span>
 
-```python
-#Optimizing Adaboost with base estimator 
-ada_base_best_clf = AdaBoostClassifier(estimator=DecisionTreeClassifier(), random_state=10)
-ada_params = {
-    'estimator__max_features':['sqrt', 'log2'],
-   'estimator__max_depth':randint(1,20),
-   'n_estimators':randint(1,200),
-   'learning_rate':uniform(.1,50),
-   'estimator__criterion': ['gini', 'entropy'],
-   'estimator__min_weight_fraction_leaf':uniform(.1,.5)}
+<span class="n">ada_search</span><span class="o">=</span><span class="nc">RandomizedSearchCV</span><span class="p">(</span><span class="n">ada_base_best_clf</span><span class="p">,</span> <span class="n">param_distributions</span><span class="o">=</span><span class="n">ada_params</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="n">iters</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">rs</span><span class="p">)</span>
+<span class="n">ada_search</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">);</span>
 
-ada_search=RandomizedSearchCV(ada_base_best_clf, param_distributions=ada_params, n_iter=iters, cv=10, scoring='accuracy', random_state=rs)
-ada_search.fit(X_train, y_train);
-
-#best model found 
+<span class="c1">#best model found 
 #ada_base_best_clf = AdaBoostClassifier(estimator=DecisionTreeClassifier(min_weight_fraction_leaf=.11,criterion='entropy', max_depth=17, max_features='sqrt'),n_estimators=108, learning_rate = 25.7, random_state=10)
 #best accuracy 89.1%, but performed the same as other adabase model without base estimator optimization on test set at ~84%
 #ada_search.best_score_, ada_search.best_params_
-```
+</span></code></pre></div></div>
 
-Following previous analyses done on this data set, adaptive boosting was found to be particularly helpful in predicting customer loyalty during cross-validation with accuracy scores &gt;89%, but failed to out-perform on the test set, suggesting over training or sampling issues. 
+<p>Following previous analyses done on this data set, adaptive boosting was found to be particularly helpful in predicting customer loyalty during cross-validation with accuracy scores &gt;89%, but failed to out-perform on the test set, suggesting over training or sampling issues.</p>
 
 <h2><br></h2>
 <h2>Ensemble classifiers</h2>
 <h3>Voting classifier</h3>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voting_clf</span> <span class="o">=</span> <span class="nc">VotingClassifier</span><span class="p">(</span>
+    <span class="n">estimators</span><span class="o">=</span><span class="p">[(</span><span class="sh">'</span><span class="s">AdaBoost</span><span class="sh">'</span><span class="p">,</span><span class="n">ada_clf</span><span class="p">),</span>
+                <span class="p">(</span><span class="sh">'</span><span class="s">ExtraTrees</span><span class="sh">'</span><span class="p">,</span><span class="n">extra_clf</span><span class="p">),</span>
+                <span class="p">(</span><span class="sh">'</span><span class="s">Logistic</span><span class="sh">'</span><span class="p">,</span><span class="n">log_clf</span><span class="p">),</span>
+                <span class="p">(</span><span class="sh">'</span><span class="s">GradBoost</span><span class="sh">'</span><span class="p">,</span><span class="n">gboost_clf</span><span class="p">)</span>
+                <span class="p">],</span>
+                <span class="n">voting</span><span class="o">=</span><span class="sh">'</span><span class="s">hard</span><span class="sh">'</span>
 
-```python
-voting_clf = VotingClassifier(
-    estimators=[('AdaBoost',ada_clf),
-                ('ExtraTrees',extra_clf),
-                ('Logistic',log_clf),
-                ('GradBoost',gboost_clf)
-                ],
-                voting='hard'
+<span class="p">)</span>
 
-)
+<span class="n">voting_clf</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">acc_voting</span> <span class="o">=</span> <span class="nf">cross_val_score</span><span class="p">(</span><span class="n">voting_clf</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+<span class="n">acc_voting</span>
+</code></pre></div></div>
 
-voting_clf.fit(X_train,y_train)
-acc_voting = cross_val_score(voting_clf,X_test, y_test,scoring='accuracy',cv=10,n_jobs=-1).mean()
-acc_voting
-```
-
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\model_selection\_split.py:700: UserWarning: The least populated class in y has only 8 members, which is less than n_splits=10.
-      warnings.warn(
-    
-
-
-
-
-    0.875
-
-
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0.875
+</code></pre></div></div>
 
 <h3><br></h3>
 <h3>Stacking classifier</h3>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stacking_clf</span> <span class="o">=</span> <span class="nc">StackingClassifier</span><span class="p">(</span>
+    <span class="n">estimators</span><span class="o">=</span><span class="p">[(</span><span class="sh">'</span><span class="s">AdaBoost</span><span class="sh">'</span><span class="p">,</span><span class="n">ada_clf</span><span class="p">),</span>
+                <span class="p">(</span><span class="sh">'</span><span class="s">Logistic</span><span class="sh">'</span><span class="p">,</span><span class="n">log_clf</span><span class="p">),</span>
+                <span class="p">(</span><span class="sh">'</span><span class="s">GradBoost</span><span class="sh">'</span><span class="p">,</span><span class="n">gboost_clf</span><span class="p">),</span>
+                <span class="p">(</span><span class="sh">'</span><span class="s">ExtraTrees</span><span class="sh">'</span><span class="p">,</span><span class="n">extra_clf</span><span class="p">)</span>
+                <span class="p">],</span>
+                <span class="n">stack_method</span> <span class="o">=</span> <span class="sh">'</span><span class="s">predict_proba</span><span class="sh">'</span>
 
-```python
-stacking_clf = StackingClassifier(
-    estimators=[('AdaBoost',ada_clf),
-                ('Logistic',log_clf),
-                ('GradBoost',gboost_clf),
-                ('ExtraTrees',extra_clf)
-                ],
-                stack_method = 'predict_proba'
+<span class="p">)</span>
 
-)
+<span class="n">stacking_clf</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">acc_stacking</span> <span class="o">=</span> <span class="nf">cross_val_score</span><span class="p">(</span><span class="n">voting_clf</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+<span class="n">acc_stacking</span>
+</code></pre></div></div>
 
-stacking_clf.fit(X_train,y_train)
-acc_stacking = cross_val_score(voting_clf,X_test, y_test,scoring='accuracy',cv=10,n_jobs=-1).mean()
-acc_stacking
-```
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0.875
+</code></pre></div></div>
 
-    c:\Users\corne\anaconda3\lib\site-packages\sklearn\model_selection\_split.py:700: UserWarning: The least populated class in y has only 8 members, which is less than n_splits=10.
-      warnings.warn(
-    
-
-
-
-
-    0.875
-
-
-
-We fail to improve upon the accuracy of the adaptive boosting. <b>Thus, the best model for predicting customer loyalty from all the provided features is the adaptive boosting classifier.</b>
+<p>We fail to improve upon the accuracy of the adaptive boosting. <b>Thus, the best model for predicting customer loyalty from all the provided features is the adaptive boosting classifier.</b></p>
 
 <h2><br></h2>
 <h2>Feature importance</h2>
 
-Key features for predicting consumer loyalty can be used by Starbucks to make improvements. It may also be possible to improve loyalty prediction accuracy.
+<p>Key features for predicting consumer loyalty can be used by Starbucks to make improvements. It may also be possible to improve loyalty prediction accuracy.</p>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rnd_clf</span> <span class="o">=</span> <span class="nc">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">oob_score</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_K</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">rnd_clf</span><span class="p">.</span><span class="n">oob_score_</span>
+</code></pre></div></div>
 
-```python
-rnd_clf = RandomForestClassifier(n_estimators=50, oob_score=True, n_jobs=-1, random_state=10).fit(X_K, y)
-rnd_clf.oob_score_
-```
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0.8032786885245902
+</code></pre></div></div>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">feature_importance</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">Series</span><span class="p">(</span><span class="n">rnd_clf</span><span class="p">.</span><span class="n">feature_importances_</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">rnd_clf</span><span class="p">.</span><span class="n">feature_names_in_</span><span class="p">).</span><span class="nf">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.bar(feature_importance.index.values.tolist(), feature_importance, width=.7,color='lightblue')
+  plt.bar(feature_importance[:6].index.values.tolist(), feature_importance[:6], width=.7,color='crimson')
+  plt.ylabel('Feature importance', fontsize=14)
+  plt.xticks(rotation=90)
+  plt.show()
+  </pre>
+A</details>
 
+<p><img src="/assets/img/starbucks_predict/output_31_0.png" alt="png"></p>
 
-    0.8032786885245902
-
-
-
-
-```python
-feature_importance = pd.Series(rnd_clf.feature_importances_, index=rnd_clf.feature_names_in_).sort_values(ascending=False)
-```
-
-
-```python
-plt.bar(feature_importance.index.values.tolist(), feature_importance, width=.7,color='lightblue')
-plt.bar(feature_importance[:6].index.values.tolist(), feature_importance[:6], width=.7,color='crimson')
-plt.ylabel('Feature importance', fontsize=14)
-plt.xticks(rotation=90)
-plt.show()
-```
-
-
-    
-![png](output_31_0.png)
-    
-
-
-Key features for predicting loyalty include price rating, quality rating, proclivity to recommend Starbucks for a business or social meeting, ambiance rating, and duration of visit. 
-
-
+<p>Key features for predicting loyalty include price rating, quality rating, proclivity to recommend Starbucks for a business or social meeting, ambiance rating, and duration of visit.</p>
 
 <h2><br></h2>
 <h2>Predicing loyalty using reduced features</h2>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scores</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">((</span><span class="mi">22</span><span class="p">,</span><span class="nf">len</span><span class="p">(</span><span class="n">names</span><span class="p">))),</span><span class="n">columns</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">22</span><span class="p">):</span>
+  <span class="n">top_features</span> <span class="o">=</span> <span class="n">feature_importance</span><span class="p">[:</span><span class="n">kk</span><span class="p">]</span>
+  <span class="n">X_train_top</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">top_features</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">values</span><span class="p">.</span><span class="nf">tolist</span><span class="p">()]</span>
+  <span class="n">X_test_top</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">[</span><span class="n">top_features</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">values</span><span class="p">.</span><span class="nf">tolist</span><span class="p">()]</span>
+  <span class="k">for</span> <span class="n">m</span><span class="p">,</span><span class="n">model</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">clfs</span><span class="p">):</span>
+    <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train_top</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">acc_</span> <span class="o">=</span> <span class="nf">cross_val_score</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">X_test_top</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+    <span class="n">scores</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">kk</span><span class="p">,</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">acc_</span>
+</code></pre></div></div>
 
-```python
-#Model definition
-'''
-ada_top_clf = AdaBoostClassifier(n_estimators=9, learning_rate=4.1, random_state=10)
-log_top_clf = LogisticRegression(C=.816,penalty='l1',solver='saga',random_state=10, max_iter=10000)
-svc_top_clf =SVC(kernel='rbf', random_state=10, max_iter=10000,C=18, gamma=.0071,probability=True)
-'''
+<details>
+  <summary>Click to show hidden code.</summary>
+  #Plotitng results
+  x_range = range(0,22)
 
-#selected_models = [ada_clf, log_clf, svc_clf]
-#selected_names = ['Adaptive boosting','Logistic classifier','SVC classifier']
+  for n,model in enumerate(clfs):
+      plt.plot(x_range, scores.iloc[:,n],'o-',label = names[n])
+  #lt.plot(x_range, scores['Logistic classifier'],'o-',label = 'Logistic regression', color='lightgreen')
+  #plt.plot(x_range, scores['SVC classifier'],'o-',label = 'SVC with rbf kernel', color='pink')
+  plt.legend(loc=4,facecolor='white')
+  plt.ylabel('Accuracy score')
+  plt.xlabel('Features selected')
+  plt.show()
+</details>
 
-```
+<p><img src="/assets/img/starbucks_predict/output_36_0.png" alt="png"></p>
 
+<p>We see the accuracy score increase as the feature number is increased from 0 to 8. There is no apparent advantage of adding more than 8 features, as the accuracy score is lower or the same from 8-21.</p>
 
-```python
-#Finding the accuracy score for each feature number
-score_ada = []
-score_log = []
-score_svc = []
-
-scores = pd.DataFrame(data=np.zeros((22,len(names))),columns=names)
-for kk in range(1,22):
-  top_features = feature_importance[:kk]
-  X_train_top = X_train[top_features.index.values.tolist()]
-  X_test_top = X_test[top_features.index.values.tolist()]
-  for m,model in enumerate(clfs):
-    model.fit(X_train_top, y_train)
-    acc_ = cross_val_score(model,X_test_top, y_test,scoring='accuracy',cv=10,n_jobs=-1).mean()
-    scores.iloc[kk,m] = acc_
-```
-
-
-```python
-#Plotitng results
-x_range = range(0,22)
-
-for n,model in enumerate(clfs):
-    plt.plot(x_range, scores.iloc[:,n],'o-',label = names[n])
-#lt.plot(x_range, scores['Logistic classifier'],'o-',label = 'Logistic regression', color='lightgreen')
-#plt.plot(x_range, scores['SVC classifier'],'o-',label = 'SVC with rbf kernel', color='pink')
-plt.legend(loc=4,facecolor='white')
-plt.ylabel('Accuracy score')
-plt.xlabel('Features selected')
-plt.show()
-```
-
-
-    
-![png](output_36_0.png)
-    
-
-
-We see the accuracy score increase as the feature number is increased from 0 to 8. There is no apparent advantage of adding more than 8 features, as the accuracy score is lower or the same from 8-21. 
-
-
-```python
-scores
-```
-
-
-
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scores</span>
+</code></pre></div></div>
 
 <div>
 <style scoped="">
@@ -1206,52 +1122,45 @@ scores
 </table>
 </div>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scores</span><span class="p">.</span><span class="nf">max</span><span class="p">()</span>
+</code></pre></div></div>
 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Random tree            0.875
+Adaptive boosting      0.900
+Gradiant boosting      0.825
+Extra trees            0.875
+Linear SVC             0.850
+SVC rbf                0.850
+Logistic regression    0.850
+dtype: float64
+</code></pre></div></div>
 
-
-```python
-scores.max()
-```
-
-
-
-
-    Random tree            0.875
-    Adaptive boosting      0.900
-    Gradiant boosting      0.825
-    Extra trees            0.875
-    Linear SVC             0.850
-    SVC rbf                0.850
-    Logistic regression    0.850
-    dtype: float64
-
-
-
-We do not see a boost in performance from adding additional features to the model past feature 10. This indicates that future surveys can be brief and only collect this data. There is an increase in performance with the top six features and adaptive boosting. This classifier reaches 90% accuracy on the test set. However, this may be due to the limited number of available samples.
-
-
+<p>We do not see a boost in performance from adding additional features to the model past feature 10. This indicates that future surveys can be brief and only collect this data. There is an increase in performance with the top six features and adaptive boosting. This classifier reaches 90% accuracy on the test set. However, this may be due to the limited number of available samples.</p>
 
 <h2><br></h2>
 <h2>Conclusions</h2>
 
-They key predictive features identified in this study indicate that affordability and quality are important factors for returning to Starbucks. The six key features that lead to improved single-classifier prediction of consumer loyalty were as follows: 
+<p>They key predictive features identified in this study indicate that affordability and quality are important factors for returning to Starbucks. The six key features that lead to improved single-classifier prediction of consumer loyalty were as follows:</p>
 
-1. Positive perception of price options
-2. Positive perception of product quality 
-3. Recommending Starbucks as a business or social meeting place 
-4. Perception of price 
-5. Rating of ambiance 
-6. Duration of visit 
+<ol>
+  <li>Positive perception of price options</li>
+  <li>Positive perception of product quality</li>
+  <li>Recommending Starbucks as a business or social meeting place</li>
+  <li>Perception of price</li>
+  <li>Rating of ambiance</li>
+  <li>Duration of visit</li>
+</ol>
 
-To improve the likeliness of future visits to Starbucks, improving perceptions of affordability and ambiance would be the most helpful. All features are not necessary to predict the likeliness. In fact with an additional four features, listed below, the classifiers ae fully functional: 
+<p>To improve the likeliness of future visits to Starbucks, improving perceptions of affordability and ambiance would be the most helpful. All features are not necessary to predict the likeliness. In fact with an additional four features, listed below, the classifiers ae fully functional:</p>
 
-7. Membership 
-8. Frequency of visit 
-9. Valuing promotions
-10. Perception of service 
+<ol>
+  <li>Membership</li>
+  <li>Frequency of visit</li>
+  <li>Valuing promotions</li>
+  <li>Perception of service</li>
+</ol>
 
-Collecting more data would enable a more robust statistical treatment of this data. Future surveys should focus on these 10 factors, as other factors were not found to be significant.
-</h2>
+<p>Collecting more data would enable a more robust statistical treatment of this data. Future surveys should focus on these 10 factors, as other factors were not found to be significant.</p>
 
           </article>
 
