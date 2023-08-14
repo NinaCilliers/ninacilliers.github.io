@@ -2,7 +2,7 @@
 layout: page
 title: Painting with convolutional neural networks
 description: A novel image is generated with distinct user selected style and content.
-img: /assets/img/style_transfer/output_44_0.png
+img: /assets/img/style_transfer/painted_final.jpg
 importance: 1
 category: Other projects
 ---
