@@ -12,7 +12,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>An optimized pipeline for Airbnb price prediction | Nina  Cilliers</title>
     <meta name="author" content="Nina  Cilliers">
-    <meta name="description" content="A pipeline is developed to predict Airbnb rental Airbnb prices in Europe. The performance of six data preprocessing strategies was evaluated in nine models against two error metrics.">
+    <meta name="description" content="A pipeline is optimized for optimal pre-preprocessing and regression techniques.">
     <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
 
 
@@ -38,7 +38,7 @@
     <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
     
     <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="canonical" href="https://ninacilliers.github.io/projects/air_bnb_pipeline/">
+    <link rel="canonical" href="https://ninacilliers.github.io/projects/airbnb-pipe/">
 
     <!-- Dark Mode -->
     
@@ -122,81 +122,97 @@
 
           <article>
             <h1>An optimized pipeline for Airbnb price prediction</h1>
-<h1> <br> </h1>
-<h1>  Introduction</h1>
+<h4><i>Regression models and preprocessing strategies</i></h4>
+<h4><br></h4>
+<h2>Introduction</h2>
 
 <p>A pipeline is developed to predict the price of Airbnb stays in Europe. An optimized pipeline for Airbnb price forecasting can identify key factors that impact the price of listings and provide insights into market trends and competitors’ offerings. By utilizing this pipeline to forecast future revenue based on these insights, hosts can make data-driven decisions that maximize their profits. This streamlined approach saves time, increases accuracy, and delivers the best possible experience to Airbnb guests. 
 <br>
 <br>
-First, we carefully consider the range of prices of interest. Next, we develop several pre-processing strategies that utilize feature re-scaling and feature engineering. Next, we evaluate these strategies in conjunction with common models looking at two common error metrics. Extra trees and random forest regressors both perform, with extra trees performing the best. This model is combined with the optimal pre-processing strategy in a transferrable and concise final pipeline. 
-<br>
-<br>
-<img src="/assets/img/airbnb_pipeline/airbnb_pic.webp" alt="img"></p>
+First, we carefully consider the range of prices of interest. Next, we develop several pre-processing strategies that utilize feature re-scaling and feature engineering. Next, we evaluate these strategies in conjunction with common models looking at two common error metrics. Extra trees and random forest regressors both perform with, with extra trees performing the best. This model is combined with the optimal pre-processing strategy in a transferrable and concise final pipeline. &lt;/br&gt;
+<br></p>
+<h2><br></h2>
+<h2>Project Outline </h2>
 
-<h1> <br>
-</h1>
-<h1>  Project Outline </h1>
-
-<h3 href="#selecting">Selecting price range</h3>
+<h4>Selecting price range</h4>
 <ul>
   <li>Raw data is imported from source</li>
   <li>Justification for outlier removal</li>
-  <li>Outlier identification</li>
+  <li>Outlier identification
+<br>
+</li>
 </ul>
-
-<h3 id="exploratory-data-analysis">Exploratory data analysis</h3>
+<h4>Exploratory</h4>
 <ul>
   <li>Heat map</li>
   <li>Pair plots</li>
   <li>RBF definition</li>
-  <li>Visualizing categorical data</li>
-  <li>Visualizing rankings</li>
+  <li>Visualizing data
+<br>
+</li>
 </ul>
-
-<h3 id="data-preprocessing">Data preprocessing</h3>
+<h4>Data preprocessing</h4>
 <ul>
   <li>Encoding categorical data</li>
-  <li>Building pipelines for model evaluation</li>
+  <li>Building pipelines for model evaluation
+<br>
+</li>
 </ul>
-
-<h3 id="price-prediction">Price prediction</h3>
+<h4>Price prediction</h4>
 <ul>
   <li>Sampling regression models with preprocessing strategies</li>
-  <li>Optimizing extra trees regression model</li>
+  <li>Optimizing extra trees regression model
+<br>
+</li>
 </ul>
+<h4>Conclusion</h4>
 
-<h3 id="conclusion">Conclusion</h3>
 <ul>
   <li>The best performing model used an extra trees regressor with 500 estimators to predict the log of the price.</li>
   <li>This pipeline had mean squared error of 11,788.</li>
 </ul>
 
-<h1> <br> </h1>
-<h1> <a id="selecting">  Selecting price range </a>
-</h1>
-<h2 id="importing-data">Importing data</h2>
+<h2><br></h2>
+<h2>Selecting price range</h2>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  import pandas as pd
+  import numpy as np
+  import matplotlib as mpl
+  import matplotlib.pyplot as plt
+  import seaborn as sns
+  import os
+  from sklearn import set_config
+  from scipy.stats import zscore
+  from sklearn.metrics.pairwise import rbf_kernel
+  from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
+  from sklearn.preprocessing import FunctionTransformer
+  from sklearn.preprocessing import OneHotEncoder
+  from sklearn.preprocessing import MinMaxScaler
+  from sklearn.base import BaseEstimator, TransformerMixin
+  from sklearn.pipeline import make_pipeline
+  from sklearn.model_selection import train_test_split
+  from sklearn.linear_model import LinearRegression, Ridge, ElasticNet
+  from sklearn.neighbors import KNeighborsRegressor
+  from sklearn.svm import SVR
+  from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, AdaBoostRegressor, GradientBoostingRegressor
+  from sklearn.metrics import mean_squared_error
+  import xgboost as xgb
+  from sklearn.decomposition import PCA 
+  from sklearn.model_selection import GridSearchCV 
+  </pre>
+  <pre>
+  plt.style.use('ggplot')
+  pd.set_option('display.max_columns', 100)
+  #set_config(transform_output="pandas")
+  </pre>
+  <pre>
+  df = pd.read_csv('Aemf1.csv')
+  </pre>
+</details>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
-<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
-<span class="kn">import</span> <span class="n">matplotlib</span> <span class="k">as</span> <span class="n">mpl</span>
-<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">import</span> <span class="n">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
-<span class="kn">import</span> <span class="n">os</span>
-<span class="kn">from</span> <span class="n">sklearn</span> <span class="kn">import</span> <span class="n">set_config</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">details</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">summary</span><span class="o">&gt;</span><span class="n">System</span> <span class="n">settings</span> <span class="ow">and</span> <span class="n">directory</span><span class="o">&lt;/</span><span class="n">summary</span><span class="o">&gt;</span>
-
-  <span class="n">plt</span><span class="p">.</span><span class="n">style</span><span class="p">.</span><span class="nf">use</span><span class="p">(</span><span class="sh">'</span><span class="s">ggplot</span><span class="sh">'</span><span class="p">)</span>
-  <span class="n">pd</span><span class="p">.</span><span class="nf">set_option</span><span class="p">(</span><span class="sh">'</span><span class="s">display.max_columns</span><span class="sh">'</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-  <span class="c1">#set_config(transform_output="pandas") #doesn't work here :(
-</span></code></pre></div></div>
-<p>&lt;/details&gt;</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="sh">'</span><span class="s">/kaggle/input/airbnb-cleaned-europe-dataset</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_csv</span><span class="p">(</span><span class="sh">'</span><span class="s">Aemf1.csv</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">df</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span>
 </code></pre></div></div>
 
 <div>
@@ -247,12 +263,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>1</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>93.0</td>
+      <td>10</td>
+      <td>93</td>
       <td>1</td>
       <td>5.022964</td>
       <td>2.539380</td>
@@ -269,12 +285,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>4.0</td>
+      <td>4</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>8.0</td>
-      <td>85.0</td>
+      <td>8</td>
+      <td>85</td>
       <td>1</td>
       <td>0.488389</td>
       <td>0.239404</td>
@@ -291,12 +307,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>1</td>
-      <td>9.0</td>
-      <td>87.0</td>
+      <td>9</td>
+      <td>87</td>
       <td>1</td>
       <td>5.748312</td>
       <td>3.651621</td>
@@ -313,12 +329,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>4.0</td>
+      <td>4</td>
       <td>False</td>
       <td>0</td>
       <td>1</td>
-      <td>9.0</td>
-      <td>90.0</td>
+      <td>9</td>
+      <td>90</td>
       <td>2</td>
       <td>0.384862</td>
       <td>0.439876</td>
@@ -335,12 +351,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>True</td>
       <td>0</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>98.0</td>
+      <td>10</td>
+      <td>98</td>
       <td>1</td>
       <td>0.544738</td>
       <td>0.318693</td>
@@ -379,12 +395,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>6.0</td>
+      <td>6</td>
       <td>False</td>
       <td>0</td>
       <td>1</td>
-      <td>10.0</td>
-      <td>100.0</td>
+      <td>10</td>
+      <td>100</td>
       <td>3</td>
       <td>0.530181</td>
       <td>0.135447</td>
@@ -401,12 +417,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>8.0</td>
-      <td>86.0</td>
+      <td>8</td>
+      <td>86</td>
       <td>1</td>
       <td>0.810205</td>
       <td>0.100839</td>
@@ -423,12 +439,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>93.0</td>
+      <td>10</td>
+      <td>93</td>
       <td>1</td>
       <td>0.994051</td>
       <td>0.202539</td>
@@ -445,12 +461,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>87.0</td>
+      <td>10</td>
+      <td>87</td>
       <td>1</td>
       <td>3.044100</td>
       <td>0.287435</td>
@@ -467,12 +483,12 @@ First, we carefully consider the range of prices of interest. Next, we develop s
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>4.0</td>
+      <td>4</td>
       <td>True</td>
       <td>1</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>93.0</td>
+      <td>10</td>
+      <td>93</td>
       <td>1</td>
       <td>1.263932</td>
       <td>0.480903</td>
@@ -500,12 +516,12 @@ Data columns (total 19 columns):
  3   Room Type                    41714 non-null  object 
  4   Shared Room                  41714 non-null  bool   
  5   Private Room                 41714 non-null  bool   
- 6   Person Capacity              41714 non-null  float64
+ 6   Person Capacity              41714 non-null  int64  
  7   Superhost                    41714 non-null  bool   
  8   Multiple Rooms               41714 non-null  int64  
  9   Business                     41714 non-null  int64  
- 10  Cleanliness Rating           41714 non-null  float64
- 11  Guest Satisfaction           41714 non-null  float64
+ 10  Cleanliness Rating           41714 non-null  int64  
+ 11  Guest Satisfaction           41714 non-null  int64  
  12  Bedrooms                     41714 non-null  int64  
  13  City Center (km)             41714 non-null  float64
  14  Metro Distance (km)          41714 non-null  float64
@@ -513,18 +529,19 @@ Data columns (total 19 columns):
  16  Normalised Attraction Index  41714 non-null  float64
  17  Restraunt Index              41714 non-null  float64
  18  Normalised Restraunt Index   41714 non-null  float64
-dtypes: bool(3), float64(10), int64(3), object(3)
+dtypes: bool(3), float64(7), int64(6), object(3)
 memory usage: 5.2+ MB
 </code></pre></div></div>
 
-<h2><br></h2>
-<h2 id="selecting">Selecting price range</h2>
-
 <p>Developing a general pricing model using extremely expensive stays that are likely outliers may not be appropriate or desirable. The price of extremely expensive stays may not be tied to features described in this dataset, such as luxury amenities or event hosting capabilities. Thus, extreme outliers will be identified and removed from the dataset.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">]))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.histplot(np.log(df['Price']))
+  plt.show()
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_8_0.png" alt="png"></p>
 
@@ -579,12 +596,12 @@ memory usage: 5.2+ MB
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>True</td>
       <td>0</td>
       <td>1</td>
-      <td>10.0</td>
-      <td>100.0</td>
+      <td>10</td>
+      <td>100</td>
       <td>1</td>
       <td>1.196536</td>
       <td>0.381128</td>
@@ -601,12 +618,12 @@ memory usage: 5.2+ MB
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>9.0</td>
-      <td>100.0</td>
+      <td>9</td>
+      <td>100</td>
       <td>1</td>
       <td>4.602378</td>
       <td>0.118665</td>
@@ -623,12 +640,12 @@ memory usage: 5.2+ MB
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>9.0</td>
-      <td>87.0</td>
+      <td>9</td>
+      <td>87</td>
       <td>1</td>
       <td>2.239501</td>
       <td>0.414395</td>
@@ -645,12 +662,12 @@ memory usage: 5.2+ MB
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>9.0</td>
-      <td>87.0</td>
+      <td>9</td>
+      <td>87</td>
       <td>1</td>
       <td>2.239486</td>
       <td>0.414409</td>
@@ -667,12 +684,12 @@ memory usage: 5.2+ MB
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>4.0</td>
+      <td>4</td>
       <td>False</td>
       <td>0</td>
       <td>1</td>
-      <td>7.0</td>
-      <td>93.0</td>
+      <td>7</td>
+      <td>93</td>
       <td>1</td>
       <td>1.497979</td>
       <td>0.396893</td>
@@ -685,11 +702,9 @@ memory usage: 5.2+ MB
 </table>
 </div>
 
-<p>To identify outliers, the price distribution from the most expensive case, where the city is Amsterdam and the room capacity is 6, is used to identify outliers for the entire data set.</p>
+<p>To identify outliers, the price distribution from the most expensive case, where the city is Amsterdam and the room capacity is 6, is used.</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">scipy.stats</span> <span class="kn">import</span> <span class="n">zscore</span>
-
-<span class="n">df_expensive</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">City</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Amsterdam</span><span class="sh">'</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Person Capacity</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mf">6.0</span><span class="p">)]</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_expensive</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">City</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="sh">'</span><span class="s">Amsterdam</span><span class="sh">'</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Person Capacity</span><span class="sh">'</span><span class="p">]</span><span class="o">==</span><span class="mf">6.0</span><span class="p">)]</span>
 
 <span class="n">mean_val</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">mean</span><span class="p">(</span><span class="n">df_expensive</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">])</span>
 <span class="n">std_dev</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">std</span><span class="p">(</span><span class="n">df_expensive</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">])</span>
@@ -700,14 +715,18 @@ memory usage: 5.2+ MB
 <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">mean_val</span> <span class="o">+</span> <span class="n">threshold</span> <span class="o">*</span> <span class="n">std_dev</span>
 
 <span class="n">df_no_outliers</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;</span><span class="n">upper_bound</span><span class="p">]</span> <span class="c1">#&amp;(z_scores&gt;-4)]
-</span>
-<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">With outliers exclusded..</span><span class="sh">'</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">New max price: $</span><span class="si">{</span><span class="n">upper_bound</span><span class="si">:</span><span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">New min price: $</span><span class="si">{</span><span class="n">lower_bound</span><span class="si">:</span><span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+</span></code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  print('With outliers exclusded..')
+  print(f'New max price: ${upper_bound:.2f}')
+  print(f'New min price: ${lower_bound:.2f}')
 
-<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">df_no_outliers</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">]))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+  sns.histplot(np.log(df_no_outliers['Price']))
+  plt.show()
+  </pre>
+</details>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>With outliers exclusded..
 New max price: $6315.60
@@ -720,14 +739,14 @@ New min price: $-2974.58
     📌   Prices above \$6,5000 will not be considered by this model, as these are likely anomalous listings influenced by factors beyond what is represented in our data set. Additional information on luxury amenities or event hosting capabilities is required for a general model to price these properties.  </div>
 
 <h2><br></h2>
-<h2 id="data-summary">Data summary</h2>
+<h2>Data summary</h2>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">6500</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
 <span class="n">df</span><span class="p">.</span><span class="nf">info</span><span class="p">()</span>
 </code></pre></div></div>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
-Int64Index: 41703 entries, 0 to 41713
+Index: 41703 entries, 0 to 41713
 Data columns (total 19 columns):
  #   Column                       Non-Null Count  Dtype  
 ---  ------                       --------------  -----  
@@ -737,12 +756,12 @@ Data columns (total 19 columns):
  3   Room Type                    41703 non-null  object 
  4   Shared Room                  41703 non-null  bool   
  5   Private Room                 41703 non-null  bool   
- 6   Person Capacity              41703 non-null  float64
+ 6   Person Capacity              41703 non-null  int64  
  7   Superhost                    41703 non-null  bool   
  8   Multiple Rooms               41703 non-null  int64  
  9   Business                     41703 non-null  int64  
- 10  Cleanliness Rating           41703 non-null  float64
- 11  Guest Satisfaction           41703 non-null  float64
+ 10  Cleanliness Rating           41703 non-null  int64  
+ 11  Guest Satisfaction           41703 non-null  int64  
  12  Bedrooms                     41703 non-null  int64  
  13  City Center (km)             41703 non-null  float64
  14  Metro Distance (km)          41703 non-null  float64
@@ -750,14 +769,13 @@ Data columns (total 19 columns):
  16  Normalised Attraction Index  41703 non-null  float64
  17  Restraunt Index              41703 non-null  float64
  18  Normalised Restraunt Index   41703 non-null  float64
-dtypes: bool(3), float64(10), int64(3), object(3)
+dtypes: bool(3), float64(7), int64(6), object(3)
 memory usage: 5.5+ MB
 </code></pre></div></div>
 
-<h1> <br> </h1>
-<h1>  EDA </h1>
-
-<h2 id="heat-map">Heat map</h2>
+<h2><br></h2>
+<h2>EDA </h2>
+<h3>Heat map</h3>
 
 <p>Correlations between variables are visualized in the heat map below.</p>
 <ul>
@@ -767,13 +785,14 @@ memory usage: 5.5+ MB
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Heat map 
-</span>
+</span><span class="n">df_</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">select_dtypes</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">object_</span><span class="sh">'</span><span class="p">])</span>
+
 <span class="c1">#optimizng range for color scale
-</span><span class="nb">min</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">().</span><span class="nf">min</span><span class="p">().</span><span class="nf">min</span><span class="p">()</span>
-<span class="nb">max</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">()[</span><span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">()</span><span class="o">!=</span><span class="mi">1</span><span class="p">].</span><span class="nf">max</span><span class="p">().</span><span class="nf">max</span><span class="p">()</span>
+</span><span class="nb">min</span> <span class="o">=</span> <span class="n">df_</span><span class="p">.</span><span class="nf">corr</span><span class="p">().</span><span class="nf">min</span><span class="p">().</span><span class="nf">min</span><span class="p">()</span>
+<span class="nb">max</span> <span class="o">=</span> <span class="n">df_</span><span class="p">.</span><span class="nf">corr</span><span class="p">()[</span><span class="n">df_</span><span class="p">.</span><span class="nf">corr</span><span class="p">()</span><span class="o">!=</span><span class="mi">1</span><span class="p">].</span><span class="nf">max</span><span class="p">().</span><span class="nf">max</span><span class="p">()</span>
 
 <span class="c1">#thresholding selected correlations
-</span><span class="n">df_corr</span>  <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">()[</span><span class="n">np</span><span class="p">.</span><span class="nf">absolute</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="nf">corr</span><span class="p">())</span><span class="o">&gt;</span><span class="mf">0.3</span><span class="p">]</span>
+</span><span class="n">df_corr</span>  <span class="o">=</span> <span class="n">df_</span><span class="p">.</span><span class="nf">corr</span><span class="p">()[</span><span class="n">np</span><span class="p">.</span><span class="nf">absolute</span><span class="p">(</span><span class="n">df_</span><span class="p">.</span><span class="nf">corr</span><span class="p">())</span><span class="o">&gt;</span><span class="mf">0.3</span><span class="p">]</span>
 
 <span class="c1">#Mask for selecting only bottom triangle
 </span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">triu</span><span class="p">(</span><span class="n">df_corr</span><span class="p">)</span>
@@ -784,12 +803,16 @@ memory usage: 5.5+ MB
 
 <p><img src="/assets/img/airbnb_pipeline/output_16_0.png" alt="heat map"></p>
 
-<h2><br></h2>
-<h2 id="pair-plots">Pair plots</h2>
+<h3><br></h3>
+<h3>Pair plots</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#raw data 
-</span><span class="n">sns</span><span class="p">.</span><span class="nf">pairplot</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="sh">'</span><span class="s">City Center (km)</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Metro Distance (km)</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Attraction Index</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Restraunt Index</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">]],</span> <span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">hist</span><span class="sh">'</span><span class="p">,</span><span class="n">corner</span><span class="o">=</span><span class="bp">True</span><span class="p">);</span>
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #raw data 
+  sns.pairplot(df[['City Center (km)','Metro Distance (km)','Attraction Index','Restraunt Index','Price']], kind='hist',corner=True);
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_18_0.png" alt="pair plots"></p>
 
@@ -807,129 +830,166 @@ memory usage: 5.5+ MB
 
 <p><img src="/assets/img/airbnb_pipeline/output_20_0.png" alt="log transformed pair plots"></p>
 
-<h2><br></h2>
-<h2 id="rbf-definition">RBF Definition</h2>
+<h3><br></h3>
+<h3>RBF Definition</h3>
 <p>We find a comparable radial basis function to describe features with an apparent radial price distribution in the above pair plots.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Metro, city center and restraunt index RBFs
-</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">rbf_kernel</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_metro</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="nf">rbf_kernel</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[[</span><span class="sh">'</span><span class="s">Metro Distance (km)</span><span class="sh">'</span><span class="p">]],[[</span><span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">]],</span> <span class="n">gamma</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_city</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="nf">rbf_kernel</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[[</span><span class="sh">'</span><span class="s">City Center (km)</span><span class="sh">'</span><span class="p">]],[[.</span><span class="mi">3</span><span class="p">]],</span> <span class="n">gamma</span><span class="o">=</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_res</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="nf">rbf_kernel</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[[</span><span class="sh">'</span><span class="s">Restraunt Index</span><span class="sh">'</span><span class="p">]],[[</span><span class="mf">6.25</span><span class="p">]],</span> <span class="n">gamma</span><span class="o">=</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span>
+</span><span class="k">def</span> <span class="nf">to_gamma</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nf">rbf_kernel</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="n">key</span><span class="p">]],[[</span><span class="n">r</span><span class="p">]],</span><span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">)</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#visualizing metro rbf function
-</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[</span><span class="sh">'</span><span class="s">Metro Distance (km)</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Log Metro Distance (km)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">=</span><span class="n">ax1</span><span class="p">.</span><span class="nf">twinx</span><span class="p">()</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">scatter</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[</span><span class="sh">'</span><span class="s">Metro Distance (km)</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_metro</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Price rbf</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_metro</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="nf">to_gamma</span><span class="p">(</span><span class="n">df_trial</span><span class="p">,</span> <span class="sh">'</span><span class="s">Metro Distance (km)</span><span class="sh">'</span><span class="p">,</span> <span class="o">-</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_city</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="nf">to_gamma</span><span class="p">(</span><span class="n">df_trial</span><span class="p">,</span><span class="sh">'</span><span class="s">City Center (km)</span><span class="sh">'</span><span class="p">,.</span><span class="mi">3</span><span class="p">,</span> <span class="p">.</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_res</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="nf">to_gamma</span><span class="p">(</span><span class="n">df_trial</span><span class="p">,</span><span class="sh">'</span><span class="s">Restraunt Index</span><span class="sh">'</span><span class="p">,</span><span class="mf">6.25</span><span class="p">,.</span><span class="mi">5</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p><img src="/assets/img/airbnb_pipeline/output_23_0.png" alt="rbf metro"></p>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #visualizing metro rbf function
+  def view_rbf(df,key,rbf_key):
+      fig, ax1 = plt.subplots(1)
+      plt.bar(df[key], df['Price'])
+      plt.xlabel(key)
+      plt.ylabel('Price')
+      ax2=ax1.twinx()
+      ax2.scatter(df[key], df[rbf_key],color='k',s=.5)
+      ax2.set_ylim([0,1])
+      ax2.set_ylabel(rbf_key)
+      plt.show()
+  </pre>
+  <pre>
+  view_rbf(df,'Metro Distance (km)','rbf_metro')
+  view_rbf(df,'City Center (km)','rbf_city')
+  view_rbf(df,'Restraunt Index','rbf_res')
+  </pre>
+</details>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#visualizing city rbf function
-</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[</span><span class="sh">'</span><span class="s">City Center (km)</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Log City Center (km)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">=</span><span class="n">ax1</span><span class="p">.</span><span class="nf">twinx</span><span class="p">()</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">scatter</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[</span><span class="sh">'</span><span class="s">City Center (km)</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_city</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">City rbf</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+<p><img src="/assets/img/airbnb_pipeline/output_23_0.png" alt="rbf metro"> <br>
+<img src="/assets/img/airbnb_pipeline/output_24_0.png" alt="rbf city center">  <br>
+<img src="/assets/img/airbnb_pipeline/output_25_0.png" alt="rbf restaurant"></p>
 
-<p><img src="/assets/img/airbnb_pipeline/output_24_0.png" alt="rbf city center"></p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#visualizing city rbf function
-</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[</span><span class="sh">'</span><span class="s">Restraunt Index</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Log Restraunt Index (km)</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">=</span><span class="n">ax1</span><span class="p">.</span><span class="nf">twinx</span><span class="p">()</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">scatter</span><span class="p">(</span><span class="n">df_trial</span><span class="p">[</span><span class="sh">'</span><span class="s">Restraunt Index</span><span class="sh">'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">rbf_res</span><span class="sh">'</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">k</span><span class="sh">'</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">ax2</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Restraunt rbf</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p><img src="/assets/img/airbnb_pipeline/output_25_0.png" alt="rbf restaurant"></p>
-
-<h2><br></h2>
-<h2 id="visualizing-categorical-data">Visualizing categorical data</h2>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">fig</span><span class="p">.</span><span class="nf">set_size_inches</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">City</span><span class="sh">'</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">,</span><span class="n">showfliers</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">.</span><span class="nf">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1300</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+<h3><br></h3>
+<h3>Visualizing data</h3>
+<h4>Price by city </h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig, ax = plt.subplots(1)
+  fig.set_size_inches(8,4)
+  sns.boxplot(data = df, x='City', y='Price',showfliers = False)
+  ax.set_ylim([0,1300])
+  plt.show()
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_27_0.png" alt="price by city"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">Superhost</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">,</span><span class="n">showfliers</span><span class="o">=</span><span class="bp">False</span><span class="p">);</span>
-</code></pre></div></div>
+<h4>Superhost status and price</h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.boxplot(data=df, x='Superhost',y='Price',showfliers=False);
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_28_0.png" alt="superhost box plot"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fig</span><span class="p">,(</span><span class="n">ax1</span><span class="p">,</span><span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">sca</span><span class="p">(</span><span class="n">ax1</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">Room Type</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">,</span><span class="n">showfliers</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">sca</span><span class="p">(</span><span class="n">ax2</span><span class="p">)</span>
-<span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">Shared Room</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">,</span><span class="n">showfliers</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
-</code></pre></div></div>
+<h4> Room type and price </h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig,(ax1,ax2) = plt.subplots(1,2,figsize=(8,3))
+  plt.sca(ax1)
+  sns.boxplot(data=df, x='Room Type',y='Price',showfliers=False)
+  plt.sca(ax2)
+  sns.boxplot(data=df, x='Shared Room',y='Price',showfliers=False)
+  plt.tight_layout()
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_29_0.png" alt="room type boxplot"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">Day</span><span class="sh">'</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">,</span><span class="n">showfliers</span><span class="o">=</span><span class="bp">False</span><span class="p">);</span>
-</code></pre></div></div>
+<h4>Price by day of week </h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.boxplot(data=df, x='Day',y='Price',showfliers=False);
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_30_0.png" alt="day boxplot"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="p">.</span><span class="nf">boxplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="sh">'</span><span class="s">Person Capacity</span><span class="sh">'</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">,</span><span class="n">showfliers</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+<h4>Price by capacity</h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.boxplot(data = df, x='Person Capacity', y='Price',showfliers=False)
+  plt.ylim([0,1000])
+  plt.show()
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_31_0.png" alt="capacity boxplot"></p>
 
-<h2><br></h2>
-<h2 id="visualizing-rankings">Visualizing rankings</h2>
+<h4>Cleanliness and price</h4>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#sns.regplot(data = df[df["Price"]&lt;2000], x='Cleanliness Rating', y='Price',scatter=True,scatter_kws={'alpha':0.05},line_kws={"color": "black"});
-</span><span class="n">sns</span><span class="p">.</span><span class="nf">jointplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Cleanliness Rating</span><span class="sh">'</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">]),</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">reg</span><span class="sh">'</span><span class="p">,</span><span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="sh">'</span><span class="s">alpha</span><span class="sh">'</span><span class="p">:</span><span class="mf">0.05</span><span class="p">},</span><span class="n">line_kws</span><span class="o">=</span><span class="p">{</span><span class="sh">"</span><span class="s">color</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">black</span><span class="sh">"</span><span class="p">})</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.regplot(data = df[df["Price"]&lt;2000], x='Cleanliness Rating', y='Price',scatter=True,scatter_kws={'alpha':0.05},line_kws={"color": "black"});
+  sns.jointplot(x=df['Cleanliness Rating'],y=np.log(df['Price']),kind='reg',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
+  plt.show()
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_33_0.png" alt="cleanliness rating"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#sns.regplot(data = df[df['Price']&lt;2000], x='Guest Satisfaction', y='Price',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
-</span><span class="n">sns</span><span class="p">.</span><span class="nf">jointplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Guest Satisfaction</span><span class="sh">'</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">Price</span><span class="sh">'</span><span class="p">]),</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">reg</span><span class="sh">'</span><span class="p">,</span><span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="sh">'</span><span class="s">alpha</span><span class="sh">'</span><span class="p">:</span><span class="mf">0.05</span><span class="p">},</span><span class="n">line_kws</span><span class="o">=</span><span class="p">{</span><span class="sh">"</span><span class="s">color</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">black</span><span class="sh">"</span><span class="p">})</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+<h4>Guest satisfaction and price </h4>
+
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #sns.regplot(data = df[df['Price']&lt;2000], x='Guest Satisfaction', y='Price',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
+  sns.jointplot(x=df['Guest Satisfaction'],y=np.log(df['Price']),kind='reg',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
+  plt.show()
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_34_0.png" alt="guest satisfaction"></p>
 
-<h1><br></h1>
-<h1>  Data preprocessing </h1>
+<h2><br></h2>
+<h2>Data preprocessing </h2>
+<h3>Column transformers</h3>
+<p>Column transformers are used to pre-process data to evaluate the effect of three different preprocessing strategies on model efficacy.</p>
+<h4><br></h4>
+<h4>1. Standard preprocessing </h4>
 
-<h4 id="column-transformers-are-developed-to-evaluate-the-effect-of-three-different-preprocessing-strategies-on-model-efficacy">Column transformers are developed to evaluate the effect of three different preprocessing strategies on model efficacy.</h4>
+<ul>
+  <li>Normalized attraction index and restaurant index are not used</li>
+  <li>Data is scaled using a min-max scaling strategy</li>
+  <li>Restaurant index, attraction index, city center and metro index are log-transformed.</li>
+  <li>Room type and city are encoded.</li>
+</ul>
+<h4><br></h4>
+<h4>2. Preprocessing using developed RBFs</h4>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span><span class="p">,</span> <span class="n">TransformedTargetRegressor</span>
-<span class="kn">from</span> <span class="n">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">FunctionTransformer</span>
-<span class="kn">from</span> <span class="n">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span>
-<span class="kn">from</span> <span class="n">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
-<span class="kn">from</span> <span class="n">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span>
-<span class="kn">from</span> <span class="n">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">make_pipeline</span>
-<span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-</code></pre></div></div>
+<ul>
+  <li>Normalized attraction index and restaurant index are not used</li>
+  <li>Data is scaled using a min-max scaling strategy</li>
+  <li>Attraction index is log-transformed.</li>
+  <li>Restaurant index, metro index, and city center are replaced with the RBF functions developed during EDA.</li>
+  <li>Room type and city are encoded.</li>
+</ul>
+<h4><br></h4>
+<h4>3. Preprocessing using given normalized restaurant and attraction indexes </h4>
+
+<ul>
+  <li>Data is scaled using a min-max scaling strategy</li>
+  <li>City center and metro index are log-transformed.</li>
+  <li>Room type and city are encoded.</li>
+</ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining functions for column transformer
 </span>
@@ -947,14 +1007,6 @@ memory usage: 5.5+ MB
         
 <span class="n">day_pipe</span> <span class="o">=</span> <span class="nf">day_pipeline</span><span class="p">()</span>
 </code></pre></div></div>
-<h2><br></h2>
-<h2 id="1-standard-preprocessing">1. Standard preprocessing</h2>
-<ul>
-  <li>Normalized attraction index and restaurant index are not used</li>
-  <li>Data is scaled using a min-max scaling strategy</li>
-  <li>Restaurant index, attraction index, city center and metro index are log-transformed.</li>
-  <li>Room type and city are encoded.</li>
-</ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining standard column transformer
 </span><span class="n">preprocessing</span> <span class="o">=</span> <span class="nc">ColumnTransformer</span><span class="p">([</span>
@@ -966,15 +1018,6 @@ memory usage: 5.5+ MB
     <span class="p">(</span><span class="sh">'</span><span class="s">cat</span><span class="sh">'</span><span class="p">,</span> <span class="n">cat_encoder</span><span class="p">,</span> <span class="p">[</span><span class="sh">'</span><span class="s">Room Type</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">City</span><span class="sh">'</span><span class="p">])</span>
 <span class="p">])</span>
 </code></pre></div></div>
-<h2><br></h2>
-<h2 id="2-preprocessing-using-developed-rbfs">2. Preprocessing using developed RBFs</h2>
-<ul>
-  <li>Normalized attraction index and restaurant index are not used</li>
-  <li>Data is scaled using a min-max scaling strategy</li>
-  <li>Attraction index is log-transformed.</li>
-  <li>Restaurant index, metro index, and city center are replaced with the RBF functions developed during EDA.</li>
-  <li>Room type and city are encoded.</li>
-</ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#column transformer with rbf functions instead of metro, city, and restraunts
 </span><span class="n">preprocessing_rbf</span> <span class="o">=</span> <span class="nc">ColumnTransformer</span><span class="p">([</span>
@@ -987,13 +1030,6 @@ memory usage: 5.5+ MB
     <span class="p">(</span><span class="sh">'</span><span class="s">cat</span><span class="sh">'</span><span class="p">,</span> <span class="n">cat_encoder</span><span class="p">,</span> <span class="p">[</span><span class="sh">'</span><span class="s">Room Type</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">City</span><span class="sh">'</span><span class="p">])</span>
 <span class="p">])</span>
 </code></pre></div></div>
-<h2><br></h2>
-<h2 id="3-preprocessing-using-given-normalized-restaurant-and-attraction-indexes">3. Preprocessing using given normalized restaurant and attraction indexes</h2>
-<ul>
-  <li>Data is scaled using a min-max scaling strategy</li>
-  <li>City center and metro index are log-transformed.</li>
-  <li>Room type and city are encoded.</li>
-</ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#column transformer with given normalized features
 </span><span class="n">preprocessing_norm</span> <span class="o">=</span> <span class="nc">ColumnTransformer</span><span class="p">([</span>
@@ -1012,6 +1048,9 @@ memory usage: 5.5+ MB
 </span><span class="n">names</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">Series</span><span class="p">([</span><span class="sh">'</span><span class="s">Weekend</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Private Room</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Shared Room</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Superhost</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Business</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Multiple Rooms</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Cleanliness Rating</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Bedrooms</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Guest Satisfaction</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Attraction Index</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">City Center</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Metro Distance</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Restraunt Index</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">Private room</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">Entire home/apt</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">Shared room</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Amsterdam</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Athens</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Barcelona</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Berlin</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Budapest</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Lisbon</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Paris</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Rome</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Vienna</span><span class="sh">'</span><span class="p">])</span>
 </code></pre></div></div>
 
+<h3><br></h3>
+<h3>Test and train sets</h3>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#transforming data
 </span><span class="n">df_processed</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">preprocessing</span><span class="p">.</span><span class="nf">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">names</span><span class="p">)</span>
 </code></pre></div></div>
@@ -1023,20 +1062,10 @@ memory usage: 5.5+ MB
 <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">test_size</span><span class="o">=</span><span class="p">.</span><span class="mi">2</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </code></pre></div></div>
 
-<h1><br></h1>
-<h1>  Price prediction </h1>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#importing packages
-</span><span class="kn">from</span> <span class="n">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span><span class="p">,</span> <span class="n">Ridge</span><span class="p">,</span> <span class="n">ElasticNet</span>
-<span class="kn">from</span> <span class="n">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsRegressor</span>
-<span class="kn">from</span> <span class="n">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVR</span>
-<span class="kn">from</span> <span class="n">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestRegressor</span><span class="p">,</span> <span class="n">ExtraTreesRegressor</span><span class="p">,</span> <span class="n">AdaBoostRegressor</span><span class="p">,</span> <span class="n">GradientBoostingRegressor</span>
-<span class="kn">from</span> <span class="n">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
-<span class="kn">import</span> <span class="n">xgboost</span> <span class="k">as</span> <span class="n">xgb</span>
-<span class="kn">from</span> <span class="n">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span> 
-</code></pre></div></div>
 <h2><br></h2>
-<h2 id="sampling-regression-models-with-preprocessing-strategies">Sampling regression models with preprocessing strategies</h2>
+<h2>Price prediction </h2>
+
+<h3>Sampling models and preprocessing strategies</h3>
 <p>Common regression models were evaluated with six variations:</p>
 
 <ol>
@@ -1053,7 +1082,7 @@ memory usage: 5.5+ MB
 <p>MAPE is particularly useful when the data contains large values or outliers, as it gives equal weight to all the data points regardless of their scale. This can be important because MSE is sensitive to outliers and large values. When you have large data points, their influence on the model’s performance can skew the results of MSE, making it harder to determine the accuracy of the model. By including MAPE in the evaluation, you can better assess how well the model is predicting the target variable, even in the presence of large data points.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining mean absolute percentage error 
-</span><span class="k">def</span> <span class="nf">mape</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+</span><span class="k">def</span> <span class="nf">get_mape</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="p">.</span><span class="nf">mean</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">abs</span><span class="p">((</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">/</span> <span class="n">y_true</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>
 </code></pre></div></div>
 
@@ -1063,98 +1092,61 @@ memory usage: 5.5+ MB
 <span class="n">model_names</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Ridge</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">ElasticNet</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">SVR</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">K-nearest neighbors</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Random Forest</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Extra Trees</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Adaptive Boosting</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Gradient Boosting</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">XGBoost</span><span class="sh">'</span><span class="p">]</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#y
-</span><span class="n">mse</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">mape_err</span> <span class="o">=</span> <span class="p">[]</span>
-
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">sample_pipe</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-    <span class="n">sample_pipe</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">sample_pipe</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="n">mse</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-    <span class="n">mape_err</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mape</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#log y
-</span><span class="n">scaled_mse</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">scaled_mape</span> <span class="o">=</span> <span class="p">[]</span>
-
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">scaled_pipe</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-    <span class="n">scaled_pipe</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">y_train</span><span class="p">))</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">scaled_pipe</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
-    <span class="n">scaled_mse</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-    <span class="n">scaled_mape</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mape</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#with dimensionality reduction
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#selected pipelines
 </span><span class="n">pca</span> <span class="o">=</span> <span class="nc">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="p">.</span><span class="mi">95</span><span class="p">)</span>
-<span class="n">pca_mse</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">pca_mape</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">pca_pipe</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing</span><span class="p">,</span> <span class="n">pca</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-    <span class="n">pca_pipe</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">pca_pipe</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="n">pca_mse</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-    <span class="n">pca_mape</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mape</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<span class="n">standard_pipeline</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing</span><span class="p">,</span><span class="n">model</span><span class="p">)</span>
+<span class="n">pca_pipeline</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing</span><span class="p">,</span> <span class="n">pca</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+<span class="n">rbf_pipeline</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing_rbf</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+<span class="n">norm_pipeline</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing_norm</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+<span class="n">combo_pipeline</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing_rbf</span><span class="p">,</span> <span class="n">pca</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+<span class="n">pipelines</span> <span class="o">=</span> <span class="p">[</span><span class="n">standard_pipeline</span><span class="p">,</span> <span class="n">standard_pipeline</span><span class="p">,</span> <span class="n">pca_pipeline</span><span class="p">,</span> <span class="n">rbf_pipeline</span><span class="p">,</span> <span class="n">norm_pipeline</span><span class="p">,</span> <span class="n">combo_pipeline</span><span class="p">]</span>
+
+<span class="c1">#local scaling
+</span><span class="n">scaling</span> <span class="o">=</span> <span class="p">(</span><span class="bp">False</span><span class="p">,</span><span class="bp">True</span><span class="p">,</span><span class="bp">False</span><span class="p">,</span><span class="bp">False</span><span class="p">,</span><span class="bp">False</span><span class="p">,</span><span class="bp">True</span><span class="p">)</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#with rbf 
-</span><span class="n">rbf_mse</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">rbf_mape</span> <span class="o">=</span> <span class="p">[]</span>
-
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">rbf_pipe</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing_rbf</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-    <span class="n">rbf_pipe</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">rbf_pipe</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="n">rbf_mse</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-    <span class="n">rbf_mape</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mape</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#function for evaluating a pipeline's perfomance in all models
+</span><span class="k">def</span> <span class="nf">pipeline_eval</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">models</span><span class="p">,</span> <span class="n">X_train</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">mse</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">mape</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+            <span class="n">pipe</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">y_train</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">pipe</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">pipe</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+        <span class="n">mse</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+        <span class="n">mape</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">get_mape</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">mse</span><span class="p">,</span><span class="n">mape</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#with provided normalized features
-</span><span class="n">norm_mse</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">norm_mape</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mse</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">mape</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">norm_pipe</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing_norm</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-    <span class="n">norm_pipe</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">norm_pipe</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="n">norm_mse</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-    <span class="n">norm_mape</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mape</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">pipe</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">pipelines</span><span class="p">):</span>
+    <span class="n">mse_</span><span class="p">,</span><span class="n">mape_</span> <span class="o">=</span> <span class="nf">pipeline_eval</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span><span class="n">log</span><span class="o">=</span><span class="n">scaling</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+    <span class="n">mse</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">mse_</span><span class="p">)</span>
+    <span class="n">mape</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">mape_</span><span class="p">)</span>
 </code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#combination 
-</span><span class="n">combo_mse</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">combo_mape</span> <span class="o">=</span> <span class="p">[]</span>
+<details>
+  <summary>Click to show hidden code</summary>
+  <pre>
+  #visualing results
+  pd.DataFrame(mse).plot(kind='barh')
+  plt.title('Regressor MSE')
+  plt.xlim([0,100000])
+  plt.legend(loc=4, facecolor='white')
 
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">combo_pipe</span> <span class="o">=</span> <span class="nf">make_pipeline</span><span class="p">(</span><span class="n">preprocessing_rbf</span><span class="p">,</span> <span class="n">pca</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-    <span class="n">combo_pipe</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">y_train</span><span class="p">))</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">combo_pipe</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
-    <span class="n">combo_mse</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-    <span class="n">combo_mape</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mape</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#error compilation
-</span><span class="n">mse_results</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">([</span><span class="n">mse</span><span class="p">,</span><span class="n">scaled_mse</span><span class="p">,</span><span class="n">pca_mse</span><span class="p">,</span> <span class="n">rbf_mse</span><span class="p">,</span> <span class="n">norm_mse</span><span class="p">,</span> <span class="n">combo_mse</span><span class="p">],</span> <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Unscaled</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Log price</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Reduced Dimensions</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">RBF Features</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Normalized Features</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Combination</span><span class="sh">'</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">model_names</span><span class="p">).</span><span class="n">T</span>
-<span class="n">mape_results</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nc">DataFrame</span><span class="p">([</span><span class="n">mape_err</span><span class="p">,</span><span class="n">scaled_mape</span><span class="p">,</span><span class="n">pca_mape</span><span class="p">,</span> <span class="n">rbf_mape</span><span class="p">,</span> <span class="n">norm_mape</span><span class="p">,</span> <span class="n">combo_mape</span><span class="p">],</span> <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Unscaled</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Log price</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Reduced Dimensions</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">RBF Features</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Normalized Features</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">Combination</span><span class="sh">'</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">model_names</span><span class="p">).</span><span class="n">T</span>
-</code></pre></div></div>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#visualing results
-</span><span class="n">mse_results</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">barh</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Regressor MSE</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">100000</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="sh">'</span><span class="s">white</span><span class="sh">'</span><span class="p">)</span>
-
-<span class="n">mape_results</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="sh">'</span><span class="s">barh</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">title</span><span class="p">(</span><span class="sh">'</span><span class="s">Regressor MAPE</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="sh">'</span><span class="s">white</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
-</code></pre></div></div>
+  pd.DataFrame(mape).plot(kind='barh')
+  plt.title('Regressor MAPE')
+  plt.xlim([0,100])
+  plt.legend(loc=4, facecolor='white')
+  plt.show()
+  </pre>
+</details>
 
 <p><img src="/assets/img/airbnb_pipeline/output_60_0.png" alt="MSE performance"></p>
 
@@ -1369,13 +1361,9 @@ memory usage: 5.5+ MB
 <div class="alert alert-block alert-success" style="font-size:18px; font-family:verdana; line-height: 1.7em;">
     📌   The top performing regressor was the extra trees regressor with the log-transformed price.  </div>
 
-<h2><br></h2>
-<h2 id="optimizing-extra-trees-regression-model">Optimizing extra trees regression model</h2>
-
-<h4 id="general-dependence-of-mse-on-number-of-estimators">General dependence of MSE on number of estimators</h4>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span> 
-</code></pre></div></div>
+<h3><br></h3>
+<h3>Optimizing extra trees regression model</h3>
+<h4>MSE and number of estimators</h4>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mse_n_est</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1386,17 +1374,24 @@ memory usage: 5.5+ MB
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">tree_opt</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
     <span class="n">mse_n_est</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
-
-<span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">n_estimators</span><span class="p">,</span><span class="n">mse_n_est</span><span class="p">,</span><span class="sh">'</span><span class="s">-</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">n_estimators</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">mean squared error</span><span class="sh">'</span><span class="p">)</span>
-<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
 </code></pre></div></div>
-
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.plot(n_estimators,mse_n_est,'-')
+  plt.xlabel('n_estimators')
+  plt.ylabel('mean squared error')
+  plt.show()
+  </pre>
+</details>
 <p><img src="/assets/img/airbnb_pipeline/output_67_0.png" alt="extra tree regressor tree number optimization"></p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Mean squared error at n_estimators = 500: </span><span class="si">{</span><span class="n">mse_n_est</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="p">.</span><span class="mi">0</span><span class="n">f</span><span class="si">}</span><span class="s">.</span><span class="sh">'</span><span class="p">)</span>
-</code></pre></div></div>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+print(f'Mean squared error at n_estimators = 500: {mse_n_est[-1]:.0f}.')
+  </pre>
+</details>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mean squared error at n_estimators = 500: 11796.
 </code></pre></div></div>
@@ -1404,7 +1399,8 @@ memory usage: 5.5+ MB
 <div class="alert alert-block alert-success" style="font-size:18px; font-family:verdana; line-height: 1.7em;">
     📌    We will use 500 trees to optimize other model parameters, as this number minimizes the mean squared error without overfitting.  </div>
 
-<h4 id="gridsearchcv">GridSearchCV</h4>
+<h4><br></h4>
+<h4>GridSearchCV</h4>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#grid search 
 </span>
@@ -1426,14 +1422,7 @@ memory usage: 5.5+ MB
 <span class="n">tree_search</span><span class="p">.</span><span class="n">best_score_</span><span class="p">,</span><span class="n">tree_search</span><span class="p">.</span><span class="n">best_params_</span>
 </code></pre></div></div>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/opt/conda/lib/python3.7/site-packages/joblib/externals/loky/process_executor.py:703: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
-  "timeout or by a memory leak.", UserWarning
-
-
-
-
-
-(-0.27009412940530914,
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(-0.27009412940530914,
  {'extratreesregressor__max_depth': 30,
   'extratreesregressor__max_features': 'sqrt',
   'extratreesregressor__n_estimators': 500})
@@ -1442,28 +1431,15 @@ memory usage: 5.5+ MB
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">y_pred</span> <span class="o">=</span> <span class="n">tree_search</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
 <span class="nf">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">y_pred</span><span class="p">))</span>
 </code></pre></div></div>
-
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>16595.141980500048
 </code></pre></div></div>
 
 <p>Constraining the max_depth appears to weaken the predictive power of the extra trees regressor in this case. Therefore, only n_estimators will be adjusted as a hyperparameter and the lowest MSE is 11,788.</p>
 
-<h1><br></h1>
-<h1>  Conclusion </h1>
+<h2><br></h2>
+<h2>Conclusion </h2>
 
-<p>The analysis done in this project enables us to build an optimized pipeline for predicting Airbnb prices. The steps in this pipeline are summarized below:</p>
-
-<ol>
-  <li>Attraction index, restaurant index, city center and metro index are log-transformed.</li>
-  <li>Room type and city are encoded.</li>
-  <li>Data is scaled using a min-max scaling strategy.</li>
-  <li>Housing prices are log-transformed.</li>
-  <li>Log-price is predicted using a trained and optimized random forest regressor</li>
-  <li>Price is transformed back to linear space.</li>
-</ol>
-
-<p><br>
-The top performing model on this dataset is defined for clarity below:</p>
+<p>The top performing model on this dataset is defined for clairity below:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">set_config</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="sh">'</span><span class="s">diagram</span><span class="sh">'</span><span class="p">)</span>
 </code></pre></div></div>
