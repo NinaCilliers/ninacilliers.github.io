@@ -1,84 +1,92 @@
 ---
 layout: page
 title: An optimized pipeline for Airbnb price prediction
-description: A pipeline is developed to predict Airbnb rental Airbnb prices in Europe. The performance of six data preprocessing strategies was evaluated in nine models against two error metrics. 
+description: A pipeline is optimized for optimal pre-preprocessing and regression techniques.
 img: assets/img/airbnb_pipeline/airbnb_pic.webp
-importance: 5
+importance: 9
 category: Other projects
 ---
 
 <h1>An optimized pipeline for Airbnb price prediction</h1>
-<h1> <br> </h1>
-<h1>  Introduction</h1>
+<h4><i>Regression models and preprocessing strategies</i></h4>
+<h4><br></h4>
+<h2>Introduction</h2>
            
 A pipeline is developed to predict the price of Airbnb stays in Europe. An optimized pipeline for Airbnb price forecasting can identify key factors that impact the price of listings and provide insights into market trends and competitors' offerings. By utilizing this pipeline to forecast future revenue based on these insights, hosts can make data-driven decisions that maximize their profits. This streamlined approach saves time, increases accuracy, and delivers the best possible experience to Airbnb guests. 
 <br>
 <br>
-First, we carefully consider the range of prices of interest. Next, we develop several pre-processing strategies that utilize feature re-scaling and feature engineering. Next, we evaluate these strategies in conjunction with common models looking at two common error metrics. Extra trees and random forest regressors both perform, with extra trees performing the best. This model is combined with the optimal pre-processing strategy in a transferrable and concise final pipeline. 
+First, we carefully consider the range of prices of interest. Next, we develop several pre-processing strategies that utilize feature re-scaling and feature engineering. Next, we evaluate these strategies in conjunction with common models looking at two common error metrics. Extra trees and random forest regressors both perform with, with extra trees performing the best. This model is combined with the optimal pre-processing strategy in a transferrable and concise final pipeline. </br>
 <br>
-<br>
-![img](/assets/img/airbnb_pipeline/airbnb_pic.webp)
+<h2><br></h2>
+<h2>Project Outline </h2>
 
-<h1> <br></h1>
-<h1>  Project Outline </h1>
-
-<h3 href='#selecting'>Selecting price range</h3>
+<h4>Selecting price range</h4>
 - Raw data is imported from source
 - Justification for outlier removal
 - Outlier identification
-
-### Exploratory data analysis 
+<br>
+<h4>Exploratory</h4>
 - Heat map 
 - Pair plots
 - RBF definition
-- Visualizing categorical data
-- Visualizing rankings
-
-### Data preprocessing
+- Visualizing data
+<br>
+<h4>Data preprocessing</h4>
 - Encoding categorical data
 - Building pipelines for model evaluation
-
-### Price prediction
+<br>
+<h4>Price prediction</h4>
 - Sampling regression models with preprocessing strategies
 - Optimizing extra trees regression model
+<br>
+<h4>Conclusion</h4>
 
-### Conclusion
 - The best performing model used an extra trees regressor with 500 estimators to predict the log of the price. 
 - This pipeline had mean squared error of 11,788.
 
-<h1> <br> </h1>
-<h1> <A id='selecting'>  Selecting price range </A></h1>         
-## Importing data
-
-
-```python
-import pandas as pd
-import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import seaborn as sns
-import os
-from sklearn import set_config
-```
-
-
-```python
+<h2><br></h2>
+<h2>Selecting price range</h2>
 <details>
-  <summary>System settings and directory</summary>
-
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  import pandas as pd
+  import numpy as np
+  import matplotlib as mpl
+  import matplotlib.pyplot as plt
+  import seaborn as sns
+  import os
+  from sklearn import set_config
+  from scipy.stats import zscore
+  from sklearn.metrics.pairwise import rbf_kernel
+  from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
+  from sklearn.preprocessing import FunctionTransformer
+  from sklearn.preprocessing import OneHotEncoder
+  from sklearn.preprocessing import MinMaxScaler
+  from sklearn.base import BaseEstimator, TransformerMixin
+  from sklearn.pipeline import make_pipeline
+  from sklearn.model_selection import train_test_split
+  from sklearn.linear_model import LinearRegression, Ridge, ElasticNet
+  from sklearn.neighbors import KNeighborsRegressor
+  from sklearn.svm import SVR
+  from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, AdaBoostRegressor, GradientBoostingRegressor
+  from sklearn.metrics import mean_squared_error
+  import xgboost as xgb
+  from sklearn.decomposition import PCA 
+  from sklearn.model_selection import GridSearchCV 
+  </pre>
+  <pre>
   plt.style.use('ggplot')
   pd.set_option('display.max_columns', 100)
-  #set_config(transform_output="pandas") #doesn't work here :(
-  ```
+  #set_config(transform_output="pandas")
+  </pre>
+  <pre>
+  df = pd.read_csv('Aemf1.csv')
+  </pre>
 </details>
 
 ```python
-os.chdir('/kaggle/input/airbnb-cleaned-europe-dataset')
-df = pd.read_csv('Aemf1.csv')
 df
 ```
-
-
 
 
 
@@ -131,12 +139,12 @@ df
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>1</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>93.0</td>
+      <td>10</td>
+      <td>93</td>
       <td>1</td>
       <td>5.022964</td>
       <td>2.539380</td>
@@ -153,12 +161,12 @@ df
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>4.0</td>
+      <td>4</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>8.0</td>
-      <td>85.0</td>
+      <td>8</td>
+      <td>85</td>
       <td>1</td>
       <td>0.488389</td>
       <td>0.239404</td>
@@ -175,12 +183,12 @@ df
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>1</td>
-      <td>9.0</td>
-      <td>87.0</td>
+      <td>9</td>
+      <td>87</td>
       <td>1</td>
       <td>5.748312</td>
       <td>3.651621</td>
@@ -197,12 +205,12 @@ df
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>4.0</td>
+      <td>4</td>
       <td>False</td>
       <td>0</td>
       <td>1</td>
-      <td>9.0</td>
-      <td>90.0</td>
+      <td>9</td>
+      <td>90</td>
       <td>2</td>
       <td>0.384862</td>
       <td>0.439876</td>
@@ -219,12 +227,12 @@ df
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>True</td>
       <td>0</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>98.0</td>
+      <td>10</td>
+      <td>98</td>
       <td>1</td>
       <td>0.544738</td>
       <td>0.318693</td>
@@ -263,12 +271,12 @@ df
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>6.0</td>
+      <td>6</td>
       <td>False</td>
       <td>0</td>
       <td>1</td>
-      <td>10.0</td>
-      <td>100.0</td>
+      <td>10</td>
+      <td>100</td>
       <td>3</td>
       <td>0.530181</td>
       <td>0.135447</td>
@@ -285,12 +293,12 @@ df
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>8.0</td>
-      <td>86.0</td>
+      <td>8</td>
+      <td>86</td>
       <td>1</td>
       <td>0.810205</td>
       <td>0.100839</td>
@@ -307,12 +315,12 @@ df
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>93.0</td>
+      <td>10</td>
+      <td>93</td>
       <td>1</td>
       <td>0.994051</td>
       <td>0.202539</td>
@@ -329,12 +337,12 @@ df
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>87.0</td>
+      <td>10</td>
+      <td>87</td>
       <td>1</td>
       <td>3.044100</td>
       <td>0.287435</td>
@@ -351,12 +359,12 @@ df
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>4.0</td>
+      <td>4</td>
       <td>True</td>
       <td>1</td>
       <td>0</td>
-      <td>10.0</td>
-      <td>93.0</td>
+      <td>10</td>
+      <td>93</td>
       <td>1</td>
       <td>1.263932</td>
       <td>0.480903</td>
@@ -388,12 +396,12 @@ df.info()
      3   Room Type                    41714 non-null  object 
      4   Shared Room                  41714 non-null  bool   
      5   Private Room                 41714 non-null  bool   
-     6   Person Capacity              41714 non-null  float64
+     6   Person Capacity              41714 non-null  int64  
      7   Superhost                    41714 non-null  bool   
      8   Multiple Rooms               41714 non-null  int64  
      9   Business                     41714 non-null  int64  
-     10  Cleanliness Rating           41714 non-null  float64
-     11  Guest Satisfaction           41714 non-null  float64
+     10  Cleanliness Rating           41714 non-null  int64  
+     11  Guest Satisfaction           41714 non-null  int64  
      12  Bedrooms                     41714 non-null  int64  
      13  City Center (km)             41714 non-null  float64
      14  Metro Distance (km)          41714 non-null  float64
@@ -401,20 +409,21 @@ df.info()
      16  Normalised Attraction Index  41714 non-null  float64
      17  Restraunt Index              41714 non-null  float64
      18  Normalised Restraunt Index   41714 non-null  float64
-    dtypes: bool(3), float64(10), int64(3), object(3)
+    dtypes: bool(3), float64(7), int64(6), object(3)
     memory usage: 5.2+ MB
-    
-<h2><br></h2>   
-<h2 id='selecting'>Selecting price range</h2>
 
 Developing a general pricing model using extremely expensive stays that are likely outliers may not be appropriate or desirable. The price of extremely expensive stays may not be tied to features described in this dataset, such as luxury amenities or event hosting capabilities. Thus, extreme outliers will be identified and removed from the dataset.
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.histplot(np.log(df['Price']))
+  plt.show()
+  </pre>
+</details>
 
-```python
-sns.histplot(np.log(df['Price']))
-plt.show()
-```
 
+    
 ![png](/assets/img/airbnb_pipeline/output_8_0.png)
     
 
@@ -475,12 +484,12 @@ df.sort_values('Price', ascending=False).head()
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>True</td>
       <td>0</td>
       <td>1</td>
-      <td>10.0</td>
-      <td>100.0</td>
+      <td>10</td>
+      <td>100</td>
       <td>1</td>
       <td>1.196536</td>
       <td>0.381128</td>
@@ -497,12 +506,12 @@ df.sort_values('Price', ascending=False).head()
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>9.0</td>
-      <td>100.0</td>
+      <td>9</td>
+      <td>100</td>
       <td>1</td>
       <td>4.602378</td>
       <td>0.118665</td>
@@ -519,12 +528,12 @@ df.sort_values('Price', ascending=False).head()
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>9.0</td>
-      <td>87.0</td>
+      <td>9</td>
+      <td>87</td>
       <td>1</td>
       <td>2.239501</td>
       <td>0.414395</td>
@@ -541,12 +550,12 @@ df.sort_values('Price', ascending=False).head()
       <td>Private room</td>
       <td>False</td>
       <td>True</td>
-      <td>2.0</td>
+      <td>2</td>
       <td>False</td>
       <td>0</td>
       <td>0</td>
-      <td>9.0</td>
-      <td>87.0</td>
+      <td>9</td>
+      <td>87</td>
       <td>1</td>
       <td>2.239486</td>
       <td>0.414409</td>
@@ -563,12 +572,12 @@ df.sort_values('Price', ascending=False).head()
       <td>Entire home/apt</td>
       <td>False</td>
       <td>False</td>
-      <td>4.0</td>
+      <td>4</td>
       <td>False</td>
       <td>0</td>
       <td>1</td>
-      <td>7.0</td>
-      <td>93.0</td>
+      <td>7</td>
+      <td>93</td>
       <td>1</td>
       <td>1.497979</td>
       <td>0.396893</td>
@@ -583,12 +592,10 @@ df.sort_values('Price', ascending=False).head()
 
 
 
-To identify outliers, the price distribution from the most expensive case, where the city is Amsterdam and the room capacity is 6, is used to identify outliers for the entire data set.  
+To identify outliers, the price distribution from the most expensive case, where the city is Amsterdam and the room capacity is 6, is used. 
 
 
 ```python
-from scipy.stats import zscore
-
 df_expensive = df[(df['City']=='Amsterdam')&(df['Person Capacity']==6.0)]
 
 mean_val = np.mean(df_expensive['Price'])
@@ -600,21 +607,26 @@ lower_bound = mean_val - threshold * std_dev
 upper_bound = mean_val + threshold * std_dev
 
 df_no_outliers = df[df['Price']<upper_bound] #&(z_scores>-4)]
-
-print('With outliers exclusded..')
-print(f'New max price: ${upper_bound:.2f}')
-print(f'New min price: ${lower_bound:.2f}')
-
-sns.histplot(np.log(df_no_outliers['Price']))
-plt.show()
 ```
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  print('With outliers exclusded..')
+  print(f'New max price: ${upper_bound:.2f}')
+  print(f'New min price: ${lower_bound:.2f}')
+
+  sns.histplot(np.log(df_no_outliers['Price']))
+  plt.show()
+  </pre>
+</details>
 
     With outliers exclusded..
     New max price: $6315.60
     New min price: $-2974.58
+
+
+
     
-
-
 ![outlier removed price histogram](/assets/img/airbnb_pipeline/output_11_1.png)    
     
 
@@ -622,8 +634,8 @@ plt.show()
 <div class="alert alert-block alert-success" style="font-size:18px; font-family:verdana; line-height: 1.7em;">
     📌 &nbsp; Prices above \$6,5000 will not be considered by this model, as these are likely anomalous listings influenced by factors beyond what is represented in our data set. Additional information on luxury amenities or event hosting capabilities is required for a general model to price these properties.  </div>
 
-<h2><br></h2>   
-## Data summary
+<h2><br></h2>
+<h2>Data summary</h2>
 
 
 ```python
@@ -632,7 +644,7 @@ df.info()
 ```
 
     <class 'pandas.core.frame.DataFrame'>
-    Int64Index: 41703 entries, 0 to 41713
+    Index: 41703 entries, 0 to 41713
     Data columns (total 19 columns):
      #   Column                       Non-Null Count  Dtype  
     ---  ------                       --------------  -----  
@@ -642,12 +654,12 @@ df.info()
      3   Room Type                    41703 non-null  object 
      4   Shared Room                  41703 non-null  bool   
      5   Private Room                 41703 non-null  bool   
-     6   Person Capacity              41703 non-null  float64
+     6   Person Capacity              41703 non-null  int64  
      7   Superhost                    41703 non-null  bool   
      8   Multiple Rooms               41703 non-null  int64  
      9   Business                     41703 non-null  int64  
-     10  Cleanliness Rating           41703 non-null  float64
-     11  Guest Satisfaction           41703 non-null  float64
+     10  Cleanliness Rating           41703 non-null  int64  
+     11  Guest Satisfaction           41703 non-null  int64  
      12  Bedrooms                     41703 non-null  int64  
      13  City Center (km)             41703 non-null  float64
      14  Metro Distance (km)          41703 non-null  float64
@@ -655,31 +667,29 @@ df.info()
      16  Normalised Attraction Index  41703 non-null  float64
      17  Restraunt Index              41703 non-null  float64
      18  Normalised Restraunt Index   41703 non-null  float64
-    dtypes: bool(3), float64(10), int64(3), object(3)
+    dtypes: bool(3), float64(7), int64(6), object(3)
     memory usage: 5.5+ MB
-    
 
-<h1> <br> </h1>
-<h1>  EDA </h1>
 
-## Heat map
+<h2><br></h2>
+<h2>EDA </h2>
+<h3>Heat map</h3>
 
 Correlations between variables are visualized in the heat map below. 
 - Cleaner rooms are rated higher. 
 - Attractions and restaurants are found in the same locations. 
 - City centers are closer to attractions and restaurants.
 
-
-
 ```python
 #Heat map 
+df_ = df.select_dtypes(exclude=['object_'])
 
 #optimizng range for color scale
-min = df.corr().min().min()
-max = df.corr()[df.corr()!=1].max().max()
+min = df_.corr().min().min()
+max = df_.corr()[df_.corr()!=1].max().max()
 
 #thresholding selected correlations
-df_corr  = df.corr()[np.absolute(df.corr())>0.3]
+df_corr  = df_.corr()[np.absolute(df_.corr())>0.3]
 
 #Mask for selecting only bottom triangle
 mask = np.triu(df_corr)
@@ -692,18 +702,19 @@ with plt.style.context('default'):
 ![heat map](/assets/img/airbnb_pipeline/output_16_0.png)    
     
 
-<h2><br></h2>   
-## Pair plots
+<h3><br></h3>
+<h3>Pair plots</h3>
+
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #raw data 
+  sns.pairplot(df[['City Center (km)','Metro Distance (km)','Attraction Index','Restraunt Index','Price']], kind='hist',corner=True);
+  </pre>
+</details>
 
 
-```python
-#raw data 
-sns.pairplot(df[['City Center (km)','Metro Distance (km)','Attraction Index','Restraunt Index','Price']], kind='hist',corner=True);
-```
-
-
-![pair plots](/assets/img/airbnb_pipeline/output_18_0.png)   
-    
+![pair plots](/assets/img/airbnb_pipeline/output_18_0.png)    
 
 
 We see that these features are better represented in log space:
@@ -720,182 +731,172 @@ df_trial['Price']=np.log(df['Price'])
 sns.pairplot(df_trial, kind='hist',corner=True);
 ```
 
-
 ![log transformed pair plots](/assets/img/airbnb_pipeline/output_20_0.png)    
+    
 
-<h2><br></h2>   
-## RBF Definition
+<h3><br></h3>
+<h3>RBF Definition</h3>
 We find a comparable radial basis function to describe features with an apparent radial price distribution in the above pair plots.
 
 
 ```python
 #Metro, city center and restraunt index RBFs
-
-from sklearn.metrics.pairwise import rbf_kernel
-df['rbf_metro'] = rbf_kernel(df_trial[['Metro Distance (km)']],[[-.5]], gamma=1) 
-df['rbf_city'] = rbf_kernel(df_trial[['City Center (km)']],[[.3]], gamma=.5)
-df['rbf_res'] = rbf_kernel(df_trial[['Restraunt Index']],[[6.25]], gamma=.5)
+def to_gamma(df, key, r, gamma):
+    return rbf_kernel(df[[key]],[[r]],gamma=gamma)
 ```
-
 
 ```python
-#visualizing metro rbf function
-fig, ax1 = plt.subplots(1)
-plt.bar(df_trial['Metro Distance (km)'], df['Price'])
-plt.xlabel('Log Metro Distance (km)')
-plt.ylabel('Price')
-ax2=ax1.twinx()
-ax2.scatter(df_trial['Metro Distance (km)'], df['rbf_metro'],color='k',s=.5)
-ax2.set_ylim([0,1])
-ax2.set_ylabel('Price rbf')
-plt.show()
+df['rbf_metro'] = to_gamma(df_trial, 'Metro Distance (km)', -.5, 1)
+df['rbf_city'] = to_gamma(df_trial,'City Center (km)',.3, .5)
+df['rbf_res'] = to_gamma(df_trial,'Restraunt Index',6.25,.5)
 ```
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #visualizing metro rbf function
+  def view_rbf(df,key,rbf_key):
+      fig, ax1 = plt.subplots(1)
+      plt.bar(df[key], df['Price'])
+      plt.xlabel(key)
+      plt.ylabel('Price')
+      ax2=ax1.twinx()
+      ax2.scatter(df[key], df[rbf_key],color='k',s=.5)
+      ax2.set_ylim([0,1])
+      ax2.set_ylabel(rbf_key)
+      plt.show()
+  </pre>
+  <pre>
+  view_rbf(df,'Metro Distance (km)','rbf_metro')
+  view_rbf(df,'City Center (km)','rbf_city')
+  view_rbf(df,'Restraunt Index','rbf_res')
+  </pre>
+</details>
 
-![rbf metro](/assets/img/airbnb_pipeline/output_23_0.png)    
-
-
-
-```python
-#visualizing city rbf function
-fig, ax1 = plt.subplots(1)
-plt.bar(df_trial['City Center (km)'], df['Price'])
-plt.xlabel('Log City Center (km)')
-plt.ylabel('Price')
-ax2=ax1.twinx()
-ax2.scatter(df_trial['City Center (km)'], df['rbf_city'],color='k',s=.5)
-ax2.set_ylim([0,1])
-ax2.set_ylabel('City rbf')
-plt.show()
-```
-
-
+![rbf metro](/assets/img/airbnb_pipeline/output_23_0.png)   
 ![rbf city center](/assets/img/airbnb_pipeline/output_24_0.png)    
-    
-
-
-
-```python
-#visualizing city rbf function
-fig, ax1 = plt.subplots(1)
-plt.bar(df_trial['Restraunt Index'], df['Price'])
-plt.xlabel('Log Restraunt Index (km)')
-plt.ylabel('Price')
-ax2=ax1.twinx()
-ax2.scatter(df_trial['Restraunt Index'], df['rbf_res'],color='k',s=.5)
-ax2.set_ylim([0,1])
-ax2.set_ylabel('Restraunt rbf')
-plt.show()
-```
-
-
 ![rbf restaurant](/assets/img/airbnb_pipeline/output_25_0.png)    
-    
 
-<h2><br></h2>   
-## Visualizing categorical data
-
-
-```python
-fig, ax = plt.subplots(1)
-fig.set_size_inches(8,4)
-sns.boxplot(data = df, x='City', y='Price',showfliers = False)
-ax.set_ylim([0,1300])
-plt.show()
-```
-
+<h3><br></h3>
+<h3>Visualizing data</h3>
+<h4>Price by city </h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig, ax = plt.subplots(1)
+  fig.set_size_inches(8,4)
+  sns.boxplot(data = df, x='City', y='Price',showfliers = False)
+  ax.set_ylim([0,1300])
+  plt.show()
+  </pre>
+</details>
 
 ![price by city](/assets/img/airbnb_pipeline/output_27_0.png)
-    
 
-
-
-```python
-sns.boxplot(data=df, x='Superhost',y='Price',showfliers=False);
-```
+<h4>Superhost status and price</h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.boxplot(data=df, x='Superhost',y='Price',showfliers=False);
+  </pre>
+</details>
 
 
 ![superhost box plot](/assets/img/airbnb_pipeline/output_28_0.png)    
-    
 
+<h4> Room type and price </h4> 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  fig,(ax1,ax2) = plt.subplots(1,2,figsize=(8,3))
+  plt.sca(ax1)
+  sns.boxplot(data=df, x='Room Type',y='Price',showfliers=False)
+  plt.sca(ax2)
+  sns.boxplot(data=df, x='Shared Room',y='Price',showfliers=False)
+  plt.tight_layout()
+  </pre>
+</details>
 
+![room type boxplot](/assets/img/airbnb_pipeline/output_29_0.png)        
 
-```python
-fig,(ax1,ax2) = plt.subplots(1,2,figsize=(8,3))
-plt.sca(ax1)
-sns.boxplot(data=df, x='Room Type',y='Price',showfliers=False)
-plt.sca(ax2)
-sns.boxplot(data=df, x='Shared Room',y='Price',showfliers=False)
-plt.tight_layout()
-```
-
-
-![room type boxplot](/assets/img/airbnb_pipeline/output_29_0.png)    
-
-
-
-```python
-sns.boxplot(data=df, x='Day',y='Price',showfliers=False);
-```
+<h4>Price by day of week </h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.boxplot(data=df, x='Day',y='Price',showfliers=False);
+  </pre>
+</details>
 
 
 ![day boxplot](/assets/img/airbnb_pipeline/output_30_0.png)    
-    
-
-
-
-```python
-sns.boxplot(data = df, x='Person Capacity', y='Price',showfliers=False)
-plt.ylim([0,1000])
-plt.show()
-```
+      
+<h4>Price by capacity</h4>
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.boxplot(data = df, x='Person Capacity', y='Price',showfliers=False)
+  plt.ylim([0,1000])
+  plt.show()
+  </pre>
+</details>
 
 
 ![capacity boxplot](/assets/img/airbnb_pipeline/output_31_0.png)    
-    
+       
+<h4>Cleanliness and price</h4>
 
-<h2><br></h2>   
-## Visualizing rankings
-
-
-```python
-#sns.regplot(data = df[df["Price"]<2000], x='Cleanliness Rating', y='Price',scatter=True,scatter_kws={'alpha':0.05},line_kws={"color": "black"});
-sns.jointplot(x=df['Cleanliness Rating'],y=np.log(df['Price']),kind='reg',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
-plt.show()
-```
-
-
-![cleanliness rating](/assets/img/airbnb_pipeline/output_33_0.png)    
-    
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  sns.regplot(data = df[df["Price"]<2000], x='Cleanliness Rating', y='Price',scatter=True,scatter_kws={'alpha':0.05},line_kws={"color": "black"});
+  sns.jointplot(x=df['Cleanliness Rating'],y=np.log(df['Price']),kind='reg',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
+  plt.show()
+  </pre>
+</details>
 
 
+![cleanliness rating](/assets/img/airbnb_pipeline/output_33_0.png)   
 
-```python
-#sns.regplot(data = df[df['Price']<2000], x='Guest Satisfaction', y='Price',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
-sns.jointplot(x=df['Guest Satisfaction'],y=np.log(df['Price']),kind='reg',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
-plt.show()
-```
+<h4>Guest satisfaction and price </h4>
 
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  #sns.regplot(data = df[df['Price']<2000], x='Guest Satisfaction', y='Price',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
+  sns.jointplot(x=df['Guest Satisfaction'],y=np.log(df['Price']),kind='reg',scatter_kws={'alpha':0.05},line_kws={"color": "black"})
+  plt.show()
+  </pre>
+</details>
 
 ![guest satisfaction](/assets/img/airbnb_pipeline/output_34_0.png)    
-    
+ 
 
+<h2><br></h2>
+<h2>Data preprocessing </h2>
+<h3>Column transformers</h3>
+Column transformers are used to pre-process data to evaluate the effect of three different preprocessing strategies on model efficacy. 
+<h4><br></h4>
+<h4>1. Standard preprocessing </h4>
 
-<h1><br></h1>
-<h1>  Data preprocessing </h1>
+- Normalized attraction index and restaurant index are not used
+- Data is scaled using a min-max scaling strategy
+- Restaurant index, attraction index, city center and metro index are log-transformed. 
+- Room type and city are encoded. 
+<h4><br></h4>
+<h4>2. Preprocessing using developed RBFs</h4>
 
-#### Column transformers are developed to evaluate the effect of three different preprocessing strategies on model efficacy. 
+- Normalized attraction index and restaurant index are not used
+- Data is scaled using a min-max scaling strategy
+- Attraction index is log-transformed. 
+- Restaurant index, metro index, and city center are replaced with the RBF functions developed during EDA.
+- Room type and city are encoded.
+<h4><br></h4>
+<h4>3. Preprocessing using given normalized restaurant and attraction indexes </h4>
 
+- Data is scaled using a min-max scaling strategy
+- City center and metro index are log-transformed. 
+- Room type and city are encoded. 
 
-```python
-from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
-from sklearn.preprocessing import FunctionTransformer
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import train_test_split
-```
 
 
 ```python
@@ -915,12 +916,6 @@ def day_pipeline():
         
 day_pipe = day_pipeline()
 ```
-<h2><br></h2>   
-## 1. Standard preprocessing 
-- Normalized attraction index and restaurant index are not used
-- Data is scaled using a min-max scaling strategy
-- Restaurant index, attraction index, city center and metro index are log-transformed. 
-- Room type and city are encoded. 
 
 
 ```python
@@ -934,13 +929,6 @@ preprocessing = ColumnTransformer([
     ('cat', cat_encoder, ['Room Type','City'])
 ])
 ```
-<h2><br></h2>   
-## 2. Preprocessing using developed RBFs
-- Normalized attraction index and restaurant index are not used
-- Data is scaled using a min-max scaling strategy
-- Attraction index is log-transformed. 
-- Restaurant index, metro index, and city center are replaced with the RBF functions developed during EDA.
-- Room type and city are encoded. 
 
 
 ```python
@@ -955,11 +943,6 @@ preprocessing_rbf = ColumnTransformer([
     ('cat', cat_encoder, ['Room Type','City'])
 ])
 ```
-<h2><br></h2>   
-## 3. Preprocessing using given normalized restaurant and attraction indexes 
-- Data is scaled using a min-max scaling strategy
-- City center and metro index are log-transformed. 
-- Room type and city are encoded. 
 
 
 ```python
@@ -982,6 +965,9 @@ preprocessing_norm = ColumnTransformer([
 names = pd.Series(['Weekend','Private Room','Shared Room','Superhost','Business','Multiple Rooms','Cleanliness Rating','Bedrooms','Guest Satisfaction','Attraction Index','City Center','Metro Distance','Restraunt Index', 'Private room', 'Entire home/apt', 'Shared room','Amsterdam','Athens','Barcelona','Berlin','Budapest','Lisbon','Paris','Rome','Vienna'])
 ```
 
+<h3><br></h3>
+<h3>Test and train sets</h3>
+
 
 ```python
 #transforming data
@@ -997,22 +983,10 @@ X = df.drop(columns={'Price'})
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=.2,random_state=10)
 ```
 
-<h1><br></h1>
-<h1>  Price prediction </h1>
+<h2><br></h2>
+<h2>Price prediction </h2>
 
-
-```python
-#importing packages
-from sklearn.linear_model import LinearRegression, Ridge, ElasticNet
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.svm import SVR
-from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, AdaBoostRegressor, GradientBoostingRegressor
-from sklearn.metrics import mean_squared_error
-import xgboost as xgb
-from sklearn.decomposition import PCA 
-```
-<h2><br></h2>   
-## Sampling regression models with preprocessing strategies
+<h3>Sampling models and preprocessing strategies</h3>
 Common regression models were evaluated with six variations: 
 
 1. Standard preprocessing
@@ -1029,7 +1003,7 @@ MAPE is particularly useful when the data contains large values or outliers, as 
 
 ```python
 #defining mean absolute percentage error 
-def mape(y_true, y_pred):
+def get_mape(y_true, y_pred):
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 ```
 
@@ -1043,127 +1017,75 @@ model_names = ['Ridge','ElasticNet','SVR','K-nearest neighbors','Random Forest',
 
 
 ```python
-#y
-mse = []
-mape_err = []
-
-for model in models:
-    sample_pipe = make_pipeline(preprocessing, model)
-    sample_pipe.fit(X_train, y_train)
-    y_pred = sample_pipe.predict(X_test)
-    mse.append(mean_squared_error(y_test, y_pred))
-    mape_err.append(mape(y_test, y_pred))
-```
-
-
-```python
-#log y
-scaled_mse = []
-scaled_mape = []
-
-for model in models:
-    scaled_pipe = make_pipeline(preprocessing, model)
-    scaled_pipe.fit(X_train, np.log(y_train))
-    y_pred = scaled_pipe.predict(X_test)
-    y_pred = np.exp(y_pred)
-    scaled_mse.append(mean_squared_error(y_test, y_pred))
-    scaled_mape.append(mape(y_test, y_pred))
-```
-
-
-```python
-#with dimensionality reduction
+#selected pipelines
 pca = PCA(n_components=.95)
-pca_mse = []
-pca_mape = []
 
-for model in models:
-    pca_pipe = make_pipeline(preprocessing, pca, model)
-    pca_pipe.fit(X_train, y_train)
-    y_pred = pca_pipe.predict(X_test)
-    pca_mse.append(mean_squared_error(y_test, y_pred))
-    pca_mape.append(mape(y_test, y_pred))
+standard_pipeline = make_pipeline(preprocessing,model)
+pca_pipeline = make_pipeline(preprocessing, pca, model)
+rbf_pipeline = make_pipeline(preprocessing_rbf, model)
+norm_pipeline = make_pipeline(preprocessing_norm, model)
+combo_pipeline = make_pipeline(preprocessing_rbf, pca, model)
+
+pipelines = [standard_pipeline, standard_pipeline, pca_pipeline, rbf_pipeline, norm_pipeline, combo_pipeline]
+
+#local scaling
+scaling = (False,True,False,False,False,True)
 ```
 
 
 ```python
-#with rbf 
-rbf_mse = []
-rbf_mape = []
-
-for model in models:
-    rbf_pipe = make_pipeline(preprocessing_rbf, model)
-    rbf_pipe.fit(X_train, y_train)
-    y_pred = rbf_pipe.predict(X_test)
-    rbf_mse.append(mean_squared_error(y_test, y_pred))
-    rbf_mape.append(mape(y_test, y_pred))
+#function for evaluating a pipeline's perfomance in all models
+def pipeline_eval(pipe, models=models, X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, log=False):
+    mse = []
+    mape = []
+    
+    for model in models:
+        if log:
+            pipe.fit(X_train, np.log(y_train))
+        else: pipe.fit(X_train, y_train)
+        y_pred = pipe.predict(X_test)
+        mse.append(mean_squared_error(y_test, y_pred))
+        mape.append(get_mape(y_test, y_pred))
+    return mse,mape
 ```
 
 
 ```python
-#with provided normalized features
-norm_mse = []
-norm_mape = []
+mse = []
+mape = []
 
-for model in models:
-    norm_pipe = make_pipeline(preprocessing_norm, model)
-    norm_pipe.fit(X_train, y_train)
-    y_pred = norm_pipe.predict(X_test)
-    norm_mse.append(mean_squared_error(y_test, y_pred))
-    norm_mape.append(mape(y_test, y_pred))
+for n,pipe in enumerate(pipelines):
+    mse_,mape_ = pipeline_eval(pipe,log=scaling[n])
+    mse.append(mse_)
+    mape.append(mape_)
 ```
 
+<details>
+  <summary>Click to show hidden code</summary>
+  <pre>
+  #visualing results
+  pd.DataFrame(mse).plot(kind='barh')
+  plt.title('Regressor MSE')
+  plt.xlim([0,100000])
+  plt.legend(loc=4, facecolor='white')
 
-```python
-#combination 
-combo_mse = []
-combo_mape = []
-
-for model in models:
-    combo_pipe = make_pipeline(preprocessing_rbf, pca, model)
-    combo_pipe.fit(X_train, np.log(y_train))
-    y_pred = combo_pipe.predict(X_test)
-    y_pred = np.exp(y_pred)
-    combo_mse.append(mean_squared_error(y_test, y_pred))
-    combo_mape.append(mape(y_test, y_pred))
-```
-
-
-```python
-#error compilation
-mse_results = pd.DataFrame([mse,scaled_mse,pca_mse, rbf_mse, norm_mse, combo_mse], index = ['Unscaled','Log price','Reduced Dimensions','RBF Features','Normalized Features','Combination'], columns=model_names).T
-mape_results = pd.DataFrame([mape_err,scaled_mape,pca_mape, rbf_mape, norm_mape, combo_mape], index = ['Unscaled','Log price','Reduced Dimensions','RBF Features','Normalized Features','Combination'], columns=model_names).T
-```
-
-
-```python
-#visualing results
-mse_results.plot(kind='barh')
-plt.title('Regressor MSE')
-plt.xlim([0,100000])
-plt.legend(loc=4, facecolor='white')
-
-mape_results.plot(kind='barh')
-plt.title('Regressor MAPE')
-plt.xlim([0,100])
-plt.legend(loc=4, facecolor='white')
-plt.show()
-```
-
+  pd.DataFrame(mape).plot(kind='barh')
+  plt.title('Regressor MAPE')
+  plt.xlim([0,100])
+  plt.legend(loc=4, facecolor='white')
+  plt.show()
+  </pre>
+</details>
 
 ![MSE performance](/assets/img/airbnb_pipeline/output_60_0.png)    
     
 
 ![MAPE performance](/assets/img/airbnb_pipeline/output_60_1.png)   
-    
-
 
 
 ```python
 mse_results.style.format('{:.0f}')
 ```
-
-
 
 
 <style type="text/css">
@@ -1381,15 +1303,9 @@ mape_results.style.format('{:.1f}')
 <div class="alert alert-block alert-success" style="font-size:18px; font-family:verdana; line-height: 1.7em;">
     📌 &nbsp; The top performing regressor was the extra trees regressor with the log-transformed price.  </div>
 
-<h2><br></h2>   
-## Optimizing extra trees regression model
-
-#### General dependence of MSE on number of estimators
-
-
-```python
-from sklearn.model_selection import GridSearchCV 
-```
+<h3><br></h3>
+<h3>Optimizing extra trees regression model</h3>
+<h4>MSE and number of estimators</h4>
 
 
 ```python
@@ -1402,30 +1318,33 @@ for n in n_estimators:
     y_pred = tree_opt.predict(X_test)
     y_pred = np.exp(y_pred)
     mse_n_est.append(mean_squared_error(y_test, y_pred))
-
-plt.plot(n_estimators,mse_n_est,'-')
-plt.xlabel('n_estimators')
-plt.ylabel('mean squared error')
-plt.show()
 ```
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
+  plt.plot(n_estimators,mse_n_est,'-')
+  plt.xlabel('n_estimators')
+  plt.ylabel('mean squared error')
+  plt.show()
+  </pre>
+</details>
+![extra tree regressor tree number optimization](/assets/img/airbnb_pipeline/output_67_0.png)  
 
-
-![extra tree regressor tree number optimization](/assets/img/airbnb_pipeline/output_67_0.png)    
-    
-
-
-
-```python
+<details>
+  <summary>Click to show hidden code.</summary>
+  <pre>
 print(f'Mean squared error at n_estimators = 500: {mse_n_est[-1]:.0f}.')
-```
+  </pre>
+</details>
 
     Mean squared error at n_estimators = 500: 11796.
-    
+
 
 <div class="alert alert-block alert-success" style="font-size:18px; font-family:verdana; line-height: 1.7em;">
     📌 &nbsp;  We will use 500 trees to optimize other model parameters, as this number minimizes the mean squared error without overfitting.  </div>
 
-#### GridSearchCV
+<h4><br></h4>
+<h4>GridSearchCV</h4>
 
 
 ```python
@@ -1449,50 +1368,24 @@ tree_search.fit(X_train,np.log(y_train))
 tree_search.best_score_,tree_search.best_params_
 ```
 
-    /opt/conda/lib/python3.7/site-packages/joblib/externals/loky/process_executor.py:703: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
-      "timeout or by a memory leak.", UserWarning
-    
-
-
-
-
     (-0.27009412940530914,
      {'extratreesregressor__max_depth': 30,
       'extratreesregressor__max_features': 'sqrt',
       'extratreesregressor__n_estimators': 500})
 
-
-
-
 ```python
 y_pred = tree_search.predict(X_test)
 mean_squared_error(y_test, np.exp(y_pred))
 ```
-
-
-
-
     16595.141980500048
-
 
 
 Constraining the max_depth appears to weaken the predictive power of the extra trees regressor in this case. Therefore, only n_estimators will be adjusted as a hyperparameter and the lowest MSE is 11,788. 
 
-<h1><br></h1>
-<h1>  Conclusion </h1>
+<h2><br></h2>
+<h2>Conclusion </h2>
 
-The analysis done in this project enables us to build an optimized pipeline for predicting Airbnb prices. The steps in this pipeline are summarized below:
-
-1. Attraction index, restaurant index, city center and metro index are log-transformed. 
-2. Room type and city are encoded. 
-3. Data is scaled using a min-max scaling strategy. 
-4. Housing prices are log-transformed. 
-5. Log-price is predicted using a trained and optimized random forest regressor 
-6. Price is transformed back to linear space. 
-
-<br>
-The top performing model on this dataset is defined for clarity below:
-
+The top performing model on this dataset is defined for clairity below:
 
 
 ```python
