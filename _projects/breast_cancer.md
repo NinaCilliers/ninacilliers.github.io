@@ -3,7 +3,7 @@ layout: page
 title: Predicting breast cancer mortality
 description: Binary classifiers are optimized to predict breast cancer mortality from clinical and genetic features. Key features are identified by permutation.
 img: assets/img/breast_cancer/cancer_science_img.jpg
-importance: 1
+importance: 2
 category: Featured projects
 ---
 
