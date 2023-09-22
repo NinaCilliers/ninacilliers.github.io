@@ -2,6 +2,7 @@ github_users:
   - ninacilliers
 
 github_repos:
+  - NinaCilliers/food_interactions
   - ninacilliers/crossfit_project
   - NinaCilliers/MNIST784_transfer_learning
   - NinaCilliers/style_transfer

@@ -10,7 +10,6 @@ layout: default
           </h1>
           <p class="desc">{{ page.subtitle }}</p>
         </header>
-
         <article>
           {% if page.profile -%}
           <div class="profile float-{%- if page.profile.align == 'left' -%}left{%- else -%}right{%- endif -%}">
@@ -29,6 +28,8 @@ layout: default
               alt=page.profile.image -%}
             {% endif -%}
             {%- if page.profile.address %}
+
+
             <div class="address">
               {{ page.profile.address }}
             </div>
@@ -58,6 +59,9 @@ layout: default
             {%- include selected_papers.html %}
           {%- endif %}
 
+          <!-- Carousel -->
+          {% include carousel.html height="50" unit="%" duration="7" number="1" %}
+          
           <!-- Social -->
           {%- if page.social %}
             <div class="social">

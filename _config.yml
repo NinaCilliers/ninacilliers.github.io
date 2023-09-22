@@ -2,7 +2,7 @@
 # Site settings
 # -----------------------------------------------------------------------------
 
-title: Data Science Portfolio # the website title (if blank, full name will be used instead)
+title: Nina Cilliers's Portfolio # the website title (if blank, full name will be used instead)
 first_name: Nina
 middle_name: 
 last_name: Cilliers
@@ -399,3 +399,14 @@ mdb:
 medium_zoom:
   version: "1.0.8"
   integrity: "sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8="
+
+# -----------------------------------------------------------------------------
+# Carousel
+# -----------------------------------------------------------------------------
+
+carousels:
+  - images: 
+    - image: /assets/img/1.jpg
+    - image: /assets/img/2.jpg
+  - images: 
+    - image: /assets/img/1.jpg
