@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>What's for dinner? | Data Science Portfolio</title>
+    <meta name="author" content="Nina  Cilliers">
+    <meta name="description" content="Generating and naming recipes from parital ingredient lists using LSTM.">
+    <meta name="keywords" content="nina cilliers, nina gasbarro, data science">
+
+    <!-- OpenGraph -->
+    <meta property="og:site_name" content="Data Science Portfolio">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Data Science Portfolio | What's for dinner?">
+    <meta property="og:url" content="https://ninacilliers.github.io/projects/ingredient_predict/">
+    <meta property="og:description" content="Generating and naming recipes from parital ingredient lists using LSTM.">
+    <!--  -->
+    <meta property="og:locale" content="en">
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="What's for dinner?">
+    <meta name="twitter:description" content="Generating and naming recipes from parital ingredient lists using LSTM.">
+    
+    
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://ninacilliers.github.io/projects/ingredient_predict/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/">Data Science Portfolio</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">About</a>
+              </li>
+              
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">Projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">Publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/repositories/">Repositories</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        <!-- page.html -->
+        <style>
+          img {
+            max-width: 100%
+          }
+        </style>
+        <div class="post">
+
+          <article>
+            <h1>What's for dinner?</h1>
+<h4><i> Generating and naming recipes from parital ingredient lists</i></h4>
+<h4><br></h4>
+<h2>Introduction</h2>
+<p>In this project we create models to (1) generate recipes from partial ingredient lists and (2) name the generated recipes. This training dataset consists of over 180k recipes covering 18 years of user interactions and uploads on Food.com and is available on <a href="https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions" rel="external nofollow noopener" target="_blank">Kaggle</a>.</p>
+
+<p>The generated ingredient lists are coherent and would result in tasty meals, and the recipe names are accurate and cleaver, even with unusual ingredient pairings as inputs. For example, when given chicken, rice, and grapefruit – a seemingly inconsistent ingredient list – our model adds Asian ingredients and calls the recipe Teriyaki Chicken. Further, the model takes the seemingly desperate pairing of black beans and chocolate and suggests creating a gluten-free brownie recipe that I have actually had and enjoyed.</p>
+
+<p>Both models employ the Long Short-Term Memory (LSTM) architecture, which is a sophisticated recurrent neural network (RNN). RNNs are designed to process input sequences and produce output that considers both the current input and the accumulated context from previous time steps, achieved by maintaining an internal state that gets updated over time. Within an LSTM, a gate cell structure is utilized to selectively forget irrelevant information, incorporate essential information, and make predictions. The LSTM structure incorporates three distinct gates, as illustrated below.</p>
+
+<p><img src="/assets/img/ingredient_predict/lstm.png" alt="png">
+<br>
+<a href="https://towardsai.net/p/deep-learning/create-your-first-text-generator-with-lstm-in-few-minutes#df05" rel="external nofollow noopener" target="_blank">LSTM structure</a></p>
+
+<p>All input text is encoded using pre-trained vectors from the <a href="https://code.google.com/archive/p/word2vec/" rel="external nofollow noopener" target="_blank">Word2Vec</a> model trained by Google on the Google News dataset. The word embeddings are fine-tined after the other model weights are optimized.</p>
+
+<p>The first model generates viable ingredient lists from partial ingredient lists or a single ingredient using LSTM cells. Full ingredient lists for each recipe are broken into partial lists to generate more training data. The number of LSTM layers and LSTM cells was optimized through a grid-search, and a single layer of 500 LSTM cells was identified as the top performing model architecture. Generated recipe lists  are generated sequentially, and each generated prediction is input to future predictions.</p>
+
+<p>The second model uses a seq2seq model architecture. As implied by the name, seq2seq models take sequences as inputs and generate output sequences. In our case, generated recipes from the first model are input and recipe names are output. Seq2seq models use an encoder and decoder to convert ingredients to a context vector and generate output sequences. A temperature factor is incorporated to increase the randomness of the predicted names, which resulted in more creative recipe names. Predictions are made sequentially using an encoder and decoder from updated input sequences.</p>
+
+<p><img src="/assets/img/ingredient_predict/seq2seq.png" alt="png">
+<br>
+<a href="https://www.geeksforgeeks.org/seq2seq-model-in-machine-learning/" rel="external nofollow noopener" target="_blank">Seq2seq architecture</a></p>
+
+<h2><br></h2>
+<h2>Data Cleaning</h2>
+<h3>Ingredients </h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="n">re</span>
+<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="n">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span> <span class="n">pickle</span>
+
+<span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
+<span class="kn">import</span> <span class="n">gensim.downloader</span> <span class="k">as</span> <span class="n">api</span>
+<span class="kn">from</span> <span class="n">gensim.models</span> <span class="kn">import</span> <span class="n">Word2Vec</span>
+<span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span> <span class="n">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Masking</span>
+<span class="kn">from</span> <span class="n">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="n">keras.preprocessing.text</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+
+<span class="kn">import</span> <span class="n">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
+<span class="kn">from</span> <span class="n">wordcloud</span> <span class="kn">import</span> <span class="n">WordCloud</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#precleaned dataframe from authors is used to clean data.
+</span><span class="n">precleaned_key</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_pickle</span><span class="p">(</span><span class="sh">'</span><span class="s">ingr_map.pkl</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">cleaning_key</span> <span class="o">=</span> <span class="nf">dict</span><span class="p">(</span><span class="nf">zip</span><span class="p">(</span><span class="n">precleaned_key</span><span class="p">[</span><span class="sh">'</span><span class="s">raw_ingr</span><span class="sh">'</span><span class="p">],</span><span class="n">precleaned_key</span><span class="p">[</span><span class="sh">'</span><span class="s">replaced</span><span class="sh">'</span><span class="p">]))</span>
+<span class="n">precleaned_key</span><span class="p">[[</span><span class="sh">'</span><span class="s">raw_ingr</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">replaced</span><span class="sh">'</span><span class="p">]]</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>raw_ingr</th>
+      <th>replaced</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>medium heads bibb or red leaf lettuce, washed,...</td>
+      <td>lettuce</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>mixed baby lettuces and spring greens</td>
+      <td>lettuce</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>romaine lettuce leaf</td>
+      <td>lettuce</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>iceberg lettuce leaf</td>
+      <td>lettuce</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>red romaine lettuce</td>
+      <td>lettuce</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>11654</th>
+      <td>soybeans</td>
+      <td>soybean</td>
+    </tr>
+    <tr>
+      <th>11655</th>
+      <td>goose</td>
+      <td>goose</td>
+    </tr>
+    <tr>
+      <th>11656</th>
+      <td>ajwain</td>
+      <td>ajwain</td>
+    </tr>
+    <tr>
+      <th>11657</th>
+      <td>brinjals</td>
+      <td>brinjal</td>
+    </tr>
+    <tr>
+      <th>11658</th>
+      <td>khoya</td>
+      <td>khoya</td>
+    </tr>
+  </tbody>
+</table>
+<p>11659 rows × 2 columns</p>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CleanRecipes</span><span class="p">():</span>
+    <span class="sh">'''</span><span class="s">Imports and cleans raw recipe data. Returns list of ingredients.</span><span class="sh">'''</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">cleaning_key</span><span class="o">=</span><span class="n">cleaning_key</span><span class="p">):</span> 
+        <span class="n">self</span><span class="p">.</span><span class="n">raw_recipes</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">import_data</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">input_sequences</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">raw_recipes</span><span class="p">[</span><span class="sh">'</span><span class="s">ingredients</span><span class="sh">'</span><span class="p">].</span><span class="nf">apply</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">string_to_list</span><span class="p">).</span><span class="nf">to_list</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">input_sequences</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">cleaned_ingredients</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">cleaning_key</span> <span class="o">=</span> <span class="n">cleaning_key</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">cleaned_ingredients</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">clean_text</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">raw_recipes</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">input_sequences</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">cleaned_ingredients</span>
+
+    <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="c1">#'''Import cleaned recipe, raw recipe and ratings data'''
+</span>        <span class="n">raw_recipes</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="nf">read_csv</span><span class="p">(</span><span class="sh">'</span><span class="s">RAW_recipes.csv</span><span class="sh">'</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">raw_recipes</span><span class="p">[</span><span class="sh">'</span><span class="s">contributor_id</span><span class="sh">'</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">raw_recipes</span><span class="p">[</span><span class="sh">'</span><span class="s">submitted</span><span class="sh">'</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">raw_recipes</span><span class="p">[</span><span class="sh">'</span><span class="s">tags</span><span class="sh">'</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">raw_recipes</span><span class="p">[</span><span class="sh">'</span><span class="s">steps</span><span class="sh">'</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">raw_recipes</span><span class="p">[</span><span class="sh">'</span><span class="s">description</span><span class="sh">'</span><span class="p">]</span>
+        <span class="n">raw_recipes</span> <span class="o">=</span> <span class="n">raw_recipes</span><span class="p">.</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">id</span><span class="sh">'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">raw_recipes</span>
+
+    <span class="k">def</span> <span class="nf">string_to_list</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Converts a string that is formatted like a list to a list</span><span class="sh">'''</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="nf">findall</span><span class="p">(</span><span class="sa">r</span><span class="sh">'</span><span class="s">\w[\w\s]+</span><span class="sh">'</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">l</span>
+
+    <span class="k">def</span> <span class="nf">clean_text</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Clean text</span><span class="sh">'''</span>
+        <span class="k">for</span> <span class="n">recipe</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">input_sequences</span><span class="p">:</span>
+            <span class="n">ingredient_bundle</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ingredient</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ingredient_bundle</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">cleaning_key</span><span class="p">[</span><span class="n">ingredient</span><span class="p">])</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">ingredient_bundle</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">ingredient</span><span class="p">)</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">cleaned_ingredients</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">ingreSdient_bundle</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">cleaned_ingredients</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Import and clean all recipes
+</span><span class="n">raw_recipes</span><span class="p">,</span> <span class="n">input_sequences</span><span class="p">,</span> <span class="n">cleaned_sequences</span> <span class="o">=</span> <span class="nc">CleanRecipes</span><span class="p">()()</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Example ingredient list</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">cleaned_sequences</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example ingredient list
+
+[['winter squash',
+  'mexican seasoning',
+  'mixed spice',
+  'honey',
+  'butter',
+  'olive oil',
+  'salt']]
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3> Cleaning recipe names </h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CleanNames</span><span class="p">():</span>
+    <span class="sh">'''</span><span class="s">Takes raw recipe names and returns cleaned, single words in a list with EOS and SOS tags</span><span class="sh">'''</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">raw_recipes</span><span class="p">[</span><span class="sh">'</span><span class="s">name</span><span class="sh">'</span><span class="p">].</span><span class="nf">to_list</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">cleaned_names</span> <span class="o">=</span> <span class="p">[]</span>
+        
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">de_contract</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">add_tags</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="nf">filter</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">empty_check</span><span class="p">,</span><span class="nf">str</span><span class="p">(</span><span class="n">name</span><span class="p">).</span><span class="nf">split</span><span class="p">(</span><span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">)))</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">cleaned_names</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">cleaned_names</span>
+        
+    <span class="k">def</span> <span class="nf">de_contract</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Removes common contractions from recipe names</span><span class="sh">'''</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nf">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">can t</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">cannot</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">don t</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">do not</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">it s</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">it is</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">won t</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">would not</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">aren t</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">are not</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">there s</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">there is</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">you d</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">you would</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">you ve</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">you have</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">you ll</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">you will</span><span class="sh">'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span>      
+    
+    <span class="k">def</span> <span class="nf">add_tags</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Adds SOS and EOS tags</span><span class="sh">'''</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">SOS </span><span class="sh">'</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="sh">'</span><span class="s"> EOS</span><span class="sh">'</span>
+        <span class="k">return</span> <span class="n">name</span>
+    
+    <span class="k">def</span> <span class="nf">empty_check</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Checks if word is only a space</span><span class="sh">'''</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="sh">''</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cleaned_names</span> <span class="o">=</span> <span class="nc">CleanNames</span><span class="p">()()</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Example names:</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">cleaned_names</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example names:
+
+[['SOS', 'arriba', 'baked', 'winter', 'squash', 'mexican', 'style', 'EOS'],
+ ['SOS', 'a', 'bit', 'different', 'breakfast', 'pizza', 'EOS'],
+ ['SOS', 'all', 'in', 'the', 'kitchen', 'chili', 'EOS'],
+ ['SOS', 'alouette', 'potatoes', 'EOS'],
+ ['SOS', 'amish', 'tomato', 'ketchup', 'for', 'canning', 'EOS'],
+ ['SOS', 'apple', 'a', 'day', 'milk', 'shake', 'EOS'],
+ ['SOS', 'aww', 'marinated', 'olives', 'EOS'],
+ ['SOS', 'backyard', 'style', 'barbecued', 'ribs', 'EOS'],
+ ['SOS', 'bananas', '4', 'ice', 'cream', 'pie', 'EOS'],
+ ['SOS', 'beat', 'this', 'banana', 'bread', 'EOS']]
+</code></pre></div></div>
+
+<h2><br></h2>
+<h2>EDA</h2>
+<h3>Ingredient frequencies</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#top words
+</span><span class="k">def</span> <span class="nf">get_top</span><span class="p">(</span><span class="n">cleaned_sequences</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Returns a sorted list of ingredients by occurance</span><span class="sh">'''</span>
+    <span class="n">ingred</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">cleaned_sequences</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
+    <span class="n">ingred_counts</span> <span class="o">=</span> <span class="nc">Counter</span><span class="p">(</span><span class="n">ingred</span><span class="p">).</span><span class="nf">most_common</span><span class="p">()</span>
+    <span class="c1">#top_ingredients = [ingred_counts[n][0] for n in range(len(ingred_counts))]
+</span>    <span class="k">return</span> <span class="n">ingred_counts</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tops</span> <span class="o">=</span> <span class="nf">get_top</span><span class="p">(</span><span class="n">cleaned_sequences</span><span class="p">)</span>
+<span class="n">sorted_ingredients</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tops</span><span class="p">]</span>
+<span class="n">sorted_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tops</span><span class="p">]</span>
+<span class="n">count_range</span> <span class="o">=</span> <span class="mi">10</span> 
+</code></pre></div></div>
+<details>
+    <summary>Click to expand hidden code.</summary>
+    <pre>
+    plt.figure(figsize=(10,4))
+    plt.style.use('ggplot')
+    plt.subplot(1,2,1)
+    plt.bar(sorted_ingredients[:count_range], sorted_counts[:count_range])
+    plt.xticks(rotation=90)
+    plt.ylim((0,90_000))
+    plt.title('Most common ingredients');
+    </pre>
+</details>
+
+<p><img src="/assets/img/ingredient_predict/output_11_0.png" alt="png"></p>
+
+<h3><br></h3>
+<h3>Sequence lengths</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#ingredient list length
+</span><span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nf">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cleaned_sequences</span><span class="p">]</span>
+</code></pre></div></div>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    plt.style.use('ggplot')
+    sns.histplot(pd.DataFrame(lengths),legend=False)
+    plt.title('Ingredients per recipe')
+    plt.xlabel('Length')
+    plt.show()
+    </pre>
+</details>
+
+<p><img src="/assets/img/ingredient_predict/output_13_0.png" alt="png"></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Recipe name length
+</span><span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nf">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cleaned_names</span><span class="p">]</span> <span class="c1">#excludes SOS and EOS
+</span></code></pre></div></div>
+<details>
+    <summary>Click to expand hidden code.</summary>
+    <pre>
+    plt.style.use('ggplot')
+    sns.histplot(pd.DataFrame(lengths),legend=False)
+    plt.title('Words in a recipe name')
+    plt.xlabel('Length')
+    plt.show()
+    </pre>
+</details>
+
+<p><img src="/assets/img/ingredient_predict/output_14_0.png" alt="png"></p>
+
+<h3><br></h3>
+<h3>Word clouds</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#word cloud by word freqency
+</span><span class="n">all_words</span> <span class="o">=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">.</span><span class="nf">join</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">cleaned_sequences</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">])</span>
+<span class="n">all_names</span> <span class="o">=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">.</span><span class="nf">join</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">cleaned_names</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sublist</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="sh">'</span><span class="s">EOS</span><span class="sh">'</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="sh">'</span><span class="s">SOS</span><span class="sh">'</span><span class="p">])</span>
+</code></pre></div></div>
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    wordcloud = WordCloud().generate(all_words)
+    namecloud = WordCloud().generate(all_names)
+    plt.figure(figsize=(10,8))
+    plt.subplot(2,1,1)
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title('Ingredient frequencies')
+    plt.subplot(2,1,2)
+    plt.imshow(namecloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title('Name frequencies');
+    </pre>
+</details>
+
+<p><img src="/assets/img/ingredient_predict/output_16_0.png" alt="png"></p>
+
+<h2><br></h2>
+<h2>Preprocessing text</h2>
+<h3>Tokenizing recipes and names</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pad_value</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">TokenizeRecipes</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">input_sequences</span><span class="p">,</span> <span class="n">ngram</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="nc">Tokenizer</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">input_sequences</span> <span class="o">=</span> <span class="n">input_sequences</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">ngram</span> <span class="o">=</span> <span class="n">ngram</span>
+    
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">ngram_sequences</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">totalwords</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">get_sequence_of_tokens</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">find_max</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">pad_sequences</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">predictors</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">predictors</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">delete_only_ones</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">max_length</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">totalwords</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">label</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">predictors</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span>
+
+    <span class="k">def</span> <span class="nf">get_sequence_of_tokens</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Tokenization</span><span class="sh">'''</span>    
+        <span class="n">self</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">.</span><span class="nf">fit_on_texts</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">input_sequences</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">total_words</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">.</span><span class="n">word_index</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">self</span><span class="p">.</span><span class="n">ngram_sequences</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">input_sequences</span><span class="p">:</span>
+            <span class="n">token_list</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">.</span><span class="nf">texts_to_sequences</span><span class="p">([</span><span class="n">line</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="n">ngram</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">token_list</span><span class="p">)):</span>
+                    <span class="n">n_gram_sequence</span> <span class="o">=</span> <span class="n">token_list</span><span class="p">[:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">self</span><span class="p">.</span><span class="n">ngram_sequences</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">n_gram_sequence</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> <span class="n">self</span><span class="p">.</span><span class="n">ngram_sequences</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">token_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">ngram_sequences</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">total_words</span>
+
+    <span class="k">def</span> <span class="nf">find_max</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">find max token length</span><span class="sh">'''</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="nf">max</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">input_sequences</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">max_length</span>
+
+    <span class="k">def</span> <span class="nf">pad_sequences</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">pad sequences (built in function returns a recursion error)</span><span class="sh">'''</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">sequence_in</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">ngram_sequences</span><span class="p">:</span>
+            <span class="n">zeros</span> <span class="o">=</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">max_length</span><span class="o">-</span><span class="nf">len</span><span class="p">(</span><span class="n">sequence_in</span><span class="p">))</span>
+            <span class="n">padded</span> <span class="o">=</span> <span class="p">[</span><span class="n">pad_value</span> <span class="k">for</span> <span class="n">zero</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">zeros</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+            <span class="n">padded</span><span class="p">.</span><span class="nf">extend</span><span class="p">(</span><span class="n">sequence_in</span><span class="p">)</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">padded</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">padded_sequence</span>
+    
+    <span class="k">def</span> <span class="nf">delete_only_ones</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Delete names that only contain SOS</span><span class="sh">'''</span>
+        <span class="n">to_be_deleted</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">predictors</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="n">predictors</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">to_be_deleted</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                
+        <span class="n">self</span><span class="p">.</span><span class="n">predictors</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">predictors</span><span class="p">,</span> <span class="n">to_be_deleted</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">label</span><span class="p">,</span> <span class="n">to_be_deleted</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">predictors</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">label</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#tokenizing ingredients
+</span><span class="n">tokenizer</span><span class="p">,</span><span class="n">max_length_</span><span class="p">,</span><span class="n">total_words</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">predictors</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="nc">TokenizeRecipes</span><span class="p">(</span><span class="n">cleaned_sequences</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#tokenize names
+</span><span class="n">tokenizer_names</span><span class="p">,</span> <span class="n">max_length_name_</span><span class="p">,</span> <span class="n">total_words_names</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">name_sequences</span> <span class="o">=</span> <span class="nc">TokenizeRecipes</span><span class="p">(</span><span class="n">cleaned_names</span><span class="p">,</span> <span class="n">ngram</span><span class="o">=</span><span class="bp">False</span><span class="p">)()</span>
+<span class="c1">#_, _, _, _, padded_names = TokenizeRecipes(cleaned_names, ngram=False)(names=True)
+</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">recipe_sequences</span> <span class="o">=</span> <span class="nc">TokenizeRecipes</span><span class="p">(</span><span class="n">cleaned_sequences</span><span class="p">,</span> <span class="n">ngram</span><span class="o">=</span><span class="bp">False</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">recipe_sequences</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>array([[   0,    0,    0, ...,    2,    6,    1],
+       [   0,    0,    0, ...,    9,   18,  141],
+       [   0,    0,    0, ...,    1,   74,   23],
+       ...,
+       [   0,    0,    0, ...,    1,   26,  657],
+       [   0,    0,    0, ...,  516,  618, 2373],
+       [   0,    0,    0, ...,  316,   21,   33]])
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">name_sequences</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>array([[   0,    0,    0, ...,  109,   45,    2],
+       [   0,    0,    0, ...,  122,   72,    2],
+       [   0,    0,    0, ...,  953,   56,    2],
+       ...,
+       [   0,    0,    0, ...,  486,  127,    2],
+       [   0,    0,    0, ...,   39, 1459,    2],
+       [   0,    0,    0, ...,  467,   17,    2]])
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Embedding text using Word2Vec</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">api</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="n">name_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{'corpora': ['semeval-2016-2017-task3-subtaskBC',
+  'semeval-2016-2017-task3-subtaskA-unannotated',
+  'patent-2017',
+  'quora-duplicate-questions',
+  'wiki-english-20171001',
+  'text8',
+  'fake-news',
+  '20-newsgroups',
+  '__testing_matrix-synopsis',
+  '__testing_multipart-matrix-synopsis'],
+ 'models': ['fasttext-wiki-news-subwords-300',
+  'conceptnet-numberbatch-17-06-300',
+  'word2vec-ruscorpora-300',
+  'word2vec-google-news-300',
+  'glove-wiki-gigaword-50',
+  'glove-wiki-gigaword-100',
+  'glove-wiki-gigaword-200',
+  'glove-wiki-gigaword-300',
+  'glove-twitter-25',
+  'glove-twitter-50',
+  'glove-twitter-100',
+  'glove-twitter-200',
+  '__testing_word2vec-matrix-synopsis']}
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">embed_model</span> <span class="o">=</span> <span class="n">api</span><span class="p">.</span><span class="nf">load</span><span class="p">(</span><span class="sh">'</span><span class="s">word2vec-google-news-300</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">embed_size</span> <span class="o">=</span> <span class="mi">300</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">EmbedWords</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">cleaned_sequences</span><span class="p">,</span> <span class="n">embed_size</span><span class="o">=</span><span class="n">embed_size</span><span class="p">,</span><span class="n">embed_model</span><span class="o">=</span><span class="n">embed_model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">cleaned_sequences</span> <span class="o">=</span> <span class="n">cleaned_sequences</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">embed_size</span> <span class="o">=</span> <span class="n">embed_size</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">embed_model</span> <span class="o">=</span> <span class="n">embed_model</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">word_index</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">.</span><span class="n">word_index</span><span class="p">.</span><span class="nf">items</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">unique_words</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">find_unique_word</span><span class="p">()</span>
+       
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">encode_words</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">unique_words</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">word_embeddings</span>
+        
+    <span class="k">def</span> <span class="nf">embed_one_word</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="n">word</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Encode a single recipe</span><span class="sh">'''</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">word_embedding</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">word_embedding</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">embed_model</span><span class="p">[</span><span class="n">word</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">word_embedding</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">((</span><span class="n">self</span><span class="p">.</span><span class="n">embed_size</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">word_embedding</span>
+    
+    <span class="k">def</span> <span class="nf">find_unique_word</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Lists unique words</span><span class="sh">'''</span>
+        <span class="k">return</span> <span class="nf">list</span><span class="p">(</span><span class="nf">set</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">cleaned_sequences</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]))</span>
+    
+    <span class="k">def</span> <span class="nf">encode_words</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="sh">'''</span><span class="s">Encode all recipes</span><span class="sh">'''</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">word_embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">((</span><span class="nf">len</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">unique_words</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">self</span><span class="p">.</span><span class="n">embed_size</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">word_index</span><span class="p">:</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">word_embeddings</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">embed_one_word</span><span class="p">(</span><span class="n">word</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">word_embeddings</span>
+    
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#creating embeding matrices
+</span><span class="n">unique_ingredients</span><span class="p">,</span><span class="n">recipe_embeddings</span> <span class="o">=</span> <span class="nc">EmbedWords</span><span class="p">(</span><span class="n">cleaned_sequences</span><span class="p">)()</span>
+<span class="n">unique_names</span><span class="p">,</span> <span class="n">name_embeddings</span> <span class="o">=</span> <span class="nc">EmbedWords</span><span class="p">(</span><span class="n">cleaned_names</span><span class="p">)()</span>
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Shuffle ingredient lists</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="nf">max</span><span class="p">((</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">permutation</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">l</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">l</span>
+
+<span class="n">predictors</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span> <span class="nf">shuffle</span><span class="p">([</span><span class="n">predictors</span><span class="p">,</span><span class="n">label</span><span class="p">])</span>
+</code></pre></div></div>
+
+<h3><br></h3>
+<h3>Creating labels for recipe names</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">name_labels_</span> <span class="o">=</span> <span class="n">name_sequences</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="n">name_sequences_</span> <span class="o">=</span> <span class="n">name_sequences</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">recipe_sequences</span> <span class="o">=</span> <span class="n">recipe_sequences</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">cut_name</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">label_name</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">name_sequences</span><span class="p">:</span>
+    <span class="n">name_</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">cut_name</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">name_</span><span class="p">)</span>
+    <span class="n">label_name</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+<span class="n">cut_name</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">cut_name</span><span class="p">)</span>
+<span class="n">label_name</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">label_name</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2><br></h2>
+<h2>Defining ingredient generator architecture</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="n">LSTM_num</span><span class="p">,</span>
+                 <span class="n">LSTM_layers</span><span class="p">,</span>
+                 <span class="n">embed_size</span><span class="o">=</span><span class="n">embed_size</span><span class="p">,</span> 
+                 <span class="n">unique_ingredients</span><span class="o">=</span><span class="n">unique_ingredients</span><span class="p">,</span> 
+                 <span class="n">max_length</span><span class="o">=</span><span class="n">max_length_</span><span class="p">,</span> 
+                 <span class="n">recipe_embeddings</span><span class="o">=</span><span class="n">recipe_embeddings</span><span class="p">,</span>
+                 <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+                 <span class="n">transfer</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">mask_zero</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Builds LSTM model</span><span class="sh">'''</span>
+    <span class="n">input_len</span> <span class="o">=</span> <span class="n">max_length</span>
+    <span class="n">ingredient_len</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">unique_ingredients</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_len</span><span class="p">,))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nc">Embedding</span><span class="p">(</span><span class="n">ingredient_len</span><span class="p">,</span> <span class="n">embed_size</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="n">recipe_embeddings</span><span class="p">],</span> <span class="n">trainable</span><span class="o">=</span><span class="n">transfer</span><span class="p">,</span> <span class="n">mask_zero</span><span class="o">=</span><span class="n">mask_zero</span><span class="p">,</span> <span class="n">input_length</span><span class="o">=</span><span class="n">input_len</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">LSTM_layers</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">LSTM_layers</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">LSTM_num</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="bp">True</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">LSTM_num</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="bp">False</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nc">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="nc">Dense</span><span class="p">(</span><span class="n">ingredient_len</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">softmax</span><span class="sh">'</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="nc">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="sh">'</span><span class="s">sparse_categorical_crossentropy</span><span class="sh">'</span><span class="p">,</span><span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">lr</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">model</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">early_cb</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="nc">EarlyStopping</span><span class="p">(</span>
+    <span class="n">monitor</span><span class="o">=</span><span class="sh">'</span><span class="s">val_loss</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">patience</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">restore_best_weights</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">unique_words</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="nf">set</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">cleaned_sequences</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]))</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span><span class="n">LSTM_num</span><span class="p">,</span> 
+                 <span class="n">LSTM_layers</span><span class="p">,</span> 
+                 <span class="n">predictors</span><span class="p">,</span><span class="n">label</span><span class="p">,</span>
+                 <span class="n">unique_words</span><span class="p">,</span>
+                 <span class="n">max_length</span><span class="p">,</span> 
+                 <span class="n">recipe_embeddings</span><span class="p">,</span> 
+                 <span class="n">weight_name</span><span class="p">,</span>
+                 <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+                 <span class="n">mask_zero</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="sh">'</span><span class="s">/gpu:0</span><span class="sh">'</span><span class="p">,</span>
+                 <span class="n">transfer</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">lr</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+                 <span class="n">callbacks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Trains model with defined architecture</span><span class="sh">'''</span>
+    <span class="sh">'''</span><span class="s">Trains and fine-tunes model using cpu</span><span class="sh">'''</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="p">.</span><span class="nf">device</span><span class="p">(</span><span class="n">device</span><span class="p">):</span> <span class="c1">#run on cpu because gpu has glitch with mask_zero=True
+</span>        <span class="n">model</span> <span class="o">=</span> <span class="nf">create_model</span><span class="p">(</span><span class="n">LSTM_num</span><span class="p">,</span>
+                             <span class="n">LSTM_layers</span><span class="p">,</span>
+                             <span class="n">unique_ingredients</span><span class="o">=</span><span class="n">unique_words</span><span class="p">,</span> 
+                             <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span> 
+                             <span class="n">recipe_embeddings</span><span class="o">=</span><span class="n">recipe_embeddings</span><span class="p">,</span>
+                             <span class="n">mask_zero</span><span class="o">=</span><span class="n">mask_zero</span><span class="p">,</span>
+                             <span class="n">transfer</span><span class="o">=</span><span class="n">transfer</span><span class="p">,</span>
+                             <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">transfer</span><span class="p">:</span>
+            <span class="n">model</span><span class="p">.</span><span class="nf">load_weights</span><span class="p">(</span><span class="sh">'</span><span class="s">training_</span><span class="sh">'</span><span class="o">+</span><span class="n">weight_name</span><span class="o">+</span><span class="sh">'</span><span class="s">.h5</span><span class="sh">'</span><span class="p">)</span>
+    
+        <span class="c1">#model.summary()
+</span>        <span class="k">if</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">predictors</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="p">.</span><span class="mi">1</span><span class="p">,</span><span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">early_cb</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="n">predictors</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="p">.</span><span class="mi">1</span><span class="p">,</span><span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">history</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#architecture grid search
+</span><span class="n">nums</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span>
+<span class="n">num_history</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">legend_label</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">nums</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+        <span class="c1">#print(' ')
+</span>        <span class="c1">#print(f'LSTM number = {num}')
+</span>        <span class="c1">#print(f'LSTM layers = {layer}')
+</span>        <span class="n">legend_label</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">Layers: </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s">, LSTMs: </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="nf">train_model</span><span class="p">(</span><span class="n">num</span><span class="p">,</span><span class="n">layer</span><span class="p">,</span><span class="n">predictors</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span><span class="n">unique_ingredients</span><span class="p">,</span><span class="n">max_length_</span><span class="p">,</span> <span class="n">recipe_embeddings</span><span class="p">,</span> <span class="sh">'</span><span class="s">num_weights</span><span class="sh">'</span><span class="p">,</span><span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">mask_zero</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">num_history</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+</code></pre></div></div>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    def plot_history(history, legend, show_train=True, show_valid=True):
+        '''Plots single history'''
+        val_loss = history.history['val_loss']
+        loss = history.history['loss']
+        epochs_train = len(loss)
+        plt.style.use('ggplot')
+        #plt.figure(figsize=(8, 4))   
+        if show_train:
+            plt.plot(range(1,epochs_train+1), pd.DataFrame(loss), label=('Training - '+str(legend)))
+        if show_valid:
+            plt.plot(range(1,epochs_train+1), pd.DataFrame(val_loss), label=('Validation - '+str(legend)))
+        plt.xlabel('Epochs')
+        plt.ylabel('Loss')
+    </pre>
+    <pre>
+    #show training results from different architectures
+    plt.figure(figsize=(9,8))
+    for n,history in enumerate(num_history):
+        plt.subplot(2,1,1)
+        plt.title('Validation')
+        plot_history(history,legend_label[n], show_train=False)
+        plt.legend(bbox_to_anchor=(1,1))
+        plt.subplot(2,1,2)
+        plt.title('Training')
+        plot_history(history,legend_label[n], show_valid=False)
+        plt.legend(bbox_to_anchor=(1,1))
+    plt.tight_layout()
+    </pre>
+</details>
+
+<p><img src="/assets/img/ingredient_predict/output_44_0.png" alt="png"></p>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    final_val_loss = pd.DataFrame(np.zeros(len(num_history)))
+    final_loss = pd.DataFrame(np.zeros(len(num_history)))
+
+    for n,history in enumerate(num_history):
+        final_val_loss.iloc[n-1] = history.history['val_loss'][-1]
+        final_loss.iloc[n-1] = history.history['loss'][-1]
+        
+
+    final_scores = pd.concat([final_val_loss,final_loss,pd.Series(legend_label)],axis=1).set_axis(['Validation Loss','Loss','Label'],axis=1).set_index('Label',drop=True)
+
+    final_scores.plot(kind='bar')
+    final_scores.sort_values('Validation Loss').head()
+    plt.xlabel('')
+    plt.ylabel('Loss');
+    </pre>
+</details>
+
+<p><img src="/assets/img/ingredient_predict/output_46_0.png" alt="png"></p>
+
+<h2><br></h2>
+<h2> Training ingredient generator </h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">LSTM_</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">layers_</span> <span class="o">=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train_and_ft</span><span class="p">(</span><span class="n">predictors</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">unique_ingredients</span><span class="p">,</span><span class="n">max_length</span><span class="p">,</span> <span class="n">recipe_embeddings</span><span class="p">,</span><span class="n">weight_name</span><span class="p">,</span><span class="n">callbacks</span><span class="p">,</span><span class="n">epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Trains and fine tunes LSTM model</span><span class="sh">'''</span>
+    <span class="c1">#train LSTM and dense layer
+</span>    <span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="nf">train_model</span><span class="p">(</span><span class="n">LSTM_</span><span class="p">,</span> <span class="n">layers_</span><span class="p">,</span> 
+                                <span class="n">predictors</span><span class="p">,</span>
+                                <span class="n">label</span><span class="p">,</span>
+                                <span class="n">unique_ingredients</span><span class="p">,</span>
+                                <span class="n">max_length</span><span class="p">,</span>
+                                <span class="n">recipe_embeddings</span><span class="p">,</span>
+                                <span class="n">weight_name</span><span class="p">,</span>
+                                <span class="n">mask_zero</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                <span class="n">device</span><span class="o">=</span><span class="sh">'</span><span class="s">/cpu:0</span><span class="sh">'</span><span class="p">,</span>
+                                <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+                                <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="nf">save_weights</span><span class="p">(</span><span class="sh">'</span><span class="s">training_</span><span class="sh">'</span><span class="o">+</span><span class="n">weight_name</span><span class="o">+</span><span class="sh">'</span><span class="s">.h5</span><span class="sh">'</span><span class="p">)</span>
+    
+    <span class="c1">#fine tune all layers
+</span>    <span class="n">model</span><span class="p">,</span> <span class="n">fine_history</span> <span class="o">=</span> <span class="nf">train_model</span><span class="p">(</span><span class="n">LSTM_</span><span class="p">,</span> <span class="n">layers_</span><span class="p">,</span> 
+                                <span class="n">predictors</span><span class="p">,</span>
+                                <span class="n">label</span><span class="p">,</span>
+                                <span class="n">unique_ingredients</span><span class="p">,</span>
+                                <span class="n">max_length</span><span class="p">,</span>
+                                <span class="n">recipe_embeddings</span><span class="p">,</span>
+                                <span class="n">weight_name</span><span class="p">,</span>
+                                <span class="n">mask_zero</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                <span class="n">device</span><span class="o">=</span><span class="sh">'</span><span class="s">/cpu:0</span><span class="sh">'</span><span class="p">,</span>
+                                <span class="n">transfer</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                <span class="n">lr</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="p">,</span>
+                                <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+                                <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="nf">save_weights</span><span class="p">(</span><span class="sh">'</span><span class="s">fine_</span><span class="sh">'</span><span class="o">+</span><span class="n">weight_name</span><span class="o">+</span><span class="sh">'</span><span class="s">.h5</span><span class="sh">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">fine_history</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">fine_history</span> <span class="o">=</span> <span class="nf">train_and_ft</span><span class="p">(</span><span class="n">predictors</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="n">unique_ingredients</span><span class="p">,</span><span class="n">max_length_</span><span class="p">,</span><span class="n">recipe_embeddings</span><span class="p">,</span><span class="sh">'</span><span class="s">weight</span><span class="sh">'</span><span class="p">,</span><span class="n">callbacks</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    def get_history(history_, fine_history_):
+        epochs_train = len(history_.history['loss'])
+        history_.history['loss'].extend(fine_history_.history['loss'])
+        history_.history['val_loss'].extend(fine_history_.history['val_loss'])
+        epochs_ft = len(history_.history['loss'])
+        return epochs_train, epochs_ft, history_
+    </pre>
+    <pre>
+    epochs_train, epochs_ft, merged_history = get_history(history, fine_history)
+    plot_history(merged_history,'Ingredients')
+    plt.axvline(x=epochs_train,color='k')
+    plt.legend()
+    plt.text(4,5.45,'Training')
+    plt.text(12,4.85,'Fine tuning');
+    </pre>
+</details>
+
+<p><img src="/assets/img/ingredient_predict/output_54_0.png" alt="png"></p>
+
+<h2><br></h2>
+<h2>Building and training Seq2seq model</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">max_length_name_</span> <span class="o">=</span> <span class="n">max_length_name_</span>
+<span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">128</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">build_seq2seq</span><span class="p">(</span><span class="n">embed_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> 
+                <span class="n">max_length_</span><span class="o">=</span><span class="n">max_length_</span><span class="p">,</span> 
+                <span class="n">unique_ingredients</span><span class="o">=</span><span class="n">unique_ingredients</span><span class="p">,</span>
+                <span class="n">embed_size</span><span class="o">=</span><span class="n">embed_size</span><span class="p">,</span>
+                <span class="n">recipe_embeddings</span><span class="o">=</span><span class="n">recipe_embeddings</span><span class="p">,</span>
+                <span class="n">latent_dim</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">,</span>
+                <span class="n">unique_names</span><span class="o">=</span><span class="n">unique_names</span><span class="p">,</span>
+                <span class="n">name_embeddings</span><span class="o">=</span><span class="n">name_embeddings</span><span class="p">,</span>
+                <span class="n">max_length_name_</span> <span class="o">=</span> <span class="n">max_length_name_</span><span class="p">,</span>
+                <span class="n">summary</span><span class="o">=</span><span class="bp">True</span>
+                <span class="p">):</span>
+    <span class="sh">'''</span><span class="s">builds seq2seq network</span><span class="sh">'''</span>
+    <span class="n">encoder_inputs</span> <span class="o">=</span> <span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_length_</span><span class="o">+</span><span class="mi">1</span><span class="p">,),</span><span class="n">dtype</span><span class="o">=</span><span class="sh">'</span><span class="s">int32</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">encoder_embedding</span> <span class="o">=</span> <span class="nc">Embedding</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">unique_ingredients</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">embed_size</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="n">recipe_embeddings</span><span class="p">],</span> <span class="n">trainable</span><span class="o">=</span><span class="n">embed_train</span><span class="p">,</span> <span class="n">mask_zero</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">input_length</span><span class="o">=</span><span class="n">max_length_</span><span class="o">+</span><span class="mi">1</span><span class="p">)(</span><span class="n">encoder_inputs</span><span class="p">)</span>
+    <span class="n">encoder</span> <span class="o">=</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">return_state</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">encoder_outputs</span><span class="p">,</span> <span class="n">state_h</span><span class="p">,</span> <span class="n">state_c</span> <span class="o">=</span> <span class="nf">encoder</span><span class="p">(</span><span class="n">encoder_embedding</span><span class="p">)</span>
+
+    <span class="n">encoder_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">state_h</span><span class="p">,</span> <span class="n">state_c</span><span class="p">]</span>
+
+    <span class="n">decoder_inputs</span> <span class="o">=</span> <span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_length_name_</span><span class="p">,),</span><span class="n">dtype</span><span class="o">=</span><span class="sh">'</span><span class="s">int32</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">decoder_embedding</span> <span class="o">=</span> <span class="nc">Embedding</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">unique_names</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">embed_size</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="n">name_embeddings</span><span class="p">],</span> <span class="n">trainable</span><span class="o">=</span><span class="n">embed_train</span><span class="p">,</span> <span class="n">mask_zero</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">input_length</span><span class="o">=</span><span class="n">max_length_name_</span><span class="o">-</span><span class="mi">1</span><span class="p">)(</span><span class="n">decoder_inputs</span><span class="p">)</span>
+    <span class="n">decoder_lstm</span> <span class="o">=</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">return_state</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">decoder_outputs</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="nf">decoder_lstm</span><span class="p">(</span><span class="n">decoder_embedding</span><span class="p">,</span> <span class="n">initial_state</span><span class="o">=</span><span class="n">encoder_states</span><span class="p">)</span>
+    <span class="n">decoder_dense</span> <span class="o">=</span> <span class="nc">Dense</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">unique_names</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">activation</span><span class="o">=</span><span class="sh">'</span><span class="s">softmax</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">decoder_outputs</span> <span class="o">=</span> <span class="nf">decoder_dense</span><span class="p">(</span><span class="n">decoder_outputs</span><span class="p">)</span>
+
+    <span class="n">model_names</span> <span class="o">=</span> <span class="nc">Model</span><span class="p">([</span><span class="n">encoder_inputs</span><span class="p">,</span> <span class="n">decoder_inputs</span><span class="p">],</span> <span class="n">decoder_outputs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">summary</span><span class="p">:</span>
+        <span class="n">model_names</span><span class="p">.</span><span class="nf">summary</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">encoder_inputs</span><span class="p">,</span><span class="n">encoder_outputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">,</span><span class="n">decoder_inputs</span><span class="p">,</span><span class="n">decoder_lstm</span><span class="p">,</span><span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">decoder_dense</span><span class="p">,</span> <span class="n">model_names</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iterated_recipes_</span><span class="p">,</span> <span class="n">name_sequences_</span><span class="p">,</span> <span class="n">name_labels_</span> <span class="o">=</span> <span class="nf">shuffle</span><span class="p">([</span><span class="n">recipe_sequences</span><span class="p">,</span> <span class="n">cut_name</span><span class="p">,</span> <span class="n">label_name</span><span class="p">])</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">early_cb</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="nc">EarlyStopping</span><span class="p">(</span>
+    <span class="n">monitor</span><span class="o">=</span><span class="sh">'</span><span class="s">val_accuracy</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">restore_best_weights</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># test_range of items
+</span><span class="k">def</span> <span class="nf">train_seq2seq</span><span class="p">(</span><span class="n">test_range</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">epochs</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="c1">#build, compile and train model using cpu due to issue with masking
+</span>    <span class="k">with</span> <span class="n">tf</span><span class="p">.</span><span class="nf">device</span><span class="p">(</span><span class="sh">'</span><span class="s">/cpu:0</span><span class="sh">'</span><span class="p">):</span>    
+        <span class="c1">#train LSTM components
+</span>        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Model summary:</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">model_names</span> <span class="o">=</span> <span class="nf">build_seq2seq</span><span class="p">()</span>
+        <span class="n">model_names</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">),</span> <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="n">sparse_categorical_crossentropy</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">])</span>
+        
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Training LSTMs...</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">model_names</span><span class="p">.</span><span class="nf">load_weights</span><span class="p">(</span><span class="sh">'</span><span class="s">name_weights.h5</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">name_history</span> <span class="o">=</span> <span class="n">model_names</span><span class="p">.</span><span class="nf">fit</span><span class="p">([</span><span class="n">iterated_recipes_</span><span class="p">[:</span><span class="n">test_range</span><span class="p">],</span><span class="n">name_sequences_</span><span class="p">[:</span><span class="n">test_range</span><span class="p">]],</span> <span class="n">name_labels_</span><span class="p">[:</span><span class="n">test_range</span><span class="p">],</span> 
+                    <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> 
+                    <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> 
+                    <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">early_cb</span><span class="p">])</span>
+        <span class="n">name_weights</span> <span class="o">=</span>  <span class="n">model_names</span><span class="p">.</span><span class="nf">save_weights</span><span class="p">(</span><span class="sh">'</span><span class="s">name_weights.h5</span><span class="sh">'</span><span class="p">)</span>
+        
+        <span class="c1">#fine tune model
+</span>        <span class="n">encoder_inputs</span><span class="p">,</span><span class="n">encoder_outputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">,</span><span class="n">decoder_inputs</span><span class="p">,</span><span class="n">decoder_lstm</span><span class="p">,</span><span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">decoder_dense</span><span class="p">,</span><span class="n">model_names</span> <span class="o">=</span> <span class="nf">build_seq2seq</span><span class="p">(</span><span class="n">embed_train</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        
+        <span class="n">model_names</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">),</span> <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="n">sparse_categorical_crossentropy</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="sh">'</span><span class="s">accuracy</span><span class="sh">'</span><span class="p">])</span>
+        
+        <span class="n">model_names</span><span class="p">.</span><span class="nf">load_weights</span><span class="p">(</span><span class="sh">'</span><span class="s">name_weights.h5</span><span class="sh">'</span><span class="p">)</span>
+        
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Fine tuning model...</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">fine_history</span> <span class="o">=</span> <span class="n">model_names</span><span class="p">.</span><span class="nf">fit</span><span class="p">([</span><span class="n">iterated_recipes_</span><span class="p">[:</span><span class="n">test_range</span><span class="p">],</span><span class="n">name_sequences_</span><span class="p">[:</span><span class="n">test_range</span><span class="p">]],</span> <span class="n">name_labels_</span><span class="p">[:</span><span class="n">test_range</span><span class="p">],</span> 
+                    <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> 
+                    <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> 
+                    <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">early_cb</span><span class="p">])</span>
+        
+        <span class="n">name_weights</span> <span class="o">=</span>  <span class="n">model_names</span><span class="p">.</span><span class="nf">save_weights</span><span class="p">(</span><span class="sh">'</span><span class="s">name_weights.h5</span><span class="sh">'</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">save</span><span class="p">:</span> 
+            <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">name_training.pkl</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">wb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="p">.</span><span class="nf">dump</span><span class="p">([</span><span class="n">name_history</span><span class="p">,</span> <span class="n">fine_history</span><span class="p">,</span> <span class="n">model_names</span><span class="p">,</span> <span class="n">name_weights</span><span class="p">,</span> <span class="n">encoder_inputs</span><span class="p">,</span><span class="n">encoder_outputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">,</span><span class="n">decoder_inputs</span><span class="p">,</span><span class="n">decoder_lstm</span><span class="p">,</span><span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">decoder_dense</span><span class="p">,</span><span class="n">model_names</span><span class="p">],</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">name_history</span><span class="p">,</span> <span class="n">fine_history</span><span class="p">,</span> <span class="n">model_names</span><span class="p">,</span> <span class="n">name_weights</span><span class="p">,</span> <span class="n">encoder_inputs</span><span class="p">,</span><span class="n">encoder_outputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">,</span><span class="n">decoder_inputs</span><span class="p">,</span><span class="n">decoder_lstm</span><span class="p">,</span><span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">decoder_dense</span><span class="p">,</span><span class="n">model_names</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">name_history</span><span class="p">,</span> <span class="n">fine_history</span><span class="p">,</span> <span class="n">model_names</span><span class="p">,</span> <span class="n">name_weights</span><span class="p">,</span> <span class="n">encoder_inputs</span><span class="p">,</span><span class="n">encoder_outputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">,</span><span class="n">decoder_inputs</span><span class="p">,</span><span class="n">decoder_lstm</span><span class="p">,</span><span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">decoder_dense</span><span class="p">,</span><span class="n">model_names</span> <span class="o">=</span> <span class="nf">train_seq2seq</span><span class="p">()</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Model summary:
+Model: "model_1"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_2 (InputLayer)        [(None, 45)]                 0         []                            
+                                                                                                  
+ input_3 (InputLayer)        [(None, 17)]                 0         []                            
+                                                                                                  
+ embedding_1 (Embedding)     (None, 45, 300)              3723900   ['input_2[0][0]']             
+                                                                                                  
+ embedding_2 (Embedding)     (None, 17, 300)              8686200   ['input_3[0][0]']             
+                                                                                                  
+ lstm_1 (LSTM)               [(None, 128),                219648    ['embedding_1[0][0]']         
+                              (None, 128),                                                        
+                              (None, 128)]                                                        
+                                                                                                  
+ lstm_2 (LSTM)               [(None, 17, 128),            219648    ['embedding_2[0][0]',         
+                              (None, 128),                           'lstm_1[0][1]',              
+                              (None, 128)]                           'lstm_1[0][2]']              
+                                                                                                  
+ dense_1 (Dense)             (None, 17, 28954)            3735066   ['lstm_2[0][0]']              
+                                                                                                  
+==================================================================================================
+Total params: 16584462 (63.26 MB)
+Trainable params: 4174362 (15.92 MB)
+Non-trainable params: 12410100 (47.34 MB)
+__________________________________________________________________________________________________
+Training LSTMs...
+Fine tuning model... ```
+</code></pre></div></div>
+
+<details>
+    <summary>Click to show hidden code.</summary>
+    <pre>
+    name_loss = name_history.history['loss'][:471]
+    name_val_loss = name_history.history['val_loss'][:471]
+    name_accuracy = name_history.history['accuracy'][:471]
+    name_val_accuracy = name_history.history['val_accuracy'][:471]
+    </pre>
+    <pre>
+    plt.plot(range(len(name_loss)),name_loss,label='Training loss')
+    plt.plot(range(len(name_val_loss)),name_val_loss,label='Validation loss')
+    plt.axvline(x=149,color='k')
+    plt.legend()
+    plt.text(20,5.45,'Training')
+    plt.text(170,4.25,'Fine tuning')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss');
+    </pre>
+</details>
+
+<p><img src="/assets/img/ingredient_predict/output_63_0.png" alt="png"></p>
+
+<h2><br></h2>
+<h2>Predicting recipe names</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decoder</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">embed_size</span><span class="o">=</span><span class="n">embed_size</span><span class="p">,</span> <span class="n">unique_names</span><span class="o">=</span><span class="n">unique_names</span><span class="p">,</span><span class="n">name_embeddings</span><span class="o">=</span><span class="n">name_embeddings</span><span class="p">,</span><span class="n">max_length_name_</span><span class="o">=</span><span class="n">max_length_name_</span><span class="p">,</span> <span class="n">decoder_inputs</span><span class="o">=</span><span class="n">decoder_inputs</span><span class="p">,</span> <span class="n">decoder_lstm</span><span class="o">=</span><span class="n">decoder_lstm</span><span class="p">,</span> <span class="n">decoder_dense</span><span class="o">=</span><span class="n">decoder_dense</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Creates decoder model</span><span class="sh">'''</span>
+    <span class="n">decoder_state_input_h</span> <span class="o">=</span> <span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,))</span>
+    <span class="n">decoder_state_input_c</span> <span class="o">=</span> <span class="nc">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,))</span>
+    <span class="n">decoder_states_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">decoder_state_input_h</span><span class="p">,</span> <span class="n">decoder_state_input_c</span><span class="p">]</span>
+    
+    <span class="n">decoder_embedding</span> <span class="o">=</span> <span class="nc">Embedding</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">unique_names</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">embed_size</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="n">name_embeddings</span><span class="p">],</span> <span class="n">trainable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mask_zero</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">input_length</span><span class="o">=</span><span class="n">max_length_name_</span><span class="p">)(</span><span class="n">decoder_inputs</span><span class="p">)</span>
+    
+    <span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">state_h</span><span class="p">,</span> <span class="n">state_c</span> <span class="o">=</span> <span class="nf">decoder_lstm</span><span class="p">(</span><span class="n">decoder_embedding</span><span class="p">,</span> <span class="n">initial_state</span><span class="o">=</span><span class="n">decoder_states_inputs</span><span class="p">)</span>
+    <span class="n">decoder_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">state_h</span><span class="p">,</span> <span class="n">state_c</span><span class="p">]</span>
+    <span class="n">decoder_outputs</span> <span class="o">=</span> <span class="nf">decoder_dense</span><span class="p">(</span><span class="n">decoder_outputs</span><span class="p">)</span>
+    <span class="n">decoder_model</span> <span class="o">=</span> <span class="nc">Model</span><span class="p">([</span><span class="n">decoder_inputs</span><span class="p">]</span> <span class="o">+</span> <span class="n">decoder_states_inputs</span><span class="p">,[</span><span class="n">decoder_outputs</span><span class="p">]</span> <span class="o">+</span> <span class="n">decoder_states</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">decoder_model</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">encoder</span><span class="p">(</span><span class="n">encoder_inputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Creates encoder model</span><span class="sh">'''</span>
+    <span class="n">encoder_model</span> <span class="o">=</span> <span class="nc">Model</span><span class="p">(</span><span class="n">encoder_inputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">encoder_model</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Selects next word in names with temperature controlling the variability.</span><span class="sh">'''</span>
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">asarray</span><span class="p">(</span><span class="n">preds</span><span class="p">).</span><span class="nf">astype</span><span class="p">(</span><span class="sh">'</span><span class="s">float64</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span> <span class="o">/</span> <span class="n">temperature</span>
+    <span class="n">exp_preds</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">exp_preds</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="nf">sum</span><span class="p">(</span><span class="n">exp_preds</span><span class="p">)</span>
+    <span class="n">probas</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">multinomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="p">.</span><span class="nf">argmax</span><span class="p">(</span><span class="n">probas</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decode_sequence</span><span class="p">(</span><span class="n">input_seq</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Decodes context vector</span><span class="sh">'''</span>
+    <span class="c1">#load models 
+</span>    <span class="n">encoder_model</span> <span class="o">=</span> <span class="nf">encoder</span><span class="p">(</span><span class="n">encoder_inputs</span><span class="p">,</span> <span class="n">encoder_states</span><span class="p">)</span>
+    <span class="n">decoder_model</span> <span class="o">=</span> <span class="nf">decoder</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">)</span>
+    <span class="c1"># Encode the input as state vectors.
+</span>    <span class="n">states_value</span> <span class="o">=</span> <span class="n">encoder_model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">input_seq</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Generate empty target sequence of length 1.
+</span>    <span class="n">target_seq</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">17</span><span class="p">))</span>
+    <span class="n">target_seq</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">#Assigning first word to be 'sos'
+</span>    <span class="n">stop_condition</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">decoded_sentence</span> <span class="o">=</span> <span class="sh">''</span>
+    <span class="n">prev_char</span> <span class="o">=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span>
+    <span class="k">while</span> <span class="n">stop_condition</span><span class="p">:</span>
+        <span class="n">output_tokens</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">decoder_model</span><span class="p">.</span><span class="nf">predict</span><span class="p">([</span><span class="n">target_seq</span><span class="p">]</span> <span class="o">+</span> <span class="n">states_value</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="c1"># Sample a token
+</span>        <span class="c1">#sampled_token_index = np.argmax(output_tokens[0, -1, :])
+</span>        <span class="c1">#sampled_token_index = np.random.choice(len(output_tokens[0,-1,:]),p=output_tokens[0,-1,:])
+</span>        <span class="n">sampled_token_index</span> <span class="o">=</span> <span class="nf">sample</span><span class="p">(</span><span class="n">output_tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,:])</span>
+        <span class="n">sampled_char</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">tokenizer_names</span><span class="p">.</span><span class="n">word_index</span><span class="p">.</span><span class="nf">keys</span><span class="p">())[</span><span class="n">sampled_token_index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="nf">if </span><span class="p">(</span><span class="n">sampled_char</span> <span class="o">!=</span> <span class="n">prev_char</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">sampled_char</span> <span class="o">!=</span> <span class="sh">'</span><span class="s">eos</span><span class="sh">'</span><span class="p">):</span>
+            <span class="n">decoded_sentence</span> <span class="o">+=</span> <span class="n">sampled_char</span><span class="o">+</span><span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="c1"># Exit condition: either hit max length
+</span>        <span class="n">prev_char</span> <span class="o">=</span> <span class="n">sampled_char</span>
+        <span class="c1"># or find stop character.
+</span>
+        <span class="nf">if </span><span class="p">(</span><span class="n">sampled_char</span> <span class="o">==</span> <span class="sh">'</span><span class="s">eos</span><span class="sh">'</span> <span class="ow">or</span> <span class="nf">len</span><span class="p">(</span><span class="n">decoded_sentence</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="n">stop_condition</span> <span class="o">=</span> <span class="bp">False</span><span class="c1"># Update the target sequence (of length 1).
+</span>            
+        <span class="c1">#updating target sequence
+</span>        <span class="n">target_seq</span> <span class="o">=</span> <span class="n">target_seq</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">tolist</span><span class="p">()</span>
+        <span class="n">target_seq</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">sampled_token_index</span><span class="p">)</span>
+        <span class="n">target_seq</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">target_seq</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([</span><span class="n">target_seq</span><span class="p">])</span>
+        
+        <span class="n">states_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">decoded_sentence</span><span class="p">.</span><span class="nf">strip</span><span class="p">().</span><span class="nf">title</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2><br></h2>
+<h2>Predicting recipes</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">pad_sequences</span><span class="p">(</span><span class="n">token_list</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length_</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">pad sequences (built in function returns a recursion error)</span><span class="sh">'''</span>
+    <span class="n">padded_sequence</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">zeros</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_length</span><span class="o">-</span><span class="nf">len</span><span class="p">(</span><span class="n">token_list</span><span class="p">))</span>
+    <span class="n">padded</span> <span class="o">=</span> <span class="p">[</span><span class="nf">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">zero</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">zeros</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">padded</span><span class="p">.</span><span class="nf">extend</span><span class="p">(</span><span class="n">token_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">padded</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">cook_for_me</span><span class="p">(</span><span class="n">seed_text</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Suggests additional ingredients to add</span><span class="sh">'''</span>
+    <span class="n">next_words</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">words_out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">token_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">seed_text</span> <span class="o">=</span> <span class="n">seed_text</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="sh">'</span><span class="s">and</span><span class="sh">'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">seed_text</span><span class="p">:</span>
+        <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="p">.</span><span class="nf">strip</span><span class="p">()</span>
+        <span class="n">token_</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">.</span><span class="nf">texts_to_sequences</span><span class="p">([</span><span class="n">word</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">token_list</span><span class="p">.</span><span class="nf">extend</span><span class="p">(</span><span class="n">token_</span><span class="p">)</span>
+    <span class="n">token_list</span> <span class="o">=</span> <span class="nf">pad_sequences</span><span class="p">(</span><span class="n">token_list</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span>
+
+    <span class="k">while</span> <span class="n">next_words</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">model</span><span class="p">.</span><span class="nf">load_weights</span><span class="p">(</span><span class="sh">'</span><span class="s">fine_weight.h5</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">proba</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">token_list</span><span class="p">).</span><span class="nf">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">43</span><span class="p">),</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">argmax</span><span class="p">(</span><span class="n">proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">new_token</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="n">predicted</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">word</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">.</span><span class="n">word_index</span><span class="p">.</span><span class="nf">keys</span><span class="p">())[</span><span class="nf">int</span><span class="p">(</span><span class="n">predicted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="n">words_out</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+        <span class="n">token_list</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">new_token</span><span class="p">)</span>
+        <span class="n">token_list</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">next_words</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="n">token_list</span> <span class="o">=</span> <span class="p">[</span><span class="nf">pad_sequences</span><span class="p">(</span><span class="n">token_list</span><span class="p">)]</span>
+    <span class="n">words_out</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="nf">set</span><span class="p">(</span><span class="n">words_out</span><span class="p">))</span>
+    <span class="n">string_out</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Why not try adding some </span><span class="sh">'</span><span class="o">+</span><span class="sh">'</span><span class="s">, </span><span class="sh">'</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">words_out</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="sh">'</span><span class="s"> and </span><span class="sh">'</span><span class="o">+</span><span class="n">words_out</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="sh">'</span><span class="s">?</span><span class="sh">'</span>
+    <span class="k">return</span> <span class="n">token_list</span><span class="p">,</span> <span class="n">string_out</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">make_suggestions</span><span class="p">(</span><span class="n">ingredients_in_stock</span><span class="p">):</span>
+    <span class="sh">'''</span><span class="s">Suggests additional ingredients to use and names the recipe</span><span class="sh">'''</span>
+    <span class="k">for</span> <span class="n">ingredient</span> <span class="ow">in</span> <span class="n">ingredients_in_stock</span><span class="p">:</span>
+        <span class="n">greeting</span> <span class="o">=</span> <span class="sh">'</span><span class="s">For </span><span class="sh">'</span><span class="o">+</span><span class="n">ingredient</span><span class="p">.</span><span class="nf">upper</span><span class="p">()</span> <span class="o">+</span><span class="sh">'</span><span class="s"> let me see... </span><span class="sh">'</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">greeting</span><span class="p">)</span>
+        <span class="n">suggestions</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="nf">cook_for_me</span><span class="p">(</span><span class="n">ingredient</span><span class="p">,</span><span class="n">model</span><span class="p">)</span>
+        <span class="c1">#print(suggestions)
+</span>        <span class="nf">print</span><span class="p">(</span><span class="n">text</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">flmy</span><span class="sh">'</span><span class="p">,</span><span class="sh">'</span><span class="s">flour</span><span class="sh">'</span><span class="p">))</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">I call it...</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">named</span> <span class="o">=</span> <span class="nf">decode_sequence</span><span class="p">(</span><span class="n">suggestions</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">named</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+<h2><br></h2>
+<h2>What's for dinner?</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#defining three levels to test suggestion models
+#easy
+</span><span class="n">single_ingredients</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sh">'</span><span class="s">cherry</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">lettuce</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">mirin</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">pineapple</span><span class="sh">'</span>
+    <span class="p">]</span>
+
+<span class="c1">#medium
+</span><span class="n">reasonable_combos</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sh">'</span><span class="s">chicken and rice</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">chicken and rice and salsa</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">banana and cinnamon</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">egg and sugar</span><span class="sh">'</span>
+    <span class="p">]</span>
+
+<span class="c1">#hard
+</span><span class="n">odd_pairings</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sh">'</span><span class="s">chicken and rice and grapefruit</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">chocolate and beans</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">marshmallow and cantaloupe</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">spinach and cinnamon</span><span class="sh">'</span>
+    <span class="p">]</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">make_suggestions</span><span class="p">(</span><span class="n">single_ingredients</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>For CHERRY let me see... 
+Why not try adding some cinnamon, egg, sugar, flour and butter?
+I call it...
+Cherry Cobbler
+ 
+For LETTUCE let me see... 
+Why not try adding some cucumber, tomato, feta cheese, green pepper and scallion?
+I call it...
+Simple Salad
+ 
+For MIRIN let me see... 
+Why not try adding some sesame oil, garlic clove, soy sauce, fresh ginger and sugar?
+I call it...
+Japanese Dipping
+ 
+For PINEAPPLE let me see... 
+Why not try adding some lemon juice, salt, water, sugar and cornstarch?
+I call it...
+Pineapple Jam
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">make_suggestions</span><span class="p">(</span><span class="n">reasonable_combos</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>For CHICKEN AND RICE let me see... 
+Why not try adding some chicken broth, carrot, celery, onion and potato?
+I call it...
+Chicken And Vegetables
+ 
+For CHICKEN AND RICE AND SALSA let me see... 
+Why not try adding some cheese, salt, tortilla, water and pepper?
+I call it...
+Chicken Tortilla
+ 
+For BANANA AND CINNAMON let me see... 
+Why not try adding some salt, allspice, ginger, nutmeg and clove?
+I call it...
+Banana Shake
+ 
+For EGG AND SUGAR let me see... 
+Why not try adding some vanilla, baking powder, salt, milk and flour?
+I call it...
+Funnel Cake
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">make_suggestions</span><span class="p">(</span><span class="n">odd_pairings</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>For CHICKEN AND RICE AND GRAPEFRUIT let me see... 
+Why not try adding some garlic, water, soy sauce, ginger and brown sugar?
+I call it...
+Teriyaki Chicken
+ 
+For CHOCOLATE AND BEANS let me see... 
+Why not try adding some baking powder, sugar, egg, butter and flour?
+I call it...
+Chocolate Brownies
+ 
+For MARSHMALLOW AND CANTALOUPE let me see... 
+Why not try adding some blueberry, strawberry, pineapple and banana?
+I call it...
+Banana Fruit
+ 
+For SPINACH AND CINNAMON let me see... 
+Why not try adding some salt, milk, pepper, nutmeg and egg?
+I call it...
+Spinach And Cheese
+</code></pre></div></div>
+
+
+          </article>
+
+        </div>
+      
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Nina  Cilliers. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank" rel="external nofollow noopener">Unsplash</a>.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js"></script>
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js"></script>
+  <script defer src="/assets/js/common.js"></script>
+  <script defer src="/assets/js/copy_code.js" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>
